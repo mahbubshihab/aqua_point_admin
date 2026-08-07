@@ -104,7 +104,7 @@ export default function Sidebar() {
           {!collapsed && (
             <div className="flex items-center gap-2">
               <span className="text-lg font-black tracking-wider text-white uppercase">
-                AQUA<span className="text-[#4cceac]"> POINT</span>
+                AQUA<span className="text-[#00BCE1]"> POINT</span>
               </span>
             </div>
           )}
@@ -138,25 +138,25 @@ export default function Sidebar() {
                     href={item.href}
                     className={`group flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-semibold transition-all duration-200 ${
                       isActive
-                        ? 'bg-[#3e4396] text-white shadow-lg shadow-[#3e4396]/40 font-bold border-l-4 border-[#4cceac]'
+                        ? 'bg-[#3e4396] text-white shadow-lg shadow-[#3e4396]/40 font-bold border-l-4 border-[#00BCE1]'
                         : 'text-[#A0AEC0] hover:text-white hover:bg-[#141b2d]/60'
                     }`}
                     title={collapsed ? item.name : undefined}
                   >
                     <div className="flex items-center gap-3">
                       <Icon className={`w-5 h-5 transition-colors ${
-                        isActive ? 'text-[#4cceac]' : 'text-[#A0AEC0] group-hover:text-white'
+                        isActive ? 'text-[#00BCE1]' : 'text-[#A0AEC0] group-hover:text-white'
                       }`} />
                       {!collapsed && <span>{item.name}</span>}
                     </div>
 
                     {!collapsed && (
                       badgeCount > 0 ? (
-                        <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40">
+                        <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
                           {badgeCount}
                         </span>
                       ) : isActive ? (
-                        <ChevronRight className="w-4 h-4 text-[#4cceac]" />
+                        <ChevronRight className="w-4 h-4 text-[#00BCE1]" />
                       ) : null
                     )}
                   </Link>

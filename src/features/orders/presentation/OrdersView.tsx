@@ -94,7 +94,7 @@ export default function OrdersView() {
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => alert('Order management ready for checkout processing!')}
-            className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer shrink-0"
+            className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer shrink-0"
           >
             <ShoppingBag className="w-4 h-4 stroke-[2.5]" /> + Create New Order
           </button>

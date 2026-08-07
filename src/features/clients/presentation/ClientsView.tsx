@@ -250,7 +250,7 @@ export default function ClientsView() {
           )}
           <button
             onClick={openAddModal}
-            className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer"
+            className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer shrink-0"
           >
             <Plus className="w-4 h-4 stroke-[3]" /> Add Corporate Client
           </button>
@@ -424,7 +424,7 @@ export default function ClientsView() {
             </button>
             <button
               onClick={openAddModal}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 shadow-md transition-all flex items-center gap-2 cursor-pointer font-bold"
+              className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer font-bold"
             >
               <Plus className="w-4 h-4 stroke-[3]" /> Add Corporate Client
             </button>
@@ -642,7 +642,7 @@ export default function ClientsView() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
+                  className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   {isSaving ? (
                     <>

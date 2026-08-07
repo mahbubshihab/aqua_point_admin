@@ -213,13 +213,13 @@ export default function BannersView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Banners
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754]">
             {filteredBanners.length} banners
           </span>
         </div>
         <button
           onClick={openAddModal}
-          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer shrink-0"
+          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Add Banner
         </button>
@@ -237,7 +237,7 @@ export default function BannersView() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search banner by title or tag..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#4cceac] transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] transition-all"
               />
             </div>
 
@@ -246,7 +246,7 @@ export default function BannersView() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] cursor-pointer transition-all"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-all"
               >
                 <option value="All">All Banner Status</option>
                 <option value="Active">Active Only</option>
@@ -295,13 +295,13 @@ export default function BannersView() {
                 onClick={() => setStatusFilter(st)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                   isActive
-                    ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                    ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
                     : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
                 }`}
               >
                 <span>{label}</span>
                 <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
+                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
                 }`}>
                   {count}
                 </span>
@@ -314,7 +314,7 @@ export default function BannersView() {
       {/* Loading & Empty States */}
       {loading ? (
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-[#4cceac] animate-spin" />
+          <Loader2 className="w-10 h-10 text-[#00BCE1] animate-spin" />
           <p className="text-xs text-[#A0AEC0]">Loading banners from Cloud Firestore...</p>
         </div>
       ) : filteredBanners.length === 0 ? (
@@ -329,7 +329,7 @@ export default function BannersView() {
           <div className="flex items-center justify-center gap-3 pt-2">
             <button
               onClick={openAddModal}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 shadow-md transition-all flex items-center gap-2 cursor-pointer font-bold"
+              className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer font-bold"
             >
               <Plus className="w-4 h-4 stroke-[3]" /> Add Banner
             </button>
@@ -342,7 +342,7 @@ export default function BannersView() {
             <div
               key={banner.id}
               className={`bg-[#1f2940] border rounded-2xl overflow-hidden flex flex-col justify-between group relative transition-all ${
-                banner.isActive ? 'border-[#4cceac]/40' : 'border-[#2c3754] opacity-75'
+                banner.isActive ? 'border-[#00BCE1]/40' : 'border-[#2c3754] opacity-75'
               }`}
             >
               <div>
@@ -366,7 +366,7 @@ export default function BannersView() {
                     <span
                       className={`px-3 py-1 text-[11px] font-extrabold rounded-full border flex items-center gap-1.5 shadow-lg ${
                         banner.isActive
-                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                           : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754]'
                       }`}
                     >
@@ -377,20 +377,20 @@ export default function BannersView() {
 
                   {/* Tag / Badge */}
                   {banner.tag && (
-                    <div className="absolute top-3 right-3 px-3 py-1 text-[11px] font-extrabold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754] flex items-center gap-1">
-                      <Tag className="w-3 h-3 text-[#4cceac]" /> {banner.tag}
+                    <div className="absolute top-3 right-3 px-3 py-1 text-[11px] font-extrabold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754] flex items-center gap-1">
+                      <Tag className="w-3 h-3 text-[#00BCE1]" /> {banner.tag}
                     </div>
                   )}
                 </div>
 
                 {/* Content */}
                 <div className="p-5 space-y-2 relative">
-                  <h3 className="text-base font-bold text-white group-hover:text-[#4cceac] transition-colors line-clamp-2">
+                  <h3 className="text-base font-bold text-white group-hover:text-[#00BCE1] transition-colors line-clamp-2">
                     {banner.title}
                   </h3>
 
                   {banner.ctaLink && (
-                    <div className="flex items-center gap-1.5 text-xs text-[#4cceac]/90 font-mono truncate pt-1">
+                    <div className="flex items-center gap-1.5 text-xs text-[#00BCE1]/90 font-mono truncate pt-1">
                       <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                       <span className="truncate">{banner.ctaLink}</span>
                     </div>
@@ -404,13 +404,13 @@ export default function BannersView() {
                   onClick={() => handleToggleActive(banner)}
                   className={`text-xs font-semibold px-3 py-1.5 rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer ${
                     banner.isActive
-                      ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                      ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                       : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754] hover:text-white'
                   }`}
                   title="Toggle active visibility on website hero slider"
                 >
                   {banner.isActive ? (
-                    <ToggleRight className="w-4 h-4 text-[#4cceac]" />
+                    <ToggleRight className="w-4 h-4 text-[#00BCE1]" />
                   ) : (
                     <ToggleLeft className="w-4 h-4 text-[#A0AEC0]" />
                   )}
@@ -420,7 +420,7 @@ export default function BannersView() {
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => openEditModal(banner)}
-                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
                     title="Edit Banner"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
@@ -465,14 +465,14 @@ export default function BannersView() {
                     <td className="py-4 px-4 font-bold text-white">{banner.title}</td>
                     <td className="py-4 px-4">
                       {banner.tag ? (
-                        <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40">
+                        <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
                           {banner.tag}
                         </span>
                       ) : (
                         <span className="text-[#A0AEC0]">-</span>
                       )}
                     </td>
-                    <td className="py-4 px-4 font-mono text-[#4cceac] max-w-xs truncate">
+                    <td className="py-4 px-4 font-mono text-[#00BCE1] max-w-xs truncate">
                       {banner.ctaLink || '-'}
                     </td>
                     <td className="py-4 px-4">
@@ -480,7 +480,7 @@ export default function BannersView() {
                         onClick={() => handleToggleActive(banner)}
                         className={`px-3 py-1 rounded-full text-[10px] font-bold border flex items-center gap-1 cursor-pointer transition-colors ${
                           banner.isActive
-                            ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                            ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                             : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754]'
                         }`}
                       >
@@ -491,7 +491,7 @@ export default function BannersView() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openEditModal(banner)}
-                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -520,7 +520,7 @@ export default function BannersView() {
           <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                {editingBannerId ? <Edit2 className="w-5 h-5 text-[#4cceac]" /> : <Plus className="w-5 h-5 text-[#4cceac]" />}
+                {editingBannerId ? <Edit2 className="w-5 h-5 text-[#00BCE1]" /> : <Plus className="w-5 h-5 text-[#00BCE1]" />}
                 {editingBannerId ? 'Edit Banner' : 'Add New Banner'}
               </h2>
               <button
@@ -547,7 +547,7 @@ export default function BannersView() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Livotec & RO Water Purifiers Showcase"
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
+                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
                 />
               </div>
 
@@ -559,7 +559,7 @@ export default function BannersView() {
                     value={tag}
                     onChange={(e) => setTag(e.target.value)}
                     placeholder="e.g. Featured, Offer, New"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
                   />
                 </div>
 
@@ -570,7 +570,7 @@ export default function BannersView() {
                     value={ctaLink}
                     onChange={(e) => setCtaLink(e.target.value)}
                     placeholder="e.g. /products or https://..."
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#4cceac] font-mono focus:outline-none focus:border-[#4cceac]"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono focus:outline-none focus:border-[#00BCE1]"
                   />
                 </div>
               </div>
@@ -578,9 +578,9 @@ export default function BannersView() {
               {/* Cloudinary Image Upload */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Banner Image * (Cloudinary Folder: <span className="text-[#4cceac]">banners/</span>)
+                  Banner Image * (Cloudinary Folder: <span className="text-[#00BCE1]">banners/</span>)
                 </label>
-                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#4cceac] transition-colors bg-[#141b2d]">
+                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#00BCE1] transition-colors bg-[#141b2d]">
                   {previewUrl || existingImageUrl ? (
                     <div className="relative w-full h-36 mx-auto rounded-xl overflow-hidden border border-[#2c3754]">
                       <img src={previewUrl || existingImageUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -594,7 +594,7 @@ export default function BannersView() {
                     </div>
                   ) : (
                     <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-4">
-                      <Upload className="w-8 h-8 text-[#4cceac] animate-bounce" />
+                      <Upload className="w-8 h-8 text-[#00BCE1] animate-bounce" />
                       <span className="text-xs text-slate-300">Click to upload banner image file</span>
                       <span className="text-[10px] text-[#A0AEC0] font-mono">Preset: aqua_point | Folder: banners</span>
                       <input
@@ -619,11 +619,11 @@ export default function BannersView() {
                   onClick={() => setIsActive(!isActive)}
                   className={`p-1.5 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
                     isActive
-                      ? 'bg-[#4cceac]/20 border-[#4cceac]/40 text-[#4cceac]'
+                      ? 'bg-[#00BCE1]/20 border-[#00BCE1]/40 text-[#00BCE1]'
                       : 'bg-[#141b2d] border-[#2c3754] text-[#A0AEC0]'
                   }`}
                 >
-                  {isActive ? <ToggleRight className="w-6 h-6 text-[#4cceac]" /> : <ToggleLeft className="w-6 h-6 text-[#A0AEC0]" />}
+                  {isActive ? <ToggleRight className="w-6 h-6 text-[#00BCE1]" /> : <ToggleLeft className="w-6 h-6 text-[#A0AEC0]" />}
                   <span className="text-xs font-bold pr-1">{isActive ? 'Active' : 'Inactive'}</span>
                 </button>
               </div>
@@ -639,7 +639,7 @@ export default function BannersView() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
+                  className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   {isSaving ? (
                     <>

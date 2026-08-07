@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import Link from 'next/link';
 import { 
   Droplets, 
   Plus, 
@@ -29,15 +30,6 @@ import {
 } from '@/core/services/firebase';
 import TableFooter from '@/core/components/TableFooter';
 
-const CORE_CATEGORIES = [
-  'RO Purifiers',
-  'Cabinet Purifiers',
-  'Water Dispensers',
-  'Filters & Cartridges',
-  'Spare Parts',
-  'Industrial RO Plants'
-];
-
 export default function ProductsView() {
   const [products, setProducts] = useState<ProductDoc[]>([]);
   const [categories, setCategories] = useState<CategoryDoc[]>([]);
@@ -60,7 +52,7 @@ export default function ProductsView() {
   // Form State
   const [name, setName] = useState('');
   const [model, setModel] = useState('');
-  const [category, setCategory] = useState('RO Purifiers');
+  const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
   const [warranty, setWarranty] = useState('1 Year Standard Warranty');
@@ -94,11 +86,6 @@ export default function ProductsView() {
     };
   }, []);
 
-  // Merge available category options
-  const allCategoryNames = Array.from(
-    new Set([...CORE_CATEGORIES, ...categories.map(c => c.name)])
-  );
-
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -112,7 +99,7 @@ export default function ProductsView() {
     setEditingProductId(null);
     setName('');
     setModel('');
-    setCategory('RO Purifiers');
+    setCategory(categories.length > 0 ? categories[0].name : '');
     setPrice('');
     setOriginalPrice('');
     setWarranty('1 Year Standard Warranty');
@@ -131,7 +118,7 @@ export default function ProductsView() {
     setEditingProductId(product.id);
     setName(product.name);
     setModel(product.model || '');
-    setCategory(product.category || 'RO Purifiers');
+    setCategory(product.category || (categories.length > 0 ? categories[0].name : ''));
     setPrice(product.price.toString());
     setOriginalPrice(product.originalPrice ? product.originalPrice.toString() : '');
     setWarranty(product.warranty || '1 Year Standard Warranty');
@@ -246,13 +233,13 @@ export default function ProductsView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Products
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#1f2940] text-[#4cceac] border border-[#2c3754]">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#1f2940] text-[#00BCE1] border border-[#2c3754]">
             {filteredProducts.length} items
           </span>
         </div>
         <button
           onClick={openAddModal}
-          className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 shadow-lg shadow-[#4cceac]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
+          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Add New Product
         </button>
@@ -270,7 +257,7 @@ export default function ProductsView() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search products by title, model code, or description..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-[#A0AEC0] focus:outline-none focus:border-[#4cceac] focus:ring-1 focus:ring-[#4cceac]/50 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-[#A0AEC0] focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
               />
             </div>
 
@@ -279,7 +266,7 @@ export default function ProductsView() {
               <select
                 value={selectedStockFilter}
                 onChange={(e) => setSelectedStockFilter(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] focus:ring-1 focus:ring-[#4cceac]/50 cursor-pointer transition-all"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 cursor-pointer transition-all"
               >
                 <option value="All">All Stock</option>
                 <option value="In Stock">In Stock</option>
@@ -296,7 +283,7 @@ export default function ProductsView() {
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
-                    ? 'bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40'
+                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40'
                     : 'text-[#A0AEC0] hover:text-white'
                 }`}
                 title="Grid View"
@@ -307,7 +294,7 @@ export default function ProductsView() {
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40'
+                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40'
                     : 'text-[#A0AEC0] hover:text-white'
                 }`}
                 title="Table View"
@@ -324,54 +311,64 @@ export default function ProductsView() {
             onClick={() => setSelectedCategoryFilter('All')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
               selectedCategoryFilter === 'All'
-                ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
                 : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
             }`}
           >
             <span>All Products</span>
             <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-              selectedCategoryFilter === 'All' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
+              selectedCategoryFilter === 'All' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
             }`}>
               {products.length}
             </span>
           </button>
 
-          {CORE_CATEGORIES.map((cat) => {
-            const count = products.filter(p => p.category === cat).length;
-            const isActive = selectedCategoryFilter === cat;
-            return (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategoryFilter(cat)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
-                  isActive
-                    ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
-                    : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
-                }`}
-              >
-                <span>{cat}</span>
-                <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
-                }`}>
-                  {count}
-                </span>
-              </button>
-            );
-          })}
+          {categories.length === 0 ? (
+            <Link
+              href="/categories"
+              className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#141b2d] text-[#00BCE1] hover:bg-[#00BCE1]/10 border border-[#2c3754] border-dashed transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Category</span>
+            </Link>
+          ) : (
+            categories.map((catDoc) => {
+              const count = products.filter(p => p.category === catDoc.name).length;
+              const isActive = selectedCategoryFilter === catDoc.name;
+              return (
+                <button
+                  key={catDoc.id || catDoc.name}
+                  onClick={() => setSelectedCategoryFilter(catDoc.name)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
+                    isActive
+                      ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
+                      : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
+                  }`}
+                >
+                  <span>{catDoc.name}</span>
+                  <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
+                    isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
 
       {/* Loading Indicator */}
       {loading ? (
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-20 flex flex-col items-center justify-center space-y-4 shadow-xl">
-          <Loader2 className="w-10 h-10 text-[#4cceac] animate-spin" />
+          <Loader2 className="w-10 h-10 text-[#00BCE1] animate-spin" />
           <p className="text-xs text-slate-400 font-medium">Fetching catalog items from Firestore...</p>
         </div>
       ) : filteredProducts.length === 0 ? (
         /* Empty State */
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 text-center shadow-xl">
-          <div className="w-16 h-16 rounded-full bg-[#4cceac]/10 border border-[#4cceac]/30 flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <Droplets className="w-8 h-8 text-[#4cceac]" />
+          <div className="w-16 h-16 rounded-full bg-[#00BCE1]/10 border border-[#00BCE1]/30 flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Droplets className="w-8 h-8 text-[#00BCE1]" />
           </div>
           <h3 className="text-lg font-bold text-white tracking-tight">No Products Found</h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1 mb-6">
@@ -380,7 +377,7 @@ export default function ProductsView() {
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={openAddModal}
-              className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] flex items-center gap-2 cursor-pointer"
+              className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer"
             >
               <Plus className="w-4 h-4 stroke-[3]" /> Add New Product
             </button>
@@ -392,7 +389,7 @@ export default function ProductsView() {
           {filteredProducts.map((p) => (
             <div 
               key={p.id} 
-              className="bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl hover:border-[#4cceac]/60 transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between group relative"
+              className="bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl hover:border-[#00BCE1]/60 transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between group relative"
             >
               <div>
                 {/* Product Image Box */}
@@ -411,7 +408,7 @@ export default function ProductsView() {
                         <Star className="w-3 h-3 fill-amber-300" /> Featured
                       </span>
                     )}
-                    <span className="px-2.5 py-1 text-[10px] font-mono font-bold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754] truncate max-w-[130px]">
+                    <span className="px-2.5 py-1 text-[10px] font-mono font-bold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754] truncate max-w-[130px]">
                       {p.model || 'AP-MODEL'}
                     </span>
                   </div>
@@ -419,7 +416,7 @@ export default function ProductsView() {
                   <div className="absolute top-3 right-3 z-10">
                     <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
                       p.stockStatus === 'In Stock'
-                        ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                        ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                         : p.stockStatus === 'Low Stock'
                         ? 'bg-amber-500/20 text-amber-300 border-amber-400/30'
                         : p.stockStatus === 'Out of Stock'
@@ -435,7 +432,7 @@ export default function ProductsView() {
                 <div className="p-5 space-y-3">
                   <div>
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#4cceac] truncate">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#00BCE1] truncate">
                         {p.category}
                       </span>
                       {p.application && (
@@ -444,7 +441,7 @@ export default function ProductsView() {
                         </span>
                       )}
                     </div>
-                    <h3 className="text-base font-bold text-white mt-1.5 line-clamp-1 group-hover:text-[#4cceac] transition-colors">
+                    <h3 className="text-base font-bold text-white mt-1.5 line-clamp-1 group-hover:text-[#00BCE1] transition-colors">
                       {p.name}
                     </h3>
                     {p.description && (
@@ -453,8 +450,8 @@ export default function ProductsView() {
                       </p>
                     )}
                     {p.warranty && (
-                      <p className="text-[11px] text-[#4cceac] mt-2 font-medium flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 text-[#4cceac]" /> {p.warranty}
+                      <p className="text-[11px] text-[#00BCE1] mt-2 font-medium flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 text-[#00BCE1]" /> {p.warranty}
                       </p>
                     )}
                   </div>
@@ -477,7 +474,7 @@ export default function ProductsView() {
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => openEditModal(p)}
-                    className="p-2.5 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] transition-all cursor-pointer shadow-sm"
+                    className="p-2.5 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer shadow-sm"
                     title="Edit Product"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
@@ -527,7 +524,7 @@ export default function ProductsView() {
                               <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />
                             )}
                           </div>
-                          <div className="text-[11px] text-[#4cceac] font-mono">{p.model || 'AP-STANDARD'}</div>
+                          <div className="text-[11px] text-[#00BCE1] font-mono">{p.model || 'AP-STANDARD'}</div>
                         </div>
                       </div>
                     </td>
@@ -547,7 +544,7 @@ export default function ProductsView() {
                     <td className="py-4 px-4">
                       <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
                         p.stockStatus === 'In Stock'
-                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                           : p.stockStatus === 'Low Stock'
                           ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                           : p.stockStatus === 'Out of Stock'
@@ -561,7 +558,7 @@ export default function ProductsView() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openEditModal(p)}
-                          className="p-2 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
+                          className="p-2 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -590,7 +587,7 @@ export default function ProductsView() {
           <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-2xl rounded-3xl p-6 relative space-y-5 my-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                {editingProductId ? <Edit2 className="w-5 h-5 text-[#4cceac]" /> : <Plus className="w-5 h-5 text-[#4cceac]" />}
+                {editingProductId ? <Edit2 className="w-5 h-5 text-[#00BCE1]" /> : <Plus className="w-5 h-5 text-[#00BCE1]" />}
                 {editingProductId ? 'Edit Product Details' : 'Add New Product'}
               </h2>
               <button
@@ -618,7 +615,7 @@ export default function ProductsView() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. AquaPurify Pro 7-Stage RO"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
 
@@ -629,7 +626,7 @@ export default function ProductsView() {
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
                     placeholder="e.g. AP-900-ROUV"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
               </div>
@@ -640,11 +637,22 @@ export default function ProductsView() {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac] cursor-pointer transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
                   >
-                    {allCategoryNames.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
+                    {categories.length === 0 && !category ? (
+                      <option value="">No categories found - Add Category first</option>
+                    ) : (
+                      Array.from(
+                        new Set([
+                          ...categories.map((c) => c.name),
+                          ...(category ? [category] : [])
+                        ])
+                      ).map((catName) => (
+                        <option key={catName} value={catName}>
+                          {catName}
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
 
@@ -657,7 +665,7 @@ export default function ProductsView() {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     placeholder="e.g. 18500"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
 
@@ -669,7 +677,7 @@ export default function ProductsView() {
                     value={originalPrice}
                     onChange={(e) => setOriginalPrice(e.target.value)}
                     placeholder="e.g. 22000"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
               </div>
@@ -680,7 +688,7 @@ export default function ProductsView() {
                   <select
                     value={application}
                     onChange={(e) => setApplication(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac] cursor-pointer transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
                   >
                     <option value="Household">Household</option>
                     <option value="Commercial">Commercial</option>
@@ -697,7 +705,7 @@ export default function ProductsView() {
                     value={warranty}
                     onChange={(e) => setWarranty(e.target.value)}
                     placeholder="e.g. 1 Year Warranty"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
 
@@ -706,7 +714,7 @@ export default function ProductsView() {
                   <select
                     value={stockStatus}
                     onChange={(e) => setStockStatus(e.target.value as any)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac] cursor-pointer transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
                   >
                     <option value="In Stock">In Stock</option>
                     <option value="Low Stock">Low Stock</option>
@@ -725,7 +733,7 @@ export default function ProductsView() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Product specifications, filtration capacity, stage details..."
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
 
@@ -735,7 +743,7 @@ export default function ProductsView() {
                     id="featuredToggle"
                     checked={featured}
                     onChange={(e) => setFeatured(e.target.checked)}
-                    className="w-4 h-4 rounded text-[#4cceac] focus:ring-[#4cceac] bg-[#141b2d] border-[#2c3754] cursor-pointer"
+                    className="w-4 h-4 rounded text-[#00BCE1] focus:ring-[#00BCE1] bg-[#141b2d] border-[#2c3754] cursor-pointer"
                   />
                   <label htmlFor="featuredToggle" className="text-xs text-slate-200 cursor-pointer font-medium flex items-center gap-1.5">
                     <Star className={`w-3.5 h-3.5 ${featured ? 'text-amber-400 fill-amber-400' : 'text-[#A0AEC0]'}`} />
@@ -749,7 +757,7 @@ export default function ProductsView() {
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                   Product Image
                 </label>
-                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#4cceac] transition-colors bg-[#141b2d]">
+                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#00BCE1] transition-colors bg-[#141b2d]">
                   {previewUrl || existingImageUrl ? (
                     <div className="relative w-36 h-36 mx-auto rounded-xl overflow-hidden border border-[#2c3754] shadow-md">
                       <img src={previewUrl || existingImageUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -763,7 +771,7 @@ export default function ProductsView() {
                     </div>
                   ) : (
                     <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-2">
-                      <Upload className="w-8 h-8 text-[#4cceac] animate-bounce" />
+                      <Upload className="w-8 h-8 text-[#00BCE1] animate-bounce" />
                       <span className="text-xs text-slate-300 font-medium">Click to upload product photo</span>
                       <input
                         type="file"
@@ -787,7 +795,7 @@ export default function ProductsView() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2.5 text-xs font-bold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 shadow-lg disabled:opacity-50 flex items-center gap-2 cursor-pointer transition-all"
+                  className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   {isSaving ? (
                     <>

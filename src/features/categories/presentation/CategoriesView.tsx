@@ -209,13 +209,13 @@ export default function CategoriesView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Categories
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754]">
             {filteredCategories.length} categories
           </span>
         </div>
         <button
           onClick={openAddModal}
-          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer shrink-0"
+          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Add Category
         </button>
@@ -233,7 +233,7 @@ export default function CategoriesView() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search category by title, slug or description..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#4cceac] transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] transition-all"
               />
             </div>
 
@@ -242,7 +242,7 @@ export default function CategoriesView() {
               <select
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] cursor-pointer transition-all"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-all"
               >
                 <option value="All">All Status</option>
                 <option value="WithProducts">Active With Products</option>
@@ -268,7 +268,7 @@ export default function CategoriesView() {
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40'
+                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40'
                     : 'text-[#A0AEC0] hover:text-white'
                 }`}
                 title="Table View"
@@ -290,7 +290,7 @@ export default function CategoriesView() {
                 onClick={() => setSelectedFilter(opt)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                   isActive
-                    ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-md'
+                    ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-md'
                     : 'bg-[#141b2d] text-[#A0AEC0] border border-[#2c3754] hover:text-white'
                 }`}
               >
@@ -304,7 +304,7 @@ export default function CategoriesView() {
       {/* Loading & Empty States */}
       {loading ? (
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-[#4cceac] animate-spin" />
+          <Loader2 className="w-10 h-10 text-[#00BCE1] animate-spin" />
           <p className="text-xs text-[#A0AEC0]">Loading categories from Cloud Firestore...</p>
         </div>
       ) : filteredCategories.length === 0 ? (
@@ -319,7 +319,7 @@ export default function CategoriesView() {
           <div className="flex items-center justify-center gap-3 pt-2">
             <button
               onClick={openAddModal}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] shadow-md hover:bg-[#4cceac]/90 transition-all flex items-center gap-2 cursor-pointer font-bold"
+              className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer"
             >
               <Plus className="w-4 h-4 stroke-[3]" /> Add Category
             </button>
@@ -331,7 +331,7 @@ export default function CategoriesView() {
           {filteredCategories.map((cat) => {
             const liveProductCount = products.filter(p => p.category.toLowerCase() === cat.name.toLowerCase()).length;
             return (
-              <div key={cat.id} className="bg-[#1f2940] border border-[#2c3754] hover:border-[#4cceac]/50 rounded-2xl overflow-hidden flex flex-col justify-between group relative transition-all">
+              <div key={cat.id} className="bg-[#1f2940] border border-[#2c3754] hover:border-[#00BCE1]/50 rounded-2xl overflow-hidden flex flex-col justify-between group relative transition-all">
                 <div>
                   {/* Banner Image */}
                   <div className="relative w-full h-44 bg-[#141b2d] overflow-hidden">
@@ -342,17 +342,17 @@ export default function CategoriesView() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#1f2940] via-[#1f2940]/40 to-transparent" />
                     
-                    <div className="absolute top-3 right-3 px-3 py-1 text-xs font-extrabold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754] flex items-center gap-1.5">
+                    <div className="absolute top-3 right-3 px-3 py-1 text-xs font-extrabold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754] flex items-center gap-1.5">
                       <Package className="w-3.5 h-3.5" /> {liveProductCount} Product{liveProductCount !== 1 ? 's' : ''}
                     </div>
                   </div>
 
                   {/* Content */}
                   <div className="p-5 space-y-2 relative -mt-6">
-                    <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#141b2d] border border-[#2c3754] text-[#4cceac]">
+                    <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#141b2d] border border-[#2c3754] text-[#00BCE1]">
                       /{cat.slug || cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
                     </span>
-                    <h3 className="text-lg font-bold text-white pt-1 group-hover:text-[#4cceac] transition-colors">
+                    <h3 className="text-lg font-bold text-white pt-1 group-hover:text-[#00BCE1] transition-colors">
                       {cat.name}
                     </h3>
                     <p className="text-xs text-[#A0AEC0] line-clamp-2 leading-relaxed">
@@ -365,7 +365,7 @@ export default function CategoriesView() {
                 <div className="p-5 pt-0 flex items-center justify-between border-t border-[#2c3754] mt-2 pt-3">
                   <Link
                     href={`/products?category=${encodeURIComponent(cat.name)}`}
-                    className="text-xs font-semibold text-[#4cceac] hover:text-white flex items-center gap-1 group/link"
+                    className="text-xs font-semibold text-[#00BCE1] hover:text-white flex items-center gap-1 group/link"
                   >
                     View Products <ArrowUpRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
                   </Link>
@@ -373,7 +373,7 @@ export default function CategoriesView() {
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => openEditModal(cat)}
-                      className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
+                      className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
                       title="Edit Category"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
@@ -420,10 +420,10 @@ export default function CategoriesView() {
                           <span>{cat.name}</span>
                         </div>
                       </td>
-                      <td className="py-4 px-4 font-mono text-[#4cceac]">/{cat.slug}</td>
+                      <td className="py-4 px-4 font-mono text-[#00BCE1]">/{cat.slug}</td>
                       <td className="py-4 px-4 text-[#A0AEC0] max-w-xs truncate">{cat.description || 'N/A'}</td>
                       <td className="py-4 px-4">
-                        <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40">
+                        <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
                           {liveCount} Items
                         </span>
                       </td>
@@ -431,7 +431,7 @@ export default function CategoriesView() {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => openEditModal(cat)}
-                            className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
+                            className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
                             title="Edit"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
@@ -461,7 +461,7 @@ export default function CategoriesView() {
           <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                {editingCategoryId ? <Edit2 className="w-5 h-5 text-[#4cceac]" /> : <Plus className="w-5 h-5 text-[#4cceac]" />}
+                {editingCategoryId ? <Edit2 className="w-5 h-5 text-[#00BCE1]" /> : <Plus className="w-5 h-5 text-[#00BCE1]" />}
                 {editingCategoryId ? 'Edit Category' : 'Create New Category'}
               </h2>
               <button
@@ -489,7 +489,7 @@ export default function CategoriesView() {
                     value={name}
                     onChange={(e) => handleNameChange(e.target.value)}
                     placeholder="e.g. RO Purifiers"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
                   />
                 </div>
 
@@ -500,7 +500,7 @@ export default function CategoriesView() {
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
                     placeholder="e.g. ro-purifiers"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#4cceac] font-mono focus:outline-none focus:border-[#4cceac]"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono focus:outline-none focus:border-[#00BCE1]"
                   />
                 </div>
               </div>
@@ -512,16 +512,16 @@ export default function CategoriesView() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Summary of products under this category..."
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
+                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
                 />
               </div>
 
               {/* Cloudinary Image Upload */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Category Banner Image (Cloudinary Folder: <span className="text-[#4cceac]">categories/</span>)
+                  Category Banner Image (Cloudinary Folder: <span className="text-[#00BCE1]">categories/</span>)
                 </label>
-                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#4cceac] transition-colors bg-[#141b2d]">
+                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#00BCE1] transition-colors bg-[#141b2d]">
                   {previewUrl || existingImageUrl ? (
                     <div className="relative w-32 h-32 mx-auto rounded-xl overflow-hidden border border-[#2c3754]">
                       <img src={previewUrl || existingImageUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -535,7 +535,7 @@ export default function CategoriesView() {
                     </div>
                   ) : (
                     <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-2">
-                      <Upload className="w-7 h-7 text-[#4cceac] animate-bounce" />
+                      <Upload className="w-7 h-7 text-[#00BCE1] animate-bounce" />
                       <span className="text-xs text-slate-300">Click to upload category cover photo</span>
                       <span className="text-[10px] text-[#A0AEC0] font-mono">Preset: aqua_point | Folder: categories</span>
                       <input
@@ -560,7 +560,7 @@ export default function CategoriesView() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
+                  className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   {isSaving ? (
                     <>

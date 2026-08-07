@@ -20,7 +20,7 @@ export default function TableFooter({
       <div className="flex items-center gap-3 text-slate-200">
         <span>Showing {totalItems > 0 ? 1 : 0} to {totalItems} of {totalItems} entries</span>
         {selectedCount > 0 && (
-          <span className="px-2.5 py-0.5 rounded-full bg-[#4cceac]/20 text-[#4cceac] text-[10px] font-bold border border-[#4cceac]/40">
+          <span className="px-2.5 py-0.5 rounded-full bg-[#00BCE1]/20 text-[#00BCE1] text-[10px] font-bold border border-[#00BCE1]/40">
             {selectedCount} selected
           </span>
         )}
@@ -34,7 +34,7 @@ export default function TableFooter({
         >
           Previous
         </button>
-        <span className="px-3 py-1 rounded-lg bg-[#141b2d] text-[#4cceac] font-bold">
+        <span className="px-3 py-1 rounded-lg bg-[#141b2d] text-[#00BCE1] font-bold">
           Page {currentPage} of {Math.max(1, totalPages)}
         </span>
         <button

@@ -5,7 +5,7 @@
   --bg-card: #1f2940;
   --bg-sidebar: #1f2940;
   --accent-purple: #3e4396;
-  --accent-teal: #4cceac;
+  --accent-teal: #00BCE1;
   --accent-cyan: #00BCE1;
   --text-primary: #ffffff;
   --text-secondary: #A0AEC0;
@@ -38,26 +38,26 @@ html, body {
 
 .glass-card-hover:hover {
   transform: translateY(-2px);
-  border-color: #4cceac !important;
+  border-color: #00BCE1 !important;
   box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.3);
 }
 
 .cyan-glow {
-  box-shadow: 0 0 20px rgba(76, 206, 172, 0.3);
+  box-shadow: 0 0 20px rgba(0, 188, 225, 0.3);
 }
 
 .cyan-glow-text {
-  text-shadow: 0 0 12px rgba(76, 206, 172, 0.6);
+  text-shadow: 0 0 12px rgba(0, 188, 225, 0.6);
 }
 
 .gradient-cyan-text {
-  background: linear-gradient(135deg, #4cceac 0%, #00BCE1 100%);
+  background: linear-gradient(135deg, #00BCE1 0%, #3B82F6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gradient-header-text {
-  background: linear-gradient(135deg, #FFFFFF 0%, #A0AEC0 50%, #4cceac 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, #A0AEC0 50%, #00BCE1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
