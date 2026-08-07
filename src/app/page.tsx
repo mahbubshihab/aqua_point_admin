@@ -4,9 +4,8 @@ import { useState } from 'react';
 import { 
   Users, 
   Wrench, 
-  Droplets, 
-  DollarSign, 
-  TrendingUp, 
+  Package, 
+  CreditCard, 
   ArrowUpRight, 
   Activity, 
   CheckCircle2, 
@@ -31,7 +30,7 @@ const initialRequests: ServiceRequest[] = [
   {
     id: 'REQ-9041',
     customerName: 'Sarah Jenkins',
-    phone: '+1 (555) 234-5678',
+    phone: '+880 1711-234567',
     model: 'AquaPurify Pro 900',
     appointmentDate: '2026-08-08 14:00',
     problem: 'Filter replacement alert & low flow rate',
@@ -41,7 +40,7 @@ const initialRequests: ServiceRequest[] = [
   {
     id: 'REQ-9040',
     customerName: 'Marcus Vance',
-    phone: '+1 (555) 876-5432',
+    phone: '+880 1819-876543',
     model: 'AquaUltra UV Pure',
     appointmentDate: '2026-08-08 16:30',
     problem: 'TDS sensor calibration required',
@@ -51,7 +50,7 @@ const initialRequests: ServiceRequest[] = [
   {
     id: 'REQ-9039',
     customerName: 'Elena Rostova',
-    phone: '+1 (555) 345-6789',
+    phone: '+880 1912-345678',
     model: 'AquaSmart Dispenser X1',
     appointmentDate: '2026-08-07 11:00',
     problem: 'Annual maintenance & UV sterilizer test',
@@ -61,7 +60,7 @@ const initialRequests: ServiceRequest[] = [
   {
     id: 'REQ-9038',
     customerName: 'David Kim',
-    phone: '+1 (555) 987-6543',
+    phone: '+880 1611-987654',
     model: 'AquaAlkaline System HD',
     appointmentDate: '2026-08-09 10:00',
     problem: 'Cooling tank temperature check',
@@ -71,7 +70,7 @@ const initialRequests: ServiceRequest[] = [
   {
     id: 'REQ-9037',
     customerName: 'Aisha Rahman',
-    phone: '+1 (555) 654-3210',
+    phone: '+880 1755-654321',
     model: 'AquaPurify Pro 900',
     appointmentDate: '2026-08-07 15:00',
     problem: 'Leakage around pre-filter housing',
@@ -106,7 +105,7 @@ export default function DashboardPage() {
       {/* Page Title Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
             Dashboard
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -125,8 +124,8 @@ export default function DashboardPage() {
 
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {/* Total Customers */}
-        <div className="glass-panel glass-card-hover rounded-2xl p-5 relative overflow-hidden">
+        {/* Card 1: Total Customers */}
+        <div className="glass-panel glass-card-hover rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Customers</span>
             <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
@@ -135,18 +134,14 @@ export default function DashboardPage() {
           </div>
           <div className="mt-4">
             <h3 className="text-2xl font-extrabold text-white tracking-tight">1,428</h3>
-            <div className="flex items-center gap-1.5 mt-2 text-xs text-emerald-400 font-medium">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>+14.2% from last month</span>
-            </div>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 
-        {/* Active Service Requests */}
-        <div className="glass-panel glass-card-hover rounded-2xl p-5 relative overflow-hidden">
+        {/* Card 2: Service Requests */}
+        <div className="glass-panel glass-card-hover rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Requests</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Service Requests</span>
             <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
               <Wrench className="w-5 h-5" />
             </div>
@@ -155,46 +150,34 @@ export default function DashboardPage() {
             <h3 className="text-2xl font-extrabold text-white tracking-tight">
               {requests.filter(r => r.status !== 'Completed').length}
             </h3>
-            <div className="flex items-center gap-1.5 mt-2 text-xs text-amber-400 font-medium">
-              <Clock className="w-3.5 h-3.5" />
-              <span>{requests.filter(r => r.status === 'Pending').length} pending dispatch</span>
-            </div>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 
-        {/* Products Catalog */}
-        <div className="glass-panel glass-card-hover rounded-2xl p-5 relative overflow-hidden">
+        {/* Card 3: Products Catalog */}
+        <div className="glass-panel glass-card-hover rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Products Catalog</span>
             <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-              <Droplets className="w-5 h-5" />
+              <Package className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4">
             <h3 className="text-2xl font-extrabold text-white tracking-tight">3,892</h3>
-            <div className="flex items-center gap-1.5 mt-2 text-xs text-cyan-400 font-medium">
-              <Zap className="w-3.5 h-3.5" />
-              <span>99.4% telemetry online</span>
-            </div>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 
-        {/* Total Revenue */}
-        <div className="glass-panel glass-card-hover rounded-2xl p-5 relative overflow-hidden">
+        {/* Card 4: Total Revenue */}
+        <div className="glass-panel glass-card-hover rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Revenue</span>
             <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-              <DollarSign className="w-5 h-5" />
+              <CreditCard className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4">
             <h3 className="text-2xl font-extrabold text-white tracking-tight">৳142,850</h3>
-            <div className="flex items-center gap-1.5 mt-2 text-xs text-emerald-400 font-medium">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>+18.4% growth rate</span>
-            </div>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
         </div>
@@ -202,15 +185,12 @@ export default function DashboardPage() {
 
       {/* Analytics Overview & TDS Health Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Hydration & TDS Telemetry Overview */}
+        {/* Water Quality Index */}
         <div className="lg:col-span-2 glass-panel-cyan rounded-2xl p-6 relative">
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
-            <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <Activity className="w-4 h-4 text-cyan-400" /> Hydration & Purity Telemetry
-              </h2>
-              <p className="text-xs text-slate-400">Water Quality</p>
-            </div>
+            <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <Activity className="w-4 h-4 text-cyan-400" /> Water Quality Index
+            </h2>
             <span className="px-3 py-1 text-xs font-semibold rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
               Optimal Grade A
             </span>
@@ -218,21 +198,21 @@ export default function DashboardPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10">
-              <p className="text-[11px] font-semibold text-slate-400 uppercase">Avg Output TDS</p>
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Avg Output TDS</p>
               <p className="text-2xl font-extrabold text-cyan-400 mt-1">42 <span className="text-xs text-slate-400 font-normal">PPM</span></p>
-              <span className="text-[10px] text-emerald-400">Pure Mineral Water</span>
+              <span className="text-[10px] text-emerald-400 font-medium">Pure Mineral Water</span>
             </div>
 
             <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10">
-              <p className="text-[11px] font-semibold text-slate-400 uppercase">Avg Filter Lifespan</p>
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Avg Filter Lifespan</p>
               <p className="text-2xl font-extrabold text-blue-400 mt-1">88 <span className="text-xs text-slate-400 font-normal">%</span></p>
-              <span className="text-[10px] text-slate-400">Next cycle in 45 days</span>
+              <span className="text-[10px] text-slate-400 font-medium">Next cycle in 45 days</span>
             </div>
 
             <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10">
-              <p className="text-[11px] font-semibold text-slate-400 uppercase">Daily Purified Water</p>
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Daily Purified Water</p>
               <p className="text-2xl font-extrabold text-white mt-1">45.2 <span className="text-xs text-slate-400 font-normal">kL</span></p>
-              <span className="text-[10px] text-cyan-400">Peak demand high</span>
+              <span className="text-[10px] text-cyan-400 font-medium">Peak demand high</span>
             </div>
           </div>
 
@@ -242,7 +222,7 @@ export default function DashboardPage() {
               <span className="font-medium">TDS Purity Level (0 - 150 PPM scale)</span>
               <span className="text-cyan-400 font-bold">42 PPM (Ideal Drinking Range)</span>
             </div>
-            <div className="w-full h-3 rounded-full bg-slate-900 overflow-hidden border border-white/10 p-0.5">
+            <div className="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden border border-white/10 p-0.5">
               <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 w-[28%] shadow-[0_0_10px_#00E5FF]" />
             </div>
             <div className="flex justify-between text-[10px] text-slate-500">
@@ -254,15 +234,14 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* System Health Quick Card */}
+        {/* Equipment Status */}
         <div className="glass-panel rounded-2xl p-6 flex flex-col justify-between">
           <div>
-            <h2 className="text-base font-bold text-white flex items-center gap-2 mb-1">
-              <Zap className="w-4 h-4 text-cyan-400" /> Network Purity Fleet
+            <h2 className="text-base font-bold text-white flex items-center gap-2 mb-6 pb-4 border-b border-white/10">
+              <Zap className="w-4 h-4 text-cyan-400" /> Equipment Status
             </h2>
-            <p className="text-xs text-slate-400 mb-4">Unit Fleet Status</p>
             
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-white/10">
                 <div className="flex items-center gap-2.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#10B981]" />
@@ -307,7 +286,7 @@ export default function DashboardPage() {
             <h2 className="text-base font-bold text-white flex items-center gap-2">
               <Wrench className="w-4 h-4 text-cyan-400" /> Recent Service Requests
             </h2>
-            <p className="text-xs text-slate-400">Click status badge to update request state in real-time</p>
+            <p className="text-xs text-slate-400 mt-1">Click status badge to update request state in real-time</p>
           </div>
 
           {/* Filter tabs */}
