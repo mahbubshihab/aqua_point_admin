@@ -6,6 +6,14 @@ import Header from '@/components/Header';
 export const metadata: Metadata = {
   title: 'Aqua Point | Web Admin Panel',
   description: 'Ultra-Premium Obsidian & Cyan Glassmorphic Admin Dashboard for Aqua Point',
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/app_logo.png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/app_logo.png',
+  },
 };
 
 export default function RootLayout({

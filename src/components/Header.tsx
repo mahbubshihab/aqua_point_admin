@@ -2,6 +2,7 @@
 
 import { Search, Bell, Activity, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function Header() {
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -13,14 +14,28 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-30 h-16 backdrop-blur-xl bg-slate-950/80 border-b border-slate-800/80 px-8 flex items-center justify-between shadow-xl shadow-cyan-950/10">
-      {/* Search Input */}
-      <div className="relative w-80">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <input
-          type="text"
-          placeholder="Search products, requests, customers..."
-          className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-900/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
-        />
+      <div className="flex items-center gap-6">
+        {/* Brand Logo in Header */}
+        <div className="flex items-center gap-2">
+          <Image
+            src="/app_logo.png"
+            alt="Aqua Point Logo"
+            width={140}
+            height={40}
+            className="h-8 w-auto object-contain"
+            priority
+          />
+        </div>
+
+        {/* Search Input */}
+        <div className="relative w-80">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search products, requests, customers..."
+            className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-900/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
+          />
+        </div>
       </div>
 
       {/* Header Controls */}
