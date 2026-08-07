@@ -11,7 +11,6 @@ import {
   Calendar, 
   Copy, 
   Check, 
-  Sparkles,
   Droplets,
   ShoppingBag,
   UserPlus
@@ -110,10 +109,10 @@ export default function CustomersPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            Customer Directory <Sparkles className="w-5 h-5 text-cyan-400" />
+            Customer Directory
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Manage customer rewards, referral tracking, and connected hydration accounts.
+            View customer accounts and loyalty.
           </p>
         </div>
 

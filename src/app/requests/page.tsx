@@ -8,7 +8,6 @@ import {
   User, 
   Phone, 
   MapPin, 
-  Sparkles,
   Loader2,
   CheckCircle2,
   UserPlus
@@ -93,10 +92,10 @@ export default function ServiceRequestsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            Service Request Queue <Sparkles className="w-5 h-5 text-cyan-400" />
+            Service Request Queue
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time customer service dispatch queue synced with Cloud Firestore (<code className="text-cyan-400">services</code>).
+            Manage customer service requests.
           </p>
         </div>
 
@@ -147,7 +146,7 @@ export default function ServiceRequestsPage() {
       {loading ? (
         <div className="glass-panel rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
           <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
-          <p className="text-xs text-slate-400">Loading service requests from Cloud Firestore...</p>
+          <p className="text-xs text-slate-400">Loading service requests...</p>
         </div>
       ) : filteredItems.length === 0 ? (
         <div className="glass-panel rounded-2xl p-12 text-center text-slate-400 text-xs">

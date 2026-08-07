@@ -114,7 +114,7 @@ export default function DashboardPage() {
             Dashboard
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            System overview and operational analytics.
+            System overview and operations.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -192,7 +192,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Analytics Overview & TDS Health Section */}
+      {/* System Overview & TDS Health Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Water Quality Index */}
         <div className="lg:col-span-2 backdrop-blur-xl bg-slate-900/80 border border-[#00BCE1]/30 rounded-2xl p-6 relative shadow-2xl shadow-cyan-950/20">

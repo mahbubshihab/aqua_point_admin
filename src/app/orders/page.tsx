@@ -8,7 +8,6 @@ import {
   User, 
   Phone, 
   MapPin, 
-  Sparkles,
   Loader2,
   CheckCircle2,
   PackageCheck,
@@ -72,10 +71,10 @@ export default function OrdersPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            Orders Management <Sparkles className="w-5 h-5 text-cyan-400" />
+            Orders Management
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time ecommerce orders placed from <code className="text-cyan-400">user_web</code> & <code className="text-cyan-400">user_app</code> synced with Cloud Firestore (<code className="text-cyan-400">orders</code>).
+            Track and fulfill customer orders.
           </p>
         </div>
 
@@ -126,14 +125,14 @@ export default function OrdersPage() {
       {loading ? (
         <div className="glass-panel rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
           <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
-          <p className="text-xs text-slate-400">Connecting to Cloud Firestore orders collection...</p>
+          <p className="text-xs text-slate-400">Loading customer orders...</p>
         </div>
       ) : filteredOrders.length === 0 ? (
         <div className="glass-panel rounded-2xl p-16 text-center space-y-3">
           <ShoppingBag className="w-12 h-12 text-slate-600 mx-auto" />
           <h3 className="text-base font-bold text-white">No Orders Found</h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            {searchTerm ? 'No orders match your filter criteria.' : 'There are currently no orders in your Cloud Firestore database.'}
+            {searchTerm ? 'No orders match your filter criteria.' : 'There are currently no orders.'}
           </p>
         </div>
       ) : (

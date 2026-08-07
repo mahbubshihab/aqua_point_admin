@@ -7,7 +7,6 @@ import {
   User, 
   Phone, 
   Mail, 
-  Sparkles,
   Loader2,
   CheckCircle2,
   Trash2,
@@ -87,10 +86,10 @@ export default function InquiriesPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            Customer Inquiries <Sparkles className="w-5 h-5 text-cyan-400" />
+            Customer Inquiries
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time messages submitted by visitors via website contact form synced with Cloud Firestore (<code className="text-cyan-400">inquiries</code>).
+            Manage customer inquiries and feedback.
           </p>
         </div>
 
@@ -136,14 +135,14 @@ export default function InquiriesPage() {
       {loading ? (
         <div className="glass-panel rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
           <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
-          <p className="text-xs text-slate-400">Loading customer messages from Cloud Firestore...</p>
+          <p className="text-xs text-slate-400">Loading customer messages...</p>
         </div>
       ) : filteredInquiries.length === 0 ? (
         <div className="glass-panel rounded-2xl p-16 text-center space-y-3">
           <MessageSquare className="w-12 h-12 text-slate-600 mx-auto" />
           <h3 className="text-base font-bold text-white">No Inquiries Found</h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            {searchTerm ? 'No customer messages match your search term.' : 'There are currently no customer contact messages in Cloud Firestore.'}
+            {searchTerm ? 'No customer messages match your search term.' : 'There are currently no customer contact messages.'}
           </p>
         </div>
       ) : (

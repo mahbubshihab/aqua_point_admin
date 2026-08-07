@@ -10,7 +10,6 @@ import {
   ShoppingBag,
   MessageSquare,
   Users, 
-  BarChart3, 
   Settings, 
   ShieldCheck,
   ChevronRight,
@@ -32,7 +31,6 @@ const navItems: NavItem[] = [
   { name: 'Orders', href: '/orders', icon: ShoppingBag },
   { name: 'Inquiries', href: '/inquiries', icon: MessageSquare },
   { name: 'Customers', href: '/customers', icon: Users },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
