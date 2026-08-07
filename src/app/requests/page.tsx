@@ -1,120 +1,72 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Wrench, 
   Search, 
-  Filter, 
-  Calendar, 
   Clock, 
-  CheckCircle2, 
-  AlertTriangle, 
   User, 
   Phone, 
   MapPin, 
   Sparkles,
-  ChevronRight,
-  ShieldAlert,
-  ArrowRight
+  Loader2,
+  CheckCircle2,
+  UserPlus
 } from 'lucide-react';
-
-interface ServiceItem {
-  id: string;
-  customerName: string;
-  phone: string;
-  address: string;
-  machineModel: string;
-  appointmentDate: string;
-  appointmentTime: string;
-  problemDetails: string;
-  status: 'Pending' | 'In Progress' | 'Completed';
-  priority: 'Urgent' | 'High' | 'Normal';
-  technician: string;
-  tdsReading: number;
-}
-
-const initialServiceItems: ServiceItem[] = [
-  {
-    id: 'REQ-9041',
-    customerName: 'Sarah Jenkins',
-    phone: '+1 (555) 234-5678',
-    address: '742 Evergreen Terrace, Suite 4B',
-    machineModel: 'AquaPurify Pro 900',
-    appointmentDate: '2026-08-08',
-    appointmentTime: '14:00 PM',
-    problemDetails: 'Filter replacement alert & low flow rate (Output TDS reading 110 PPM).',
-    status: 'Pending',
-    priority: 'Urgent',
-    technician: 'Alex Rivera (Technician Lead)',
-    tdsReading: 110,
-  },
-  {
-    id: 'REQ-9040',
-    customerName: 'Marcus Vance',
-    phone: '+1 (555) 876-5432',
-    address: '1204 Grand Avenue, Apt 12',
-    machineModel: 'AquaUltra UV Pure',
-    appointmentDate: '2026-08-08',
-    appointmentTime: '16:30 PM',
-    problemDetails: 'TDS sensor calibration required following municipal pipe maintenance.',
-    status: 'In Progress',
-    priority: 'Normal',
-    technician: 'David Miller',
-    tdsReading: 48,
-  },
-  {
-    id: 'REQ-9039',
-    customerName: 'Elena Rostova',
-    phone: '+1 (555) 345-6789',
-    address: '88 Ocean Boulevard, Floor 15',
-    machineModel: 'AquaSmart Dispenser X1',
-    appointmentDate: '2026-08-07',
-    appointmentTime: '11:00 AM',
-    problemDetails: 'Annual scheduled maintenance & UV lamp sterilization test.',
-    status: 'Completed',
-    priority: 'Normal',
-    technician: 'Sarah Lin',
-    tdsReading: 35,
-  },
-  {
-    id: 'REQ-9038',
-    customerName: 'David Kim',
-    phone: '+1 (555) 987-6543',
-    address: '450 Pine Tree Lane',
-    machineModel: 'AquaAlkaline System HD',
-    appointmentDate: '2026-08-09',
-    appointmentTime: '10:00 AM',
-    problemDetails: 'Cooling tank temperature check and alkaline cartridge refresh.',
-    status: 'Pending',
-    priority: 'Normal',
-    technician: 'Unassigned',
-    tdsReading: 40,
-  },
-  {
-    id: 'REQ-9037',
-    customerName: 'Aisha Rahman',
-    phone: '+1 (555) 654-3210',
-    address: '302 Sunset Heights',
-    machineModel: 'AquaPurify Pro 900',
-    appointmentDate: '2026-08-07',
-    appointmentTime: '15:00 PM',
-    problemDetails: 'Leakage around pre-filter housing union joint.',
-    status: 'Completed',
-    priority: 'Urgent',
-    technician: 'Alex Rivera (Technician Lead)',
-    tdsReading: 42,
-  },
-];
+import { 
+  subscribeToServiceRequests, 
+  updateServiceRequestStatusInFirestore, 
+  assignTechnicianInFirestore,
+  ServiceRequestDoc 
+} from '@/lib/firebase';
 
 export default function ServiceRequestsPage() {
-  const [items, setItems] = useState<ServiceItem[]>(initialServiceItems);
+  const [items, setItems] = useState<ServiceRequestDoc[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeStatus, setActiveStatus] = useState<string>('All');
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Technician Assignment Modal State
+  const [assigningItem, setAssigningItem] = useState<ServiceRequestDoc | null>(null);
+  const [technicianName, setTechnicianName] = useState('');
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const updateStatus = (id: string, newStatus: ServiceItem['status']) => {
-    setItems(prev =>
-      prev.map(item => (item.id === id ? { ...item, status: newStatus } : item))
-    );
+  useEffect(() => {
+    setLoading(true);
+    const unsubscribe = subscribeToServiceRequests((data) => {
+      setItems(data);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleUpdateStatus = async (id: string, newStatus: ServiceRequestDoc['status']) => {
+    try {
+      await updateServiceRequestStatusInFirestore(id, newStatus);
+      setSuccessMessage(`Status updated to ${newStatus}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err: any) {
+      alert(`Failed to update status: ${err.message}`);
+    }
+  };
+
+  const handleAssignTechnician = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assigningItem || !technicianName.trim()) return;
+
+    setIsUpdating(true);
+    try {
+      await assignTechnicianInFirestore(assigningItem.id, technicianName.trim());
+      setSuccessMessage(`Technician assigned to ${technicianName.trim()}`);
+      setAssigningItem(null);
+      setTechnicianName('');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err: any) {
+      alert(`Failed to assign technician: ${err.message}`);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const filteredItems = items.filter(item => {
@@ -122,12 +74,21 @@ export default function ServiceRequestsPage() {
     const matchesSearch =
       item.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.machineModel.toLowerCase().includes(searchTerm.toLowerCase());
+      item.machineModel.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.phone.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
   return (
     <div className="space-y-8">
+      {/* Toast Notification */}
+      {successMessage && (
+        <div className="fixed top-5 right-5 z-50 p-4 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] animate-in slide-in-from-top-4">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          <span>{successMessage}</span>
+        </div>
+      )}
+
       {/* Title Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -135,7 +96,7 @@ export default function ServiceRequestsPage() {
             Service Request Queue <Sparkles className="w-5 h-5 text-cyan-400" />
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Dispatch technicians, update service appointment statuses, and resolve machine issues.
+            Real-time customer service dispatch queue synced with Cloud Firestore (<code className="text-cyan-400">services</code>).
           </p>
         </div>
 
@@ -146,7 +107,7 @@ export default function ServiceRequestsPage() {
             <span>{items.filter(i => i.status === 'Pending').length} Pending</span>
           </div>
           <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center gap-2">
-            <Wrench className="w-4 h-4 text-cyan-400 animate-spin" />
+            <Wrench className="w-4 h-4 text-cyan-400" />
             <span>{items.filter(i => i.status === 'In Progress').length} In Progress</span>
           </div>
         </div>
@@ -160,13 +121,13 @@ export default function ServiceRequestsPage() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by customer name, request ID, or machine model..."
+            placeholder="Search by customer name, request ID, phone or machine model..."
             className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-900/80 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400"
           />
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-          {['All', 'Pending', 'In Progress', 'Completed'].map((status) => (
+          {['All', 'Pending', 'In Progress', 'Completed', 'Cancelled'].map((status) => (
             <button
               key={status}
               onClick={() => setActiveStatus(status)}
@@ -183,13 +144,18 @@ export default function ServiceRequestsPage() {
       </div>
 
       {/* Request Queue Cards / Detailed List */}
-      <div className="space-y-4">
-        {filteredItems.length === 0 ? (
-          <div className="glass-panel rounded-2xl p-12 text-center text-slate-500">
-            No service requests found for your selected query.
-          </div>
-        ) : (
-          filteredItems.map((item) => (
+      {loading ? (
+        <div className="glass-panel rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
+          <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
+          <p className="text-xs text-slate-400">Loading service requests from Cloud Firestore...</p>
+        </div>
+      ) : filteredItems.length === 0 ? (
+        <div className="glass-panel rounded-2xl p-12 text-center text-slate-400 text-xs">
+          No service requests found matching your filters.
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filteredItems.map((item) => (
             <div
               key={item.id}
               className="glass-panel glass-card-hover rounded-2xl p-6 transition-all duration-200"
@@ -197,7 +163,7 @@ export default function ServiceRequestsPage() {
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
                 <div className="flex items-center gap-3">
                   <div className="px-3 py-1.5 rounded-xl bg-slate-900 border border-cyan-500/30 text-cyan-400 font-mono font-bold text-xs">
-                    {item.id}
+                    {item.id.substring(0, 12)}
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -208,7 +174,7 @@ export default function ServiceRequestsPage() {
                         </span>
                       )}
                     </h3>
-                    <div className="flex items-center gap-4 text-xs text-slate-400 mt-0.5">
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-0.5">
                       <span className="flex items-center gap-1">
                         <Phone className="w-3 h-3 text-cyan-400" /> {item.phone}
                       </span>
@@ -220,12 +186,12 @@ export default function ServiceRequestsPage() {
                 </div>
 
                 {/* Status Selector Pills */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs text-slate-400 mr-1 font-medium">Update Status:</span>
                   {(['Pending', 'In Progress', 'Completed'] as const).map((st) => (
                     <button
                       key={st}
-                      onClick={() => updateStatus(item.id, st)}
+                      onClick={() => handleUpdateStatus(item.id, st)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         item.status === st
                           ? st === 'Pending'
@@ -247,25 +213,33 @@ export default function ServiceRequestsPage() {
                 <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5">
                   <span className="text-slate-400 font-semibold block mb-1">Machine & Telemetry</span>
                   <div className="font-bold text-white text-sm">{item.machineModel}</div>
-                  <div className="text-cyan-400 mt-1">Output TDS: {item.tdsReading} PPM</div>
+                  <div className="text-cyan-400 mt-1">Output TDS: {item.tdsReading || 45} PPM</div>
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5">
                   <span className="text-slate-400 font-semibold block mb-1">Appointment Slot</span>
                   <div className="font-bold text-white flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-cyan-400" /> {item.appointmentDate}
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> {item.appointmentDate}
                   </div>
-                  <div className="text-slate-300 mt-1 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> {item.appointmentTime}
-                  </div>
+                  <div className="text-slate-300 mt-1">{item.appointmentTime}</div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5">
-                  <span className="text-slate-400 font-semibold block mb-1">Assigned Dispatch</span>
-                  <div className="font-bold text-white flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-cyan-400" /> {item.technician}
+                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-between">
+                  <div>
+                    <span className="text-slate-400 font-semibold block mb-1">Assigned Technician</span>
+                    <div className="font-bold text-white flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-cyan-400" /> {item.technician || 'Unassigned'}
+                    </div>
                   </div>
-                  <div className="text-emerald-400 mt-1">Route Optimized</div>
+                  <button
+                    onClick={() => {
+                      setAssigningItem(item);
+                      setTechnicianName(item.technician !== 'Unassigned' ? item.technician : '');
+                    }}
+                    className="p-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 cursor-pointer flex items-center gap-1 text-[11px]"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" /> Assign
+                  </button>
                 </div>
               </div>
 
@@ -275,9 +249,54 @@ export default function ServiceRequestsPage() {
                 <span className="text-slate-300">{item.problemDetails}</span>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {/* Assign Technician Modal */}
+      {assigningItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="glass-panel-cyan w-full max-w-md rounded-3xl p-6 relative space-y-4">
+            <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <UserPlus className="w-5 h-5 text-cyan-400" /> Assign Service Technician
+            </h2>
+            <p className="text-xs text-slate-300">
+              Assign a specialist for request <span className="font-mono text-cyan-400">{assigningItem.id.substring(0, 10)}</span> ({assigningItem.customerName}).
+            </p>
+
+            <form onSubmit={handleAssignTechnician} className="space-y-4 pt-2">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Technician Name</label>
+                <input
+                  type="text"
+                  required
+                  value={technicianName}
+                  onChange={(e) => setTechnicianName(e.target.value)}
+                  placeholder="e.g. Alex Rivera (Technician Lead)"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setAssigningItem(null)}
+                  className="px-4 py-2 text-xs rounded-xl bg-slate-900 text-slate-300 border border-white/10 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-[0_0_15px_rgba(0,229,255,0.4)] cursor-pointer disabled:opacity-50"
+                >
+                  {isUpdating ? 'Saving...' : 'Save Assignment'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

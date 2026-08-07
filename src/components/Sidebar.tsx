@@ -1,4 +1,3 @@
-'use me';
 'use client';
 
 import Link from 'next/link';
@@ -7,6 +6,8 @@ import {
   LayoutDashboard, 
   Droplets, 
   Wrench, 
+  ShoppingBag,
+  MessageSquare,
   Users, 
   BarChart3, 
   Settings, 
@@ -15,10 +16,19 @@ import {
   Sparkles
 } from 'lucide-react';
 
-const navItems = [
+interface NavItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+}
+
+const navItems: NavItem[] = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Products', href: '/products', icon: Droplets },
   { name: 'Service Requests', href: '/requests', icon: Wrench, badge: '12' },
+  { name: 'Orders', href: '/orders', icon: ShoppingBag },
+  { name: 'Inquiries', href: '/inquiries', icon: MessageSquare },
   { name: 'Customers', href: '/customers', icon: Users },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Settings', href: '/settings', icon: Settings },
