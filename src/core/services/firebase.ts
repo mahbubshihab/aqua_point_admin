@@ -42,8 +42,19 @@ export const INQUIRIES_COLLECTION = 'inquiries';
 export const REVIEWS_COLLECTION = 'reviews';
 export const COMPANY_INFO_COLLECTION = 'company_info';
 export const CLIENTS_COLLECTION = 'clients';
+export const BANNERS_COLLECTION = 'banners';
 
 // Data Interfaces
+export interface BannerDoc {
+  id: string;
+  title: string;
+  tag?: string;
+  imageUrl: string;
+  ctaLink?: string;
+  isActive: boolean;
+  createdAt?: any;
+}
+
 export interface ClientDoc {
   id: string;
   name: string;
@@ -555,3 +566,59 @@ export async function deleteClientFromFirestore(id: string) {
   const docRef = doc(db, CLIENTS_COLLECTION, id);
   return await deleteDoc(docRef);
 }
+
+// BANNERS
+export function subscribeToBanners(callback: (banners: BannerDoc[]) => void) {
+  const q = query(collection(db, BANNERS_COLLECTION), orderBy('createdAt', 'desc'));
+  return onSnapshot(q, (snapshot) => {
+    const list: BannerDoc[] = snapshot.docs.map((docSnap) => {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        title: data.title || 'Untitled Banner',
+        tag: data.tag || data.badge || '',
+        imageUrl: data.imageUrl || data.image || '',
+        ctaLink: data.ctaLink || data.link || '',
+        isActive: data.isActive !== undefined ? Boolean(data.isActive) : true,
+        createdAt: data.createdAt,
+      };
+    });
+    callback(list);
+  }, (error) => {
+    console.error('Error fetching banners snapshot with orderBy, trying fallback:', error);
+    const fallbackQ = collection(db, BANNERS_COLLECTION);
+    onSnapshot(fallbackQ, (snapshot) => {
+      const list: BannerDoc[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          title: data.title || 'Untitled Banner',
+          tag: data.tag || data.badge || '',
+          imageUrl: data.imageUrl || data.image || '',
+          ctaLink: data.ctaLink || data.link || '',
+          isActive: data.isActive !== undefined ? Boolean(data.isActive) : true,
+          createdAt: data.createdAt,
+        };
+      });
+      callback(list);
+    });
+  });
+}
+
+export async function addBannerToFirestore(data: Omit<BannerDoc, 'id'>) {
+  return await addDoc(collection(db, BANNERS_COLLECTION), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateBannerInFirestore(id: string, data: Partial<BannerDoc>) {
+  const docRef = doc(db, BANNERS_COLLECTION, id);
+  return await updateDoc(docRef, data);
+}
+
+export async function deleteBannerFromFirestore(id: string) {
+  const docRef = doc(db, BANNERS_COLLECTION, id);
+  return await deleteDoc(docRef);
+}
+
