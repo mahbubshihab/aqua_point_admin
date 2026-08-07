@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { 
   LayoutDashboard, 
   Droplets, 
@@ -80,19 +81,20 @@ export default function Sidebar() {
     <aside className="w-64 fixed left-0 top-0 bottom-0 z-40 backdrop-blur-xl bg-slate-950/85 border-r border-slate-800/80 flex flex-col justify-between p-4 shadow-2xl shadow-cyan-950/20">
       <div>
         {/* Brand Header */}
-        <div className="flex items-center gap-3 px-3 py-4 mb-6 border-b border-slate-800/80">
-          <div className="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-[#00BCE1] to-blue-600 shadow-[0_0_20px_rgba(0,188,225,0.4)]">
-            <Droplets className="w-6 h-6 text-slate-950 stroke-[2.5]" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-cyan-300 rounded-full animate-ping" />
+        <div className="flex flex-col gap-1 px-3 py-4 mb-6 border-b border-slate-800/80">
+          <div className="flex items-center gap-3">
+            <Image
+              src="/app_logo.png"
+              alt="Aqua Point Logo"
+              width={160}
+              height={48}
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </div>
-          <div>
-            <h1 className="font-extrabold text-lg tracking-wider text-white flex items-center gap-1.5">
-              AQUA <span className="text-[#00BCE1] cyan-glow-text">POINT</span>
-            </h1>
-            <p className="text-[11px] text-[#00BCE1]/80 font-medium tracking-wide flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-[#00BCE1]" /> ADMIN SYSTEM
-            </p>
-          </div>
+          <p className="text-[10px] text-[#00BCE1] font-bold tracking-widest uppercase flex items-center gap-1 mt-1 pl-0.5">
+            <Sparkles className="w-3 h-3 text-[#00BCE1]" /> ADMIN SYSTEM
+          </p>
         </div>
 
         {/* Navigation Items */}
