@@ -4,7 +4,6 @@ import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { 
   Building2, 
   Plus, 
-  Search, 
   Upload, 
   LayoutGrid, 
   List, 
@@ -28,6 +27,7 @@ import {
   ClientDoc 
 } from '@/core/services/firebase';
 import TableFooter from '@/core/components/TableFooter';
+import { useSearch } from '@/core/context/SearchContext';
 
 const DEFAULT_SAMPLE_CLIENTS: Omit<ClientDoc, 'id'>[] = [
   {
@@ -66,7 +66,7 @@ export default function ClientsView() {
   const [clients, setClients] = useState<ClientDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-  const [searchTerm, setSearchTerm] = useState('');
+  const { searchTerm } = useSearch();
   const [selectedIndustry, setSelectedIndustry] = useState<string>('All');
 
   // Add / Edit Modal State
@@ -294,18 +294,6 @@ export default function ClientsView() {
       <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
-            {/* In-Page Search Input */}
-            <div className="relative flex-1 w-full">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by client name or industry sector..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] transition-all"
-              />
-            </div>
-
             {/* Industry Filter Dropdown */}
             {industries.length > 0 && (
               <div className="relative w-full sm:w-52">
