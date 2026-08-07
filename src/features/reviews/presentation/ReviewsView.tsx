@@ -195,13 +195,13 @@ export default function ReviewsView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Reviews
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
             {filteredReviews.length} reviews
           </span>
         </div>
         <button
           onClick={openAddModal}
-          className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
+          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Add Review
         </button>
@@ -209,8 +209,8 @@ export default function ReviewsView() {
 
       {/* Metrics Banner */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center gap-3 shadow-lg">
-          <div className="p-3 rounded-xl bg-[#00BCE1]/10 border border-[#00BCE1]/30 text-[#00BCE1]">
+        <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
+          <div className="p-3.5 rounded-2xl bg-[#4cceac]/15 border border-[#4cceac]/30 text-[#4cceac]">
             <MessageSquareQuote className="w-5 h-5" />
           </div>
           <div>
@@ -219,8 +219,8 @@ export default function ReviewsView() {
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center gap-3 shadow-lg">
-          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+        <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
+          <div className="p-3.5 rounded-2xl bg-[#4cceac]/15 border border-[#4cceac]/30 text-[#4cceac]">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
@@ -229,8 +229,8 @@ export default function ReviewsView() {
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center gap-3 shadow-lg">
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
+        <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
+          <div className="p-3.5 rounded-2xl bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b]">
             <AlertCircle className="w-5 h-5" />
           </div>
           <div>
@@ -239,9 +239,9 @@ export default function ReviewsView() {
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center gap-3 shadow-lg">
-          <div className="p-3 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400">
-            <Star className="w-5 h-5 fill-amber-400" />
+        <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
+          <div className="p-3.5 rounded-2xl bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b]">
+            <Star className="w-5 h-5 fill-[#f59e0b]" />
           </div>
           <div>
             <p className="text-[11px] text-slate-400 font-medium">Average Rating</p>
@@ -251,7 +251,7 @@ export default function ReviewsView() {
       </div>
 
       {/* Unified Filter Bar (Single Consolidated Bar) */}
-      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 space-y-3">
+      <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
             {/* In-Page Search Input */}
@@ -262,7 +262,7 @@ export default function ReviewsView() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by customer name, location, or comment..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#4cceac] transition-all"
               />
             </div>
 
@@ -271,7 +271,7 @@ export default function ReviewsView() {
               <select
                 value={ratingFilter}
                 onChange={(e) => setRatingFilter(e.target.value === 'All' ? 'All' : Number(e.target.value))}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 cursor-pointer transition-all"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] cursor-pointer transition-all"
               >
                 <option value="All">All Star Ratings</option>
                 <option value={5}>5 Stars ★★★★★</option>
@@ -283,13 +283,13 @@ export default function ReviewsView() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-800/80">
-            <div className="p-1 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-1">
+          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-[#2c3754]">
+            <div className="p-1 rounded-xl bg-[#141b2d] border border-[#2c3754] flex items-center gap-1">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
+                    ? 'bg-[#3e4396] text-white shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
                 title="Grid View"
@@ -300,7 +300,7 @@ export default function ReviewsView() {
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
+                    ? 'bg-[#3e4396] text-white shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
                 title="Table View"
@@ -312,18 +312,18 @@ export default function ReviewsView() {
         </div>
 
         {/* Approval Filter Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-slate-800/60 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-[#2c3754] scrollbar-none">
           <button
             onClick={() => setFilterApproved('all')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
               filterApproved === 'all'
-                ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
+                ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
             }`}
           >
             <span>All Reviews</span>
             <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-              filterApproved === 'all' ? 'bg-slate-950/25 text-slate-950' : 'bg-white/10 text-[#00BCE1]'
+              filterApproved === 'all' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
             }`}>
               {totalReviews}
             </span>
@@ -333,13 +333,13 @@ export default function ReviewsView() {
             onClick={() => setFilterApproved('approved')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
               filterApproved === 'approved'
-                ? 'bg-emerald-500 text-slate-950 font-bold shadow-[0_0_15px_rgba(16,185,129,0.4)]'
-                : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-emerald-500/30'
+                ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
             }`}
           >
             <span>Approved & Live</span>
             <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-              filterApproved === 'approved' ? 'bg-slate-950/25 text-slate-950' : 'bg-white/10 text-emerald-400'
+              filterApproved === 'approved' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
             }`}>
               {approvedCount}
             </span>
@@ -349,13 +349,13 @@ export default function ReviewsView() {
             onClick={() => setFilterApproved('pending')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
               filterApproved === 'pending'
-                ? 'bg-amber-500 text-slate-950 font-bold shadow-[0_0_15px_rgba(245,158,11,0.4)]'
-                : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-amber-500/30'
+                ? 'bg-[#f59e0b] text-[#141b2d] font-bold shadow-md'
+                : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
             }`}
           >
             <span>Pending Moderation</span>
             <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-              filterApproved === 'pending' ? 'bg-slate-950/25 text-slate-950' : 'bg-white/10 text-amber-400'
+              filterApproved === 'pending' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#f59e0b]'
             }`}>
               {pendingCount}
             </span>
@@ -365,15 +365,15 @@ export default function ReviewsView() {
 
       {/* Main Content Area */}
       {loading ? (
-        <div className="glass-panel rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
-          <p className="text-xs text-slate-400">Loading reviews from Cloud Firestore...</p>
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
+          <Loader2 className="w-10 h-10 text-[#4cceac] animate-spin" />
+          <p className="text-xs text-[#A0AEC0]">Loading reviews from Cloud Firestore...</p>
         </div>
       ) : filteredReviews.length === 0 ? (
-        <div className="glass-panel rounded-2xl p-16 text-center space-y-4">
-          <MessageSquareQuote className="w-12 h-12 text-slate-600 mx-auto" />
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 text-center space-y-4">
+          <MessageSquareQuote className="w-12 h-12 text-[#A0AEC0] mx-auto" />
           <h3 className="text-base font-bold text-white">No Reviews Found</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+          <p className="text-xs text-[#A0AEC0] max-w-sm mx-auto">
             {searchTerm || filterApproved !== 'all'
               ? 'No reviews match your current filters.'
               : 'There are no customer reviews stored in Cloud Firestore yet.'}
@@ -381,7 +381,7 @@ export default function ReviewsView() {
           <div className="pt-2">
             <button
               onClick={openAddModal}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all inline-flex items-center gap-2 cursor-pointer font-bold"
+              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 shadow-md transition-all inline-flex items-center gap-2 cursor-pointer font-bold"
             >
               <Plus className="w-4 h-4 stroke-[3]" /> Add First Review
             </button>
@@ -393,7 +393,7 @@ export default function ReviewsView() {
           {filteredReviews.map((rev) => (
             <div
               key={rev.id}
-              className="glass-panel glass-card-hover rounded-2xl p-5 flex flex-col justify-between space-y-4 border border-white/10 relative group"
+              className="bg-[#1f2940] border border-[#2c3754] hover:border-[#4cceac]/50 rounded-2xl p-5 flex flex-col justify-between space-y-4 relative group transition-all"
             >
               <div className="space-y-3">
                 {/* Header: Star Rating & Approval Badge */}
@@ -433,16 +433,16 @@ export default function ReviewsView() {
                 </div>
 
                 {/* Comment */}
-                <p className="text-xs text-slate-300 italic leading-relaxed bg-slate-900/60 p-3 rounded-xl border border-white/5">
+                <p className="text-xs text-slate-300 italic leading-relaxed bg-[#141b2d] p-3 rounded-xl border border-[#2c3754]">
                   "{rev.comment}"
                 </p>
               </div>
 
               {/* Customer Info & Actions */}
-              <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+              <div className="pt-3 border-t border-[#2c3754] flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-bold text-white">{rev.customerName}</h4>
-                  <p className="text-[11px] text-cyan-400 flex items-center gap-1 font-medium mt-0.5">
+                  <p className="text-[11px] text-[#4cceac] flex items-center gap-1 font-medium mt-0.5">
                     <MapPin className="w-3 h-3" /> {rev.location}
                   </p>
                 </div>
@@ -450,14 +450,14 @@ export default function ReviewsView() {
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => openEditModal(rev)}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/30 transition-all cursor-pointer"
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
                     title="Edit Review"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => setDeletingReview(rev)}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-rose-950 text-rose-400 border border-rose-500/30 transition-all cursor-pointer"
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
                     title="Delete Review"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -469,10 +469,10 @@ export default function ReviewsView() {
         </div>
       ) : (
         /* Table Layout */
-        <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-200">
-              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
+              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-[#2c3754]">
                 <tr>
                   <th className="py-3.5 px-4">Customer Name</th>
                   <th className="py-3.5 px-4">Location</th>
@@ -482,7 +482,7 @@ export default function ReviewsView() {
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
+              <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
                 {filteredReviews.map((rev) => (
                   <tr key={rev.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-4 px-4 font-bold text-white">{rev.customerName}</td>
@@ -498,7 +498,7 @@ export default function ReviewsView() {
                         ))}
                       </div>
                     </td>
-                    <td className="py-4 px-4 text-slate-300 italic max-w-xs truncate">
+                    <td className="py-4 px-4 text-[#A0AEC0] italic max-w-xs truncate">
                       "{rev.comment}"
                     </td>
                     <td className="py-4 px-4">
@@ -517,14 +517,14 @@ export default function ReviewsView() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openEditModal(rev)}
-                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-slate-700 cursor-pointer transition-all"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setDeletingReview(rev)}
-                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-slate-700 cursor-pointer transition-all"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-[#2c3754] cursor-pointer transition-all"
                           title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -542,20 +542,20 @@ export default function ReviewsView() {
 
       {/* Add / Edit Review Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="glass-panel-cyan w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/80 backdrop-blur-md">
+          <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
                 {editingReviewId ? (
-                  <Edit2 className="w-5 h-5 text-cyan-400" />
+                  <Edit2 className="w-5 h-5 text-[#4cceac]" />
                 ) : (
-                  <Plus className="w-5 h-5 text-cyan-400" />
+                  <Plus className="w-5 h-5 text-[#4cceac]" />
                 )}
                 {editingReviewId ? 'Edit Review' : 'Add New Customer Review'}
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 cursor-pointer"
+                className="p-1 rounded-xl text-[#A0AEC0] hover:text-white hover:bg-[#141b2d] cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -580,7 +580,7 @@ export default function ReviewsView() {
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="e.g. Engr. Tanvir Ahmed"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
                   />
                 </div>
 
@@ -594,7 +594,7 @@ export default function ReviewsView() {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="e.g. Gulshan, Dhaka"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
                   />
                 </div>
               </div>
@@ -612,7 +612,7 @@ export default function ReviewsView() {
                       className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center gap-1 text-xs font-bold ${
                         rating >= starVal
                           ? 'bg-amber-500/20 border-amber-400/50 text-amber-300'
-                          : 'bg-slate-900 border-white/10 text-slate-500 hover:text-white'
+                          : 'bg-[#141b2d] border-[#2c3754] text-slate-500 hover:text-white'
                       }`}
                     >
                       <Star
@@ -638,17 +638,17 @@ export default function ReviewsView() {
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="e.g. Excellent service and purified water TDS dropped significantly..."
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
                 />
               </div>
 
               {/* Approval Toggle */}
-              <div className="p-3 rounded-2xl bg-slate-900/80 border border-white/10 flex items-center justify-between">
+              <div className="p-3 rounded-2xl bg-[#141b2d] border border-[#2c3754] flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold text-white flex items-center gap-1.5">
                     Approval & Publication Status
                   </p>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-[#A0AEC0]">
                     If enabled, this review will be displayed on the User Web testimonials slider.
                   </p>
                 </div>
@@ -660,22 +660,22 @@ export default function ReviewsView() {
                     onChange={(e) => setIsApproved(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                  <div className="w-11 h-6 bg-[#1f2940] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                 </label>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-white/10">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#2c3754]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-slate-300 border border-[#2c3754] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-[0_0_15px_rgba(0,229,255,0.4)] disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
+                  className="px-5 py-2 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
                 >
                   {isSaving ? (
                     <>
@@ -694,15 +694,15 @@ export default function ReviewsView() {
 
       {/* Delete Confirmation Modal */}
       {deletingReview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="glass-panel w-full max-w-md rounded-3xl p-6 border-rose-500/30 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/80 backdrop-blur-md">
+          <div className="bg-[#1f2940] border border-rose-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center gap-3 text-rose-400">
               <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30">
                 <AlertCircle className="w-6 h-6" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">Delete Customer Review</h3>
-                <p className="text-xs text-slate-400">Confirm permanent deletion from Firestore.</p>
+                <p className="text-xs text-[#A0AEC0]">Confirm permanent deletion from Firestore.</p>
               </div>
             </div>
 
@@ -711,18 +711,18 @@ export default function ReviewsView() {
               <strong className="text-white">"{deletingReview.customerName}"</strong> ({deletingReview.location})? This action cannot be undone.
             </p>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2c3754]">
               <button
                 onClick={() => setDeletingReview(null)}
                 disabled={isDeleting}
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 cursor-pointer"
+                className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-slate-300 border border-[#2c3754] cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteReview}
                 disabled={isDeleting}
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-rose-600 hover:bg-rose-500 text-white shadow-[0_0_15px_rgba(244,63,94,0.4)] disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
+                className="px-4 py-2 text-xs font-semibold rounded-xl bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
               >
                 {isDeleting ? (
                   <>

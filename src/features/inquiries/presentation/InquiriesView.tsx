@@ -93,14 +93,14 @@ export default function InquiriesView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Inquiries
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#1f2940] text-[#4cceac] border border-[#2c3754]">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
             {filteredInquiries.length} messages
           </span>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => alert('Compose new customer message / reply dispatch!')}
-            className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 shadow-lg shadow-[#4cceac]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
+            className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer shrink-0"
           >
             <MessageSquare className="w-4 h-4 stroke-[2.5]" /> + New Inquiry
           </button>
@@ -113,13 +113,13 @@ export default function InquiriesView() {
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
             {/* In-Page Search Input */}
             <div className="relative flex-1 w-full">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A0AEC0]" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by customer name, phone, email or subject..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-[#A0AEC0] focus:outline-none focus:border-[#4cceac] focus:ring-1 focus:ring-[#4cceac]/50 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#4cceac] transition-all"
               />
             </div>
 
@@ -128,7 +128,7 @@ export default function InquiriesView() {
               <select
                 value={activeFilter}
                 onChange={(e) => setActiveFilter(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] focus:ring-1 focus:ring-[#4cceac]/50 cursor-pointer transition-all"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] cursor-pointer transition-all"
               >
                 <option value="All">All Inquiries</option>
                 <option value="New">New Messages</option>
@@ -145,8 +145,8 @@ export default function InquiriesView() {
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
-                    ? 'bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40'
-                    : 'text-[#A0AEC0] hover:text-white'
+                    ? 'bg-[#3e4396] text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
                 }`}
                 title="Grid View"
               >
@@ -156,8 +156,8 @@ export default function InquiriesView() {
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40'
-                    : 'text-[#A0AEC0] hover:text-white'
+                    ? 'bg-[#3e4396] text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
                 }`}
                 title="Table View"
               >
@@ -178,8 +178,8 @@ export default function InquiriesView() {
                 onClick={() => setActiveFilter(filter)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                   isActive
-                    ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-md'
-                    : 'bg-[#141b2d] text-[#A0AEC0] border border-[#2c3754] hover:text-white'
+                    ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                    : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
                 }`}
               >
                 <span>{filter}</span>

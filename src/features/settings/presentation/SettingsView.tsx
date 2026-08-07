@@ -121,17 +121,17 @@ export default function SettingsView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Settings
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
             System Config
           </span>
         </div>
         <button
           onClick={handleSave}
           disabled={saving || loading}
-          className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
+          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
         >
           {saving ? (
-            <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+            <Loader2 className="w-4 h-4 animate-spin text-white" />
           ) : (
             <Save className="w-4 h-4" />
           )}
@@ -140,7 +140,7 @@ export default function SettingsView() {
       </div>
 
       {/* Unified Section Toolbar */}
-      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10">
+      <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
           {[
             { id: 'company', label: 'Company Contact' },
@@ -151,10 +151,10 @@ export default function SettingsView() {
           ].map((tab, idx) => (
             <span
               key={tab.id}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap cursor-pointer transition-all ${
                 idx === 0
-                  ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                  : 'bg-slate-950/70 text-slate-400 border border-slate-800/80'
+                  ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                  : 'bg-[#141b2d] text-slate-400 border border-[#2c3754] hover:text-white'
               }`}
             >
               {tab.label}
@@ -164,15 +164,15 @@ export default function SettingsView() {
       </div>
 
       {/* Company Contact Information Card */}
-      <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl p-6 space-y-5 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-700/50 pb-4">
+      <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 space-y-5 shadow-2xl">
+        <div className="flex items-center justify-between border-b border-[#2c3754] pb-4">
           <h2 className="text-base font-bold text-white flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-[#3e4396] text-[#4cceac]">
               <Building2 className="w-4 h-4" />
             </div>
             Company Contact Information
           </h2>
-          <span className="text-[11px] text-[#4cceac] font-mono bg-[#141b2d] px-2.5 py-1 rounded-full border border-slate-700">
+          <span className="text-[11px] text-[#4cceac] font-mono bg-[#141b2d] px-2.5 py-1 rounded-full border border-[#2c3754]">
             Firestore: company_info
           </span>
         </div>
@@ -181,28 +181,28 @@ export default function SettingsView() {
           {/* Phone / Helpline 1 */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-cyan-400" /> Phone / Helpline 1
+              <Phone className="w-3.5 h-3.5 text-[#4cceac]" /> Phone / Helpline 1
             </label>
             <input
               type="text"
               value={contactInfo.phone1}
               onChange={(e) => handleChange('phone1', e.target.value)}
               placeholder="e.g. 01780-885841"
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900/90 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#4cceac] transition-colors"
             />
           </div>
 
           {/* Phone / Hotline 2 */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-cyan-400" /> Phone / Hotline 2
+              <Phone className="w-3.5 h-3.5 text-[#4cceac]" /> Phone / Hotline 2
             </label>
             <input
               type="text"
               value={contactInfo.phone2}
               onChange={(e) => handleChange('phone2', e.target.value)}
               placeholder="e.g. 09613 700 750"
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900/90 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#4cceac] transition-colors"
             />
           </div>
 
@@ -216,21 +216,21 @@ export default function SettingsView() {
               value={contactInfo.whatsapp}
               onChange={(e) => handleChange('whatsapp', e.target.value)}
               placeholder="e.g. +8801780885841"
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900/90 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#4cceac] transition-colors"
             />
           </div>
 
           {/* Official Email */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-cyan-400" /> Official Email
+              <Mail className="w-3.5 h-3.5 text-[#4cceac]" /> Official Email
             </label>
             <input
               type="email"
               value={contactInfo.email}
               onChange={(e) => handleChange('email', e.target.value)}
               placeholder="e.g. aquabd112@gmail.com"
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900/90 border border-white/10 text-white focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac] transition-colors"
             />
           </div>
 
@@ -244,14 +244,14 @@ export default function SettingsView() {
               value={contactInfo.address}
               onChange={(e) => handleChange('address', e.target.value)}
               placeholder="e.g. House 72, Janata Housing Road, 3 Ring Road, Dhaka 1219"
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900/90 border border-white/10 text-white focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac] transition-colors"
             />
           </div>
 
           {/* Google Maps URL */}
           <div className="md:col-span-2">
             <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5 text-cyan-400" /> Google Maps URL
+              <Globe className="w-3.5 h-3.5 text-[#4cceac]" /> Google Maps URL
             </label>
             <div className="flex gap-2">
               <input
@@ -259,14 +259,14 @@ export default function SettingsView() {
                 value={contactInfo.googleMapsUrl}
                 onChange={(e) => handleChange('googleMapsUrl', e.target.value)}
                 placeholder="https://maps.google.com/..."
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900/90 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400 transition-colors"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#4cceac] transition-colors"
               />
               {contactInfo.googleMapsUrl && (
                 <a
                   href={contactInfo.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-slate-800 border border-white/10 hover:border-cyan-400 text-slate-300 hover:text-cyan-400 transition-colors shrink-0 flex items-center justify-center"
+                  className="p-2.5 rounded-xl bg-[#141b2d] border border-[#2c3754] hover:border-[#4cceac] text-[#A0AEC0] hover:text-[#4cceac] transition-colors shrink-0 flex items-center justify-center"
                   title="Test Map Link"
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -278,15 +278,15 @@ export default function SettingsView() {
       </div>
 
       {/* Social Media Links Card */}
-      <div className="glass-panel rounded-2xl p-6 space-y-5">
-        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+      <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 space-y-5 shadow-2xl">
+        <div className="flex items-center justify-between border-b border-[#2c3754] pb-4">
           <h2 className="text-base font-bold text-white flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+            <div className="p-2 rounded-xl bg-[#3e4396] text-[#4cceac]">
               <Share2 className="w-4 h-4" />
             </div>
             Social Media Links
           </h2>
-          <span className="text-[11px] text-slate-400 font-mono">
+          <span className="text-[11px] text-[#A0AEC0] font-mono">
             Public Channels
           </span>
         </div>
@@ -302,7 +302,7 @@ export default function SettingsView() {
               value={contactInfo.facebookUrl}
               onChange={(e) => handleChange('facebookUrl', e.target.value)}
               placeholder="https://facebook.com/yourpage"
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#4cceac] transition-colors"
             />
           </div>
 
@@ -316,7 +316,7 @@ export default function SettingsView() {
               value={contactInfo.whatsappLink}
               onChange={(e) => handleChange('whatsappLink', e.target.value)}
               placeholder="https://wa.me/8801780885841"
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#4cceac] transition-colors"
             />
           </div>
 
@@ -330,7 +330,7 @@ export default function SettingsView() {
               value={contactInfo.youtubeUrl}
               onChange={(e) => handleChange('youtubeUrl', e.target.value)}
               placeholder="https://youtube.com/@yourchannel"
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#4cceac] transition-colors"
             />
           </div>
 
@@ -344,7 +344,7 @@ export default function SettingsView() {
               value={contactInfo.instagramUrl}
               onChange={(e) => handleChange('instagramUrl', e.target.value)}
               placeholder="https://instagram.com/yourhandle"
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#4cceac] transition-colors"
             />
           </div>
 
@@ -358,16 +358,16 @@ export default function SettingsView() {
               value={contactInfo.linkedinUrl}
               onChange={(e) => handleChange('linkedinUrl', e.target.value)}
               placeholder="https://linkedin.com/company/yourcompany"
-              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400 transition-colors"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#4cceac] transition-colors"
             />
           </div>
         </div>
       </div>
 
       {/* Cloudinary Integration Section */}
-      <div className="glass-panel rounded-2xl p-6 space-y-4">
-        <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
-          <Cloud className="w-4 h-4 text-cyan-400" /> Cloudinary Media Storage Helper
+      <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 space-y-4 shadow-2xl">
+        <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-[#2c3754] pb-3">
+          <Cloud className="w-4 h-4 text-[#4cceac]" /> Cloudinary Media Storage Helper
         </h2>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -377,7 +377,7 @@ export default function SettingsView() {
               type="text"
               value={cloudName}
               onChange={(e) => setCloudName(e.target.value)}
-              className="w-full px-3 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400"
+              className="w-full px-3 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#4cceac]"
             />
           </div>
 
@@ -387,20 +387,20 @@ export default function SettingsView() {
               type="text"
               value={uploadPreset}
               onChange={(e) => setUploadPreset(e.target.value)}
-              className="w-full px-3 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400"
+              className="w-full px-3 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#4cceac]"
             />
           </div>
         </div>
 
-        <div className="p-3 rounded-xl bg-cyan-500/[0.04] border border-cyan-500/20 text-xs text-slate-300">
-          Upload API Endpoint: <span className="font-mono text-cyan-400">https://api.cloudinary.com/v1_1/{cloudName}/image/upload</span>
+        <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754] text-xs text-slate-300">
+          Upload API Endpoint: <span className="font-mono text-[#4cceac]">https://api.cloudinary.com/v1_1/{cloudName}/image/upload</span>
         </div>
       </div>
 
       {/* Telemetry Sensor Alerts */}
-      <div className="glass-panel rounded-2xl p-6 space-y-4">
-        <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
-          <Sliders className="w-4 h-4 text-cyan-400" /> Sensor & Telemetry Thresholds
+      <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 space-y-4 shadow-2xl">
+        <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-[#2c3754] pb-3">
+          <Sliders className="w-4 h-4 text-[#4cceac]" /> Sensor & Telemetry Thresholds
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -410,14 +410,14 @@ export default function SettingsView() {
               type="number"
               value={tdsThreshold}
               onChange={(e) => setTdsThreshold(e.target.value)}
-              className="w-full px-3 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400"
+              className="w-full px-3 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
             />
-            <span className="text-[10px] text-slate-400 mt-1 block">Triggers filter alert notification if output exceeds threshold</span>
+            <span className="text-[10px] text-[#A0AEC0] mt-1 block">Triggers filter alert notification if output exceeds threshold</span>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">Telemetry Heartbeat Interval</label>
-            <select className="w-full px-3 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400">
+            <select className="w-full px-3 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]">
               <option value="5">Every 5 Minutes (Realtime)</option>
               <option value="15">Every 15 Minutes (Standard)</option>
               <option value="60">Hourly Sync</option>
@@ -427,19 +427,19 @@ export default function SettingsView() {
       </div>
 
       {/* Admin Profile & Security */}
-      <div className="glass-panel rounded-2xl p-6 space-y-4">
-        <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-3">
-          <ShieldCheck className="w-4 h-4 text-cyan-400" /> Admin Profile Credentials
+      <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 space-y-4 shadow-2xl">
+        <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-[#2c3754] pb-3">
+          <ShieldCheck className="w-4 h-4 text-[#4cceac]" /> Admin Profile Credentials
         </h2>
 
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-bold text-lg shadow-[0_0_15px_rgba(0,229,255,0.3)]">
+          <div className="w-14 h-14 rounded-2xl bg-[#3e4396] flex items-center justify-center text-white font-bold text-lg border border-[#4cceac]/30 shadow-md">
             MS
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Mahbub Shihab</h3>
-            <p className="text-xs text-cyan-400">Super Administrator</p>
-            <p className="text-[11px] text-slate-400">mahbub.shihab@aquapoint.com</p>
+            <p className="text-xs text-[#4cceac]">Super Administrator</p>
+            <p className="text-[11px] text-[#A0AEC0]">mahbub.shihab@aquapoint.com</p>
           </div>
         </div>
       </div>

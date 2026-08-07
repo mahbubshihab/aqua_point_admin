@@ -124,47 +124,53 @@ export default function CustomersView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Customers
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
             {filteredCustomers.length} customers
           </span>
         </div>
-        <button className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0">
+        <button className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer shrink-0">
           <UserPlus className="w-4 h-4 stroke-[2.5]" /> Register Customer
         </button>
       </div>
 
       {/* Stats Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 shadow-lg">
+        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] shadow-xl hover:border-[#4cceac]/60 transition-all duration-300">
           <div className="flex items-center justify-between text-slate-400 text-xs">
-            <span>Total Active Users</span>
-            <Users className="w-4 h-4 text-[#00BCE1]" />
+            <span className="font-medium">Total Active Users</span>
+            <div className="p-2.5 rounded-xl bg-[#4cceac]/15 text-[#4cceac]">
+              <Users className="w-4 h-4" />
+            </div>
           </div>
-          <p className="text-2xl font-extrabold text-white mt-2">1,428</p>
-          <span className="text-[11px] text-emerald-400 mt-1 inline-block">+34 new this week</span>
+          <p className="text-3xl font-extrabold text-white mt-2">1,428</p>
+          <span className="text-[11px] text-[#4cceac] font-medium mt-1 inline-block">+34 new this week</span>
         </div>
 
-        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 shadow-lg">
+        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] shadow-xl hover:border-[#4cceac]/60 transition-all duration-300">
           <div className="flex items-center justify-between text-slate-400 text-xs">
-            <span>Reward Points Issued</span>
-            <Gift className="w-4 h-4 text-amber-400" />
+            <span className="font-medium">Reward Points Issued</span>
+            <div className="p-2.5 rounded-xl bg-[#f59e0b]/15 text-[#f59e0b]">
+              <Gift className="w-4 h-4" />
+            </div>
           </div>
-          <p className="text-2xl font-extrabold text-amber-300 mt-2">342,900 <span className="text-xs text-slate-400 font-normal">PTS</span></p>
-          <span className="text-[11px] text-[#00BCE1] mt-1 inline-block">Aqua Loyalty Program</span>
+          <p className="text-3xl font-extrabold text-amber-300 mt-2">342,900 <span className="text-xs text-slate-400 font-normal">PTS</span></p>
+          <span className="text-[11px] text-[#4cceac] font-medium mt-1 inline-block">Aqua Loyalty Program</span>
         </div>
 
-        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 shadow-lg">
+        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] shadow-xl hover:border-[#4cceac]/60 transition-all duration-300">
           <div className="flex items-center justify-between text-slate-400 text-xs">
-            <span>Referrals Converted</span>
-            <Award className="w-4 h-4 text-emerald-400" />
+            <span className="font-medium">Referrals Converted</span>
+            <div className="p-2.5 rounded-xl bg-[#4cceac]/15 text-[#4cceac]">
+              <Award className="w-4 h-4" />
+            </div>
           </div>
-          <p className="text-2xl font-extrabold text-emerald-300 mt-2">584</p>
-          <span className="text-[11px] text-emerald-400 mt-1 inline-block">+18% growth month-over-month</span>
+          <p className="text-3xl font-extrabold text-[#4cceac] mt-2">584</p>
+          <span className="text-[11px] text-[#4cceac] font-medium mt-1 inline-block">+18% growth month-over-month</span>
         </div>
       </div>
 
       {/* Unified Filter Bar (Single Consolidated Bar) */}
-      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 space-y-3">
+      <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
             {/* In-Page Search Input */}
@@ -175,7 +181,7 @@ export default function CustomersView() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search customer by name, email, or referral code..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#4cceac] transition-all"
               />
             </div>
 
@@ -184,7 +190,7 @@ export default function CustomersView() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 cursor-pointer transition-all"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] cursor-pointer transition-all"
               >
                 <option value="All">All Loyalty Tiers</option>
                 <option value="VIP">VIP Gold (800+ PTS)</option>
@@ -193,14 +199,14 @@ export default function CustomersView() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-800/80">
-            <div className="p-1 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-1">
+          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-[#2c3754]">
+            <div className="p-1 rounded-xl bg-[#141b2d] border border-[#2c3754] flex items-center gap-1">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40'
+                    : 'text-[#A0AEC0] hover:text-white'
                 }`}
                 title="Grid View"
               >
@@ -210,8 +216,8 @@ export default function CustomersView() {
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40'
+                    : 'text-[#A0AEC0] hover:text-white'
                 }`}
                 title="Table View"
               >
@@ -222,7 +228,7 @@ export default function CustomersView() {
         </div>
 
         {/* Loyalty Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-slate-800/60 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-[#2c3754] scrollbar-none">
           {(['All', 'VIP', 'Regular'] as const).map((tier) => {
             const label = tier === 'All' ? 'All Customers' : tier === 'VIP' ? 'VIP Gold Tier' : 'Standard Tier';
             const count = tier === 'All' ? customers.length : customers.filter(c => tier === 'VIP' ? c.rewardPoints >= 800 : c.rewardPoints < 800).length;
@@ -233,13 +239,13 @@ export default function CustomersView() {
                 onClick={() => setStatusFilter(tier)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                   isActive
-                    ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                    : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
+                    ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-md'
+                    : 'bg-[#141b2d] text-[#A0AEC0] border border-[#2c3754] hover:text-white'
                 }`}
               >
                 <span>{label}</span>
                 <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                  isActive ? 'bg-slate-950/25 text-slate-950' : 'bg-white/10 text-[#00BCE1]'
+                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
                 }`}>
                   {count}
                 </span>
@@ -250,10 +256,10 @@ export default function CustomersView() {
       </div>
 
       {/* Customers Table */}
-      <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
+      <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-200">
-            <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
+            <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-[#2c3754]">
               <tr>
                 <th className="py-3.5 px-4">Customer Name</th>
                 <th className="py-3.5 px-4">Contact Info</th>
@@ -264,7 +270,7 @@ export default function CustomersView() {
                 <th className="py-3.5 px-4">Joined Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
+            <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
               {filteredCustomers.map((cust) => (
                 <tr key={cust.id} className="hover:bg-[#2c3754] transition-colors">
                   <td className="py-4 px-4 font-bold text-white flex items-center gap-2.5">
@@ -281,7 +287,7 @@ export default function CustomersView() {
                     <div className="flex items-center gap-1.5 text-slate-300">
                       <Mail className="w-3 h-3 text-[#4cceac]" /> {cust.email}
                     </div>
-                    <div className="flex items-center gap-1.5 text-slate-400 text-[11px] mt-0.5">
+                    <div className="flex items-center gap-1.5 text-[#A0AEC0] text-[11px] mt-0.5">
                       <Phone className="w-3 h-3 text-[#4cceac]" /> {cust.phone}
                     </div>
                   </td>
@@ -289,14 +295,14 @@ export default function CustomersView() {
                   <td className="py-4 px-4">
                     <button
                       onClick={() => copyReferral(cust.referralCode)}
-                      className="px-2.5 py-1 rounded-lg bg-[#141b2d] border border-slate-700 text-[#4cceac] font-mono text-[11px] flex items-center gap-1.5 hover:border-[#4cceac] transition-all cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-[#141b2d] border border-[#2c3754] text-[#4cceac] font-mono text-[11px] flex items-center gap-1.5 hover:border-[#4cceac] transition-all cursor-pointer"
                       title="Click to copy referral code"
                     >
                       {cust.referralCode}
                       {copiedCode === cust.referralCode ? (
                         <Check className="w-3 h-3 text-emerald-400" />
                       ) : (
-                        <Copy className="w-3 h-3 text-slate-400" />
+                        <Copy className="w-3 h-3 text-[#A0AEC0]" />
                       )}
                     </button>
                   </td>
@@ -319,7 +325,7 @@ export default function CustomersView() {
                     </span>
                   </td>
 
-                  <td className="py-4 px-4 text-slate-400 text-[11px]">
+                  <td className="py-4 px-4 text-[#A0AEC0] text-[11px]">
                     {cust.joinedDate}
                   </td>
                 </tr>
