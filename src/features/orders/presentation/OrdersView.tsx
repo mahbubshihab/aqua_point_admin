@@ -12,7 +12,9 @@ import {
   CheckCircle2,
   PackageCheck,
   CreditCard,
-  ChevronDown
+  ChevronDown,
+  LayoutGrid,
+  List
 } from 'lucide-react';
 import { 
   subscribeToOrders, 
@@ -47,18 +49,29 @@ export default function OrdersView() {
     }
   };
 
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [paymentFilter, setPaymentFilter] = useState<'All' | 'Paid' | 'Unpaid'>('All');
+
   const filteredOrders = orders.filter(order => {
     const matchesStatus = activeStatus === 'All' ? true : order.status === activeStatus;
+    const matchesPayment =
+      paymentFilter === 'All'
+        ? true
+        : paymentFilter === 'Paid'
+        ? order.paymentStatus === 'Paid'
+        : order.paymentStatus !== 'Paid';
+
     const matchesSearch =
       order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (order.email && order.email.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesStatus && matchesSearch;
+
+    return matchesStatus && matchesPayment && matchesSearch;
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-12">
       {/* Toast Notification */}
       {successMessage && (
         <div className="fixed top-5 right-5 z-50 p-4 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] animate-in slide-in-from-top-4">
@@ -78,44 +91,98 @@ export default function OrdersView() {
           </span>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center gap-2">
-            <Clock className="w-4 h-4 text-amber-400" />
-            <span>{orders.filter(o => o.status === 'Pending').length} Pending</span>
-          </div>
-          <div className="px-3.5 py-1.5 rounded-xl bg-[#00BCE1]/10 border border-[#00BCE1]/30 text-[#00BCE1] text-xs font-semibold flex items-center gap-2">
-            <PackageCheck className="w-4 h-4 text-[#00BCE1]" />
-            <span>{orders.filter(o => o.status === 'Processing').length} Processing</span>
-          </div>
+          <button
+            onClick={() => alert('Order management ready for checkout processing!')}
+            className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
+          >
+            <ShoppingBag className="w-4 h-4 stroke-[2.5]" /> + Create New Order
+          </button>
         </div>
       </div>
 
       {/* Unified Filter Bar (Single Consolidated Bar) */}
-      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by customer name, order ID, phone or email..."
-            className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
-          />
+      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
+            {/* In-Page Search Input */}
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search order by customer, ID, phone or email..."
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
+              />
+            </div>
+
+            {/* Payment Filter Dropdown */}
+            <div className="relative w-full sm:w-48">
+              <select
+                value={paymentFilter}
+                onChange={(e) => setPaymentFilter(e.target.value as any)}
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 cursor-pointer transition-all"
+              >
+                <option value="All">All Payment Status</option>
+                <option value="Paid">Paid Only</option>
+                <option value="Unpaid">Unpaid / Pending COD</option>
+              </select>
+            </div>
+          </div>
+
+          {/* View Toggles */}
+          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-800/80">
+            <div className="p-1 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'grid'
+                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Grid View"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`p-2 rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'table'
+                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Table View"
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
-          {['All', 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map((status) => (
-            <button
-              key={status}
-              onClick={() => setActiveStatus(status)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                activeStatus === status
-                  ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                  : 'text-slate-400 hover:text-white bg-slate-950/70 border border-slate-800/80 hover:border-[#00BCE1]/30'
-              }`}
-            >
-              {status}
-            </button>
-          ))}
+        {/* Fulfillment Status Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-slate-800/60 scrollbar-none">
+          {['All', 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map((status) => {
+            const count = status === 'All' ? orders.length : orders.filter(o => o.status === status).length;
+            const isActive = activeStatus === status;
+            return (
+              <button
+                key={status}
+                onClick={() => setActiveStatus(status)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
+                    : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
+                }`}
+              >
+                <span>{status}</span>
+                <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
+                  isActive ? 'bg-slate-950/25 text-slate-950' : 'bg-white/10 text-[#00BCE1]'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

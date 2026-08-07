@@ -139,6 +139,30 @@ export default function SettingsView() {
         </button>
       </div>
 
+      {/* Unified Section Toolbar */}
+      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+          {[
+            { id: 'company', label: 'Company Contact' },
+            { id: 'social', label: 'Social Channels' },
+            { id: 'cloudinary', label: 'Cloudinary Storage' },
+            { id: 'telemetry', label: 'Telemetry & Sensors' },
+            { id: 'admin', label: 'Admin Security' },
+          ].map((tab, idx) => (
+            <span
+              key={tab.id}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap ${
+                idx === 0
+                  ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
+                  : 'bg-slate-950/70 text-slate-400 border border-slate-800/80'
+              }`}
+            >
+              {tab.label}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Company Contact Information Card */}
       <div className="glass-panel-cyan rounded-2xl p-6 space-y-5">
         <div className="flex items-center justify-between border-b border-white/10 pb-4">

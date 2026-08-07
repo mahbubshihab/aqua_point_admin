@@ -276,6 +276,29 @@ export default function DashboardView() {
         </Link>
       </div>
 
+      {/* Unified Section Toolbar Bar */}
+      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+          {[
+            { id: 'all', label: 'System Overview' },
+            { id: 'quality', label: 'Water Purity Index' },
+            { id: 'telemetry', label: 'Equipment Status' },
+            { id: 'requests', label: 'Recent Service Queue' },
+          ].map((tab, idx) => (
+            <span
+              key={tab.id}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap ${
+                idx === 0
+                  ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
+                  : 'bg-slate-950/70 text-slate-400 border border-slate-800/80'
+              }`}
+            >
+              {tab.label}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Total Customers */}

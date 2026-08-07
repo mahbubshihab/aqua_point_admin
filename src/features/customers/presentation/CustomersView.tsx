@@ -13,7 +13,9 @@ import {
   Check, 
   Droplets,
   ShoppingBag,
-  UserPlus
+  UserPlus,
+  LayoutGrid,
+  List
 } from 'lucide-react';
 
 interface Customer {
@@ -90,6 +92,8 @@ export default function CustomersView() {
   const [customers] = useState<Customer[]>(initialCustomers);
   const [searchTerm, setSearchTerm] = useState('');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'VIP' | 'Regular'>('All');
 
   const copyReferral = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -97,14 +101,22 @@ export default function CustomersView() {
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
-  const filteredCustomers = customers.filter(c =>
-    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.referralCode.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCustomers = customers.filter(c => {
+    const matchesSearch =
+      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      c.referralCode.toLowerCase().includes(searchTerm.toLowerCase());
+
+    if (!matchesSearch) return false;
+
+    if (statusFilter === 'VIP') return c.rewardPoints >= 800;
+    if (statusFilter === 'Regular') return c.rewardPoints < 800;
+
+    return true;
+  });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-12">
       {/* Page Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -151,16 +163,88 @@ export default function CustomersView() {
       </div>
 
       {/* Unified Filter Bar (Single Consolidated Bar) */}
-      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 flex items-center gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search customer by name, email, or referral code..."
-            className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
-          />
+      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
+            {/* In-Page Search Input */}
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search customer by name, email, or referral code..."
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
+              />
+            </div>
+
+            {/* Filter Dropdown */}
+            <div className="relative w-full sm:w-48">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as any)}
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 cursor-pointer transition-all"
+              >
+                <option value="All">All Loyalty Tiers</option>
+                <option value="VIP">VIP Gold (800+ PTS)</option>
+                <option value="Regular">Standard Member</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-800/80">
+            <div className="p-1 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'grid'
+                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Grid View"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`p-2 rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'table'
+                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Table View"
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Loyalty Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-slate-800/60 scrollbar-none">
+          {(['All', 'VIP', 'Regular'] as const).map((tier) => {
+            const label = tier === 'All' ? 'All Customers' : tier === 'VIP' ? 'VIP Gold Tier' : 'Standard Tier';
+            const count = tier === 'All' ? customers.length : customers.filter(c => tier === 'VIP' ? c.rewardPoints >= 800 : c.rewardPoints < 800).length;
+            const isActive = statusFilter === tier;
+            return (
+              <button
+                key={tier}
+                onClick={() => setStatusFilter(tier)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
+                    : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
+                }`}
+              >
+                <span>{label}</span>
+                <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
+                  isActive ? 'bg-slate-950/25 text-slate-950' : 'bg-white/10 text-[#00BCE1]'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
