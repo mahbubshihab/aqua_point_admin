@@ -74,7 +74,7 @@ export default function OrdersPage() {
             Orders Management
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Track and fulfill customer orders.
+            Real-time ecommerce orders, payment status, and fulfillment tracking.
           </p>
         </div>
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -10,32 +11,66 @@ import {
   ShoppingBag,
   MessageSquare,
   Users, 
+  BarChart3, 
   Settings, 
   ShieldCheck,
   ChevronRight,
   Sparkles
 } from 'lucide-react';
+import { 
+  subscribeToServiceRequests, 
+  subscribeToOrders, 
+  subscribeToInquiries 
+} from '@/lib/firebase';
 
 interface NavItem {
   name: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  badge?: string;
 }
 
 const navItems: NavItem[] = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Products', href: '/products', icon: Droplets },
   { name: 'Categories', href: '/categories', icon: Layers },
-  { name: 'Service Requests', href: '/requests', icon: Wrench, badge: '12' },
+  { name: 'Service Requests', href: '/requests', icon: Wrench },
   { name: 'Orders', href: '/orders', icon: ShoppingBag },
   { name: 'Inquiries', href: '/inquiries', icon: MessageSquare },
   { name: 'Customers', href: '/customers', icon: Users },
+  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [servicesCount, setServicesCount] = useState<number>(0);
+  const [ordersCount, setOrdersCount] = useState<number>(0);
+  const [inquiriesCount, setInquiriesCount] = useState<number>(0);
+
+  useEffect(() => {
+    const unsubServices = subscribeToServiceRequests((data) => {
+      setServicesCount(data.length);
+    });
+    const unsubOrders = subscribeToOrders((data) => {
+      setOrdersCount(data.length);
+    });
+    const unsubInquiries = subscribeToInquiries((data) => {
+      setInquiriesCount(data.length);
+    });
+
+    return () => {
+      unsubServices();
+      unsubOrders();
+      unsubInquiries();
+    };
+  }, []);
+
+  const getBadgeCount = (href: string): number => {
+    if (href === '/requests') return servicesCount;
+    if (href === '/orders') return ordersCount;
+    if (href === '/inquiries') return inquiriesCount;
+    return 0;
+  };
 
   return (
     <aside className="w-64 fixed left-0 top-0 bottom-0 z-40 backdrop-blur-xl bg-slate-950/85 border-r border-slate-800/80 flex flex-col justify-between p-4 shadow-2xl shadow-cyan-950/20">
@@ -61,6 +96,7 @@ export default function Sidebar() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
+            const badgeCount = getBadgeCount(item.href);
 
             return (
               <Link
@@ -78,9 +114,9 @@ export default function Sidebar() {
                   }`} />
                   <span>{item.name}</span>
                 </div>
-                {item.badge ? (
+                {badgeCount > 0 ? (
                   <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/30">
-                    {item.badge}
+                    {badgeCount}
                   </span>
                 ) : isActive ? (
                   <ChevronRight className="w-4 h-4 text-[#00BCE1]" />

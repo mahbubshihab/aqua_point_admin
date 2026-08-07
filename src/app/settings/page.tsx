@@ -7,7 +7,6 @@ import {
   ShieldCheck, 
   Bell, 
   Sliders, 
-  Sparkles, 
   Check, 
   Save,
   Key,
@@ -31,10 +30,10 @@ export default function SettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            System & Media Configuration <Sparkles className="w-5 h-5 text-cyan-400" />
+            System & Media Configuration
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Manage Cloudinary upload presets, sensor alerts, and administrative security options.
+            System configuration and settings.
           </p>
         </div>
 

@@ -89,7 +89,7 @@ export default function InquiriesPage() {
             Customer Inquiries
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Manage customer inquiries and feedback.
+            Real-time messages submitted by visitors via website contact form.
           </p>
         </div>
 

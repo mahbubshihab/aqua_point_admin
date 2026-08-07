@@ -95,7 +95,7 @@ export default function ServiceRequestsPage() {
             Service Request Queue
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Manage customer service requests.
+            Real-time customer service dispatch queue and technician dispatch management.
           </p>
         </div>
 
