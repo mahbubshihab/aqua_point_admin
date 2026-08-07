@@ -11,11 +11,8 @@ import {
   Activity, 
   CheckCircle2, 
   Clock, 
-  AlertTriangle,
   Zap,
-  Filter,
-  Eye,
-  Sparkles
+  Eye
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -110,10 +107,10 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            System Dashboard <Sparkles className="w-5 h-5 text-cyan-400" />
+            Dashboard
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time analytics, water purity telemetry & service request monitoring.
+            System Overview
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -166,10 +163,10 @@ export default function DashboardPage() {
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 
-        {/* Connected Products */}
+        {/* Products Catalog */}
         <div className="glass-panel glass-card-hover rounded-2xl p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Connected Products</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Products Catalog</span>
             <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
               <Droplets className="w-5 h-5" />
             </div>
@@ -193,7 +190,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="mt-4">
-            <h3 className="text-2xl font-extrabold text-white tracking-tight">$142,850</h3>
+            <h3 className="text-2xl font-extrabold text-white tracking-tight">৳142,850</h3>
             <div className="flex items-center gap-1.5 mt-2 text-xs text-emerald-400 font-medium">
               <ArrowUpRight className="w-3.5 h-3.5" />
               <span>+18.4% growth rate</span>
@@ -212,7 +209,7 @@ export default function DashboardPage() {
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <Activity className="w-4 h-4 text-cyan-400" /> Hydration & Purity Telemetry
               </h2>
-              <p className="text-xs text-slate-400">Real-time TDS monitoring across active units</p>
+              <p className="text-xs text-slate-400">Water Quality</p>
             </div>
             <span className="px-3 py-1 text-xs font-semibold rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
               Optimal Grade A
@@ -263,7 +260,7 @@ export default function DashboardPage() {
             <h2 className="text-base font-bold text-white flex items-center gap-2 mb-1">
               <Zap className="w-4 h-4 text-cyan-400" /> Network Purity Fleet
             </h2>
-            <p className="text-xs text-slate-400 mb-4">IoT Cloud Gateway status</p>
+            <p className="text-xs text-slate-400 mb-4">Unit Fleet Status</p>
             
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-white/10">
