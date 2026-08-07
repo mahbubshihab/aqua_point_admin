@@ -4,6 +4,7 @@ import {
   getFirestore,
   collection,
   doc,
+  setDoc,
   addDoc,
   updateDoc,
   deleteDoc,
@@ -38,8 +39,19 @@ export const CATEGORIES_COLLECTION = 'categories';
 export const SERVICES_COLLECTION = 'services';
 export const ORDERS_COLLECTION = 'orders';
 export const INQUIRIES_COLLECTION = 'inquiries';
+export const REVIEWS_COLLECTION = 'reviews';
+export const COMPANY_INFO_COLLECTION = 'company_info';
+export const CLIENTS_COLLECTION = 'clients';
+
 
 // Data Interfaces
+export interface ClientDoc {
+  id: string;
+  name: string;
+  industry?: string;
+  logoUrl: string;
+  createdAt?: any;
+}
 export interface ProductDoc {
   id: string;
   name: string;
@@ -116,6 +128,17 @@ export interface InquiryDoc {
   status?: 'New' | 'In Progress' | 'Resolved';
   createdAt?: any;
 }
+
+export interface ReviewDoc {
+  id: string;
+  customerName: string;
+  location: string;
+  rating: number;
+  comment: string;
+  isApproved: boolean;
+  createdAt?: any;
+}
+
 
 // -------------------------------------------------------------
 // Real-time Firestore Subscriptions & Operations
@@ -363,5 +386,176 @@ export async function updateInquiryStatusInFirestore(id: string, status: Inquiry
 
 export async function deleteInquiryFromFirestore(id: string) {
   const docRef = doc(db, INQUIRIES_COLLECTION, id);
+  return await deleteDoc(docRef);
+}
+
+// REVIEWS
+export function subscribeToReviews(callback: (reviews: ReviewDoc[]) => void) {
+  const q = query(collection(db, REVIEWS_COLLECTION), orderBy('createdAt', 'desc'));
+  return onSnapshot(q, (snapshot) => {
+    const list: ReviewDoc[] = snapshot.docs.map((docSnap) => {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        customerName: data.customerName || data.name || 'Anonymous Customer',
+        location: data.location || 'Dhaka',
+        rating: Number(data.rating) || 5,
+        comment: data.comment || '',
+        isApproved: data.isApproved !== undefined ? Boolean(data.isApproved) : true,
+        createdAt: data.createdAt,
+      };
+    });
+    callback(list);
+  }, (error) => {
+    console.error('Error fetching reviews snapshot:', error);
+    const fallbackQ = collection(db, REVIEWS_COLLECTION);
+    onSnapshot(fallbackQ, (snapshot) => {
+      const list: ReviewDoc[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          customerName: data.customerName || data.name || 'Anonymous Customer',
+          location: data.location || 'Dhaka',
+          rating: Number(data.rating) || 5,
+          comment: data.comment || '',
+          isApproved: data.isApproved !== undefined ? Boolean(data.isApproved) : true,
+          createdAt: data.createdAt,
+        };
+      });
+      callback(list);
+    });
+  });
+}
+
+export async function addReviewToFirestore(data: Omit<ReviewDoc, 'id'>) {
+  return await addDoc(collection(db, REVIEWS_COLLECTION), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateReviewInFirestore(id: string, data: Partial<ReviewDoc>) {
+  const docRef = doc(db, REVIEWS_COLLECTION, id);
+  return await updateDoc(docRef, data);
+}
+
+export async function deleteReviewFromFirestore(id: string) {
+  const docRef = doc(db, REVIEWS_COLLECTION, id);
+  return await deleteDoc(docRef);
+}
+
+// COMPANY INFO & SOCIAL MEDIA
+export interface CompanySettingsDoc {
+  phone1: string;
+  phone2: string;
+  whatsapp: string;
+  email: string;
+  address: string;
+  googleMapsUrl: string;
+  facebookUrl: string;
+  whatsappLink: string;
+  youtubeUrl: string;
+  instagramUrl: string;
+  linkedinUrl: string;
+  updatedAt?: any;
+}
+
+export const DEFAULT_COMPANY_SETTINGS: CompanySettingsDoc = {
+  phone1: '01780-885841',
+  phone2: '09613 700 750',
+  whatsapp: '+8801780885841',
+  email: 'aquabd112@gmail.com',
+  address: 'House 72, Janata Housing Road, 3 Ring Road, Dhaka 1219',
+  googleMapsUrl: 'https://maps.google.com/?q=House+72,+Janata+Housing+Road,+3+Ring+Road,+Dhaka+1219',
+  facebookUrl: 'https://facebook.com/aquapointbd',
+  whatsappLink: 'https://wa.me/8801780885841',
+  youtubeUrl: 'https://youtube.com/@aquapointbd',
+  instagramUrl: 'https://instagram.com/aquapointbd',
+  linkedinUrl: 'https://linkedin.com/company/aquapointbd',
+};
+
+export function subscribeToCompanyInfo(callback: (info: CompanySettingsDoc) => void) {
+  const docRef = doc(db, COMPANY_INFO_COLLECTION, 'main');
+  return onSnapshot(docRef, (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      callback({
+        phone1: data.phone1 ?? DEFAULT_COMPANY_SETTINGS.phone1,
+        phone2: data.phone2 ?? DEFAULT_COMPANY_SETTINGS.phone2,
+        whatsapp: data.whatsapp ?? DEFAULT_COMPANY_SETTINGS.whatsapp,
+        email: data.email ?? DEFAULT_COMPANY_SETTINGS.email,
+        address: data.address ?? DEFAULT_COMPANY_SETTINGS.address,
+        googleMapsUrl: data.googleMapsUrl ?? DEFAULT_COMPANY_SETTINGS.googleMapsUrl,
+        facebookUrl: data.facebookUrl ?? DEFAULT_COMPANY_SETTINGS.facebookUrl,
+        whatsappLink: data.whatsappLink ?? DEFAULT_COMPANY_SETTINGS.whatsappLink,
+        youtubeUrl: data.youtubeUrl ?? DEFAULT_COMPANY_SETTINGS.youtubeUrl,
+        instagramUrl: data.instagramUrl ?? DEFAULT_COMPANY_SETTINGS.instagramUrl,
+        linkedinUrl: data.linkedinUrl ?? DEFAULT_COMPANY_SETTINGS.linkedinUrl,
+      });
+    } else {
+      callback(DEFAULT_COMPANY_SETTINGS);
+    }
+  }, (error) => {
+    console.error('Error fetching company info snapshot:', error);
+    callback(DEFAULT_COMPANY_SETTINGS);
+  });
+}
+
+export async function saveCompanyInfoToFirestore(data: Partial<CompanySettingsDoc>) {
+  const docRef = doc(db, COMPANY_INFO_COLLECTION, 'main');
+  return await setDoc(docRef, {
+    ...data,
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
+}
+
+// CORPORATE CLIENTS
+export function subscribeToClients(callback: (clients: ClientDoc[]) => void) {
+  const q = query(collection(db, CLIENTS_COLLECTION), orderBy('createdAt', 'desc'));
+  return onSnapshot(q, (snapshot) => {
+    const list: ClientDoc[] = snapshot.docs.map((docSnap) => {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        name: data.name || 'Unnamed Client',
+        industry: data.industry || 'Corporate',
+        logoUrl: data.logoUrl || data.imageUrl || '',
+        createdAt: data.createdAt,
+      };
+    });
+    callback(list);
+  }, (error) => {
+    console.error('Error fetching clients snapshot with orderBy, trying fallback:', error);
+    const fallbackQ = collection(db, CLIENTS_COLLECTION);
+    onSnapshot(fallbackQ, (snapshot) => {
+      const list: ClientDoc[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          name: data.name || 'Unnamed Client',
+          industry: data.industry || 'Corporate',
+          logoUrl: data.logoUrl || data.imageUrl || '',
+          createdAt: data.createdAt,
+        };
+      });
+      callback(list);
+    });
+  });
+}
+
+export async function addClientToFirestore(data: Omit<ClientDoc, 'id'>) {
+  return await addDoc(collection(db, CLIENTS_COLLECTION), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateClientInFirestore(id: string, data: Partial<ClientDoc>) {
+  const docRef = doc(db, CLIENTS_COLLECTION, id);
+  return await updateDoc(docRef, data);
+}
+
+export async function deleteClientFromFirestore(id: string) {
+  const docRef = doc(db, CLIENTS_COLLECTION, id);
   return await deleteDoc(docRef);
 }
