@@ -11,6 +11,7 @@ import {
   Building2,
   Wrench, 
   ShoppingBag,
+  Inbox,
   MessageSquare,
   MessageSquareQuote,
   Users, 
@@ -21,7 +22,8 @@ import {
 import { 
   subscribeToServiceRequests, 
   subscribeToOrders, 
-  subscribeToInquiries 
+  subscribeToInquiries,
+  subscribeToCustomerThreads
 } from '@/core/services/firebase';
 
 interface NavItem {
@@ -51,6 +53,7 @@ const navGroups: NavGroup[] = [
       { name: 'Clients', href: '/clients', icon: Building2 },
       { name: 'Service Requests', href: '/requests', icon: Wrench },
       { name: 'Orders', href: '/orders', icon: ShoppingBag },
+      { name: 'Inbox', href: '/messages', icon: Inbox },
       { name: 'Inquiries', href: '/inquiries', icon: MessageSquare },
       { name: 'Reviews', href: '/reviews', icon: MessageSquareQuote },
       { name: 'Customers', href: '/customers', icon: Users },
@@ -69,6 +72,7 @@ export default function Sidebar() {
   const [servicesCount, setServicesCount] = useState<number>(0);
   const [ordersCount, setOrdersCount] = useState<number>(0);
   const [inquiriesCount, setInquiriesCount] = useState<number>(0);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState<number>(0);
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -81,11 +85,16 @@ export default function Sidebar() {
     const unsubInquiries = subscribeToInquiries((data) => {
       setInquiriesCount(data.length);
     });
+    const unsubThreads = subscribeToCustomerThreads((data) => {
+      const totalUnread = data.reduce((acc, t) => acc + (t.unreadCount || 0), 0);
+      setUnreadMessagesCount(totalUnread);
+    });
 
     return () => {
       unsubServices();
       unsubOrders();
       unsubInquiries();
+      unsubThreads();
     };
   }, []);
 
@@ -93,8 +102,10 @@ export default function Sidebar() {
     if (href === '/requests') return servicesCount;
     if (href === '/orders') return ordersCount;
     if (href === '/inquiries') return inquiriesCount;
+    if (href === '/messages') return unreadMessagesCount;
     return 0;
   };
+
 
   return (
     <aside className={`fixed left-0 top-0 bottom-0 z-40 bg-[#1f2940] border-r border-[#2c3754] flex flex-col justify-between p-4 shadow-2xl transition-all duration-300 ${collapsed ? 'w-20' : 'w-64'}`}>

@@ -43,8 +43,29 @@ export const REVIEWS_COLLECTION = 'reviews';
 export const COMPANY_INFO_COLLECTION = 'company_info';
 export const CLIENTS_COLLECTION = 'clients';
 export const BANNERS_COLLECTION = 'banners';
+export const CUSTOMERS_COLLECTION = 'customers';
 
 // Data Interfaces
+export interface CustomerMessageDoc {
+  id: string;
+  text: string;
+  sender: 'customer' | 'user' | 'admin';
+  createdAt: any;
+  isRead?: boolean;
+}
+
+export interface CustomerThreadDoc {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  address?: string;
+  avatarUrl?: string;
+  lastMessage?: string;
+  lastMessageTime?: any;
+  unreadCount?: number;
+}
+
 export interface BannerDoc {
   id: string;
   title: string;
@@ -621,4 +642,97 @@ export async function deleteBannerFromFirestore(id: string) {
   const docRef = doc(db, BANNERS_COLLECTION, id);
   return await deleteDoc(docRef);
 }
+
+// CUSTOMER LIVE MESSAGING
+export function subscribeToCustomerThreads(callback: (threads: CustomerThreadDoc[]) => void) {
+  const q = collection(db, CUSTOMERS_COLLECTION);
+  return onSnapshot(q, (snapshot) => {
+    const list: CustomerThreadDoc[] = snapshot.docs.map((docSnap) => {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        name: data.name || data.customerName || 'Anonymous Customer',
+        phone: data.phone || 'N/A',
+        email: data.email || '',
+        address: data.address || '',
+        avatarUrl: data.avatarUrl || data.photoURL || '',
+        lastMessage: data.lastMessage || data.lastMessageText || '',
+        lastMessageTime: data.lastMessageTime || data.updatedAt || data.createdAt,
+        unreadCount: Number(data.unreadCount) || 0,
+      };
+    });
+    callback(list);
+  }, (error) => {
+    console.error('Error subscribing to customer threads:', error);
+  });
+}
+
+export function subscribeToCustomerMessages(customerId: string, callback: (messages: CustomerMessageDoc[]) => void) {
+  if (!customerId) return () => {};
+  const q = query(
+    collection(db, CUSTOMERS_COLLECTION, customerId, 'messages'),
+    orderBy('createdAt', 'asc')
+  );
+  return onSnapshot(q, (snapshot) => {
+    const list: CustomerMessageDoc[] = snapshot.docs.map((docSnap) => {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        text: data.text || data.message || data.content || '',
+        sender: data.sender || 'customer',
+        createdAt: data.createdAt,
+        isRead: data.isRead !== undefined ? Boolean(data.isRead) : true,
+      };
+    });
+    callback(list);
+  }, (error) => {
+    console.error('Fallback subscribing to customer messages without orderBy:', error);
+    const fallbackQ = collection(db, CUSTOMERS_COLLECTION, customerId, 'messages');
+    return onSnapshot(fallbackQ, (snapshot) => {
+      const list: CustomerMessageDoc[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          text: data.text || data.message || data.content || '',
+          sender: data.sender || 'customer',
+          createdAt: data.createdAt,
+          isRead: data.isRead !== undefined ? Boolean(data.isRead) : true,
+        };
+      });
+      list.sort((a, b) => {
+        const timeA = a.createdAt?.seconds || 0;
+        const timeB = b.createdAt?.seconds || 0;
+        return timeA - timeB;
+      });
+      callback(list);
+    });
+  });
+}
+
+export async function sendAdminReply(customerId: string, text: string) {
+  if (!customerId || !text.trim()) return;
+  const msgRef = collection(db, CUSTOMERS_COLLECTION, customerId, 'messages');
+  await addDoc(msgRef, {
+    text: text.trim(),
+    sender: 'admin',
+    createdAt: serverTimestamp(),
+    isRead: true,
+  });
+
+  const custRef = doc(db, CUSTOMERS_COLLECTION, customerId);
+  await setDoc(custRef, {
+    lastMessage: text.trim(),
+    lastMessageTime: serverTimestamp(),
+    unreadCount: 0,
+  }, { merge: true });
+}
+
+export async function markThreadAsRead(customerId: string) {
+  if (!customerId) return;
+  const custRef = doc(db, CUSTOMERS_COLLECTION, customerId);
+  await setDoc(custRef, {
+    unreadCount: 0,
+  }, { merge: true });
+}
+
 
