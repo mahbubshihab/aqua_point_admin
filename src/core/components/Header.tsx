@@ -1,11 +1,8 @@
 'use client';
 
-import { Search, Moon, Bell, Settings, User } from 'lucide-react';
-import { useState } from 'react';
+import { Search, Bell, Settings, User } from 'lucide-react';
 
 export default function Header() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
   return (
     <header className="sticky top-0 z-30 h-16 bg-[#1f2940] border-b border-[#141b2d] px-6 flex items-center justify-between shadow-lg">
       {/* Left: Compact Search Bar */}
@@ -22,14 +19,6 @@ export default function Header() {
 
       {/* Right: Minimal action icons */}
       <div className="flex items-center gap-3">
-        {/* Dark Mode Toggle 🌙 */}
-        <button
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className="p-2.5 rounded-xl bg-[#141b2d] border border-slate-700/60 hover:border-[#4cceac]/50 text-[#A0AEC0] hover:text-white transition-all cursor-pointer shadow-sm"
-          title="Toggle Theme"
-        >
-          <Moon className="w-4 h-4 text-[#4cceac]" />
-        </button>
 
         {/* Notifications Bell 🔔 */}
         <button 
