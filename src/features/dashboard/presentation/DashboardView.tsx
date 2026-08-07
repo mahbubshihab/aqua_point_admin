@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Users, 
   Wrench, 
@@ -13,9 +13,12 @@ import {
   Zap,
   Eye,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import { db, updateServiceRequestStatusInFirestore } from '@/core/services/firebase';
+import { collection, onSnapshot } from 'firebase/firestore';
 
 interface ServiceRequest {
   id: string;
@@ -85,17 +88,168 @@ export default function DashboardView() {
   const [requests, setRequests] = useState<ServiceRequest[]>(initialRequests);
   const [statusFilter, setStatusFilter] = useState<string>('All');
 
-  const toggleStatus = (id: string) => {
-    setRequests(prev =>
-      prev.map(req => {
-        if (req.id === id) {
-          const nextStatus: ServiceRequest['status'] =
-            req.status === 'Pending' ? 'In Progress' : req.status === 'In Progress' ? 'Completed' : 'Pending';
-          return { ...req, status: nextStatus };
-        }
-        return req;
-      })
+  // Real-time Firestore Metric States
+  const [customersCount, setCustomersCount] = useState<number>(0);
+  const [activeRequestsCount, setActiveRequestsCount] = useState<number>(0);
+  const [urgentRequestsCount, setUrgentRequestsCount] = useState<number>(0);
+  const [productsCount, setProductsCount] = useState<number>(0);
+  const [categoriesCount, setCategoriesCount] = useState<number>(0);
+  const [totalRevenue, setTotalRevenue] = useState<number>(0);
+
+  const [loading, setLoading] = useState({
+    customers: true,
+    requests: true,
+    products: true,
+    categories: true,
+    revenue: true,
+  });
+
+  // 1. TOTAL CUSTOMERS (collection: 'customers')
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, 'customers'),
+      (snapshot) => {
+        setCustomersCount(snapshot.docs.length);
+        setLoading((prev) => ({ ...prev, customers: false }));
+      },
+      (error) => {
+        console.error('Error in customers snapshot:', error);
+        setLoading((prev) => ({ ...prev, customers: false }));
+      }
     );
+    return () => unsub();
+  }, []);
+
+  // 2. ACTIVE REQUESTS & Service Table (collection: 'services')
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, 'services'),
+      (snapshot) => {
+        let activeCount = 0;
+        let urgentCount = 0;
+
+        const fetchedRequests: ServiceRequest[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          const rawStatus = (data.status || 'Pending').toString();
+          let normStatus: ServiceRequest['status'] = 'Pending';
+          const upper = rawStatus.toUpperCase();
+          if (upper === 'PENDING') normStatus = 'Pending';
+          else if (upper === 'IN PROGRESS' || upper === 'IN_PROGRESS' || upper === 'CONFIRMED') normStatus = 'In Progress';
+          else if (upper === 'COMPLETED') normStatus = 'Completed';
+
+          const priority: ServiceRequest['priority'] =
+            data.priority === 'Urgent' || data.priority === 'High' ? 'Urgent' : 'Normal';
+
+          if (normStatus === 'Pending' || normStatus === 'In Progress') {
+            activeCount++;
+            if (priority === 'Urgent') {
+              urgentCount++;
+            }
+          }
+
+          return {
+            id: docSnap.id,
+            customerName: data.customerName || data.name || 'Anonymous Customer',
+            phone: data.phone || 'N/A',
+            model: data.machineModel || data.model || 'RO Pure System',
+            appointmentDate: data.appointmentDate || data.preferredDate || new Date().toISOString().split('T')[0],
+            problem: data.problemDetails || data.problem || 'General Servicing',
+            status: normStatus,
+            priority: priority,
+          };
+        });
+
+        setActiveRequestsCount(activeCount);
+        setUrgentRequestsCount(urgentCount);
+        if (snapshot.docs.length > 0) {
+          setRequests(fetchedRequests);
+        } else {
+          setRequests([]);
+        }
+        setLoading((prev) => ({ ...prev, requests: false }));
+      },
+      (error) => {
+        console.error('Error in services snapshot:', error);
+        setLoading((prev) => ({ ...prev, requests: false }));
+      }
+    );
+    return () => unsub();
+  }, []);
+
+  // 3. PRODUCTS CATALOG (collection: 'products')
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, 'products'),
+      (snapshot) => {
+        setProductsCount(snapshot.docs.length);
+        setLoading((prev) => ({ ...prev, products: false }));
+      },
+      (error) => {
+        console.error('Error in products snapshot:', error);
+        setLoading((prev) => ({ ...prev, products: false }));
+      }
+    );
+    return () => unsub();
+  }, []);
+
+  // 4. LIVE CATEGORIES COUNT (collection: 'categories')
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, 'categories'),
+      (snapshot) => {
+        setCategoriesCount(snapshot.docs.length);
+        setLoading((prev) => ({ ...prev, categories: false }));
+      },
+      (error) => {
+        console.error('Error in categories snapshot:', error);
+        setLoading((prev) => ({ ...prev, categories: false }));
+      }
+    );
+    return () => unsub();
+  }, []);
+
+  // 5. TOTAL REVENUE (collection: 'orders')
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, 'orders'),
+      (snapshot) => {
+        let rev = 0;
+        snapshot.docs.forEach((docSnap) => {
+          const data = docSnap.data();
+          const st = (data.status || '').toString().toLowerCase();
+          const paySt = (data.paymentStatus || '').toString().toLowerCase();
+          if (st === 'completed' || st === 'delivered' || paySt === 'paid') {
+            rev += Number(data.totalAmount || data.amount || data.total || 0);
+          }
+        });
+        setTotalRevenue(rev);
+        setLoading((prev) => ({ ...prev, revenue: false }));
+      },
+      (error) => {
+        console.error('Error in orders snapshot:', error);
+        setLoading((prev) => ({ ...prev, revenue: false }));
+      }
+    );
+    return () => unsub();
+  }, []);
+
+  const toggleStatus = async (id: string) => {
+    const target = requests.find(req => req.id === id);
+    if (!target) return;
+
+    const nextStatus: ServiceRequest['status'] =
+      target.status === 'Pending' ? 'In Progress' : target.status === 'In Progress' ? 'Completed' : 'Pending';
+
+    // Optimistically update local state
+    setRequests(prev =>
+      prev.map(req => (req.id === id ? { ...req, status: nextStatus } : req))
+    );
+
+    try {
+      await updateServiceRequestStatusInFirestore(id, nextStatus);
+    } catch (err) {
+      console.warn('Could not sync status update to Firestore:', err);
+    }
   };
 
   const filteredRequests = requests.filter(req => 
@@ -122,7 +276,7 @@ export default function DashboardView() {
             href="/requests"
             className="px-4.5 py-2.5 text-xs font-bold rounded-2xl bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_20px_rgba(0,188,225,0.15)] hover:bg-[#00BCE1]/25 hover:border-[#00BCE1]/70 hover:scale-[1.02] transition-all duration-300 flex items-center gap-2"
           >
-            <Wrench className="w-4 h-4 text-[#00BCE1]" /> View Queue ({requests.filter(r => r.status !== 'Completed').length})
+            <Wrench className="w-4 h-4 text-[#00BCE1]" /> View Queue ({loading.requests ? '...' : activeRequestsCount})
           </Link>
         </div>
       </div>
@@ -138,13 +292,24 @@ export default function DashboardView() {
             </div>
           </div>
           <div className="mt-4">
-            <h3 className="text-2xl font-extrabold text-white tracking-tight">1,428</h3>
-            <span className="text-[11px] text-emerald-400 font-semibold mt-1 inline-block">↑ 12% this month</span>
+            {loading.customers ? (
+              <div className="flex items-center gap-2 my-1">
+                <Loader2 className="w-5 h-5 animate-spin text-[#00BCE1]" />
+                <span className="text-sm font-semibold text-slate-400 animate-pulse">Syncing...</span>
+              </div>
+            ) : (
+              <h3 className="text-2xl font-extrabold text-white tracking-tight">
+                {customersCount.toLocaleString()}
+              </h3>
+            )}
+            <span className="text-[11px] text-emerald-400 font-semibold mt-1 inline-block">
+              {customersCount === 0 ? '0 registered customers' : '↑ Live from Firestore'}
+            </span>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 
-        {/* Card 2: Service Requests */}
+        {/* Card 2: Active Requests */}
         <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between hover:border-amber-500/40 hover:-translate-y-1 transition-all duration-300 shadow-xl shadow-cyan-950/10 group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Active Requests</span>
@@ -153,10 +318,19 @@ export default function DashboardView() {
             </div>
           </div>
           <div className="mt-4">
-            <h3 className="text-2xl font-extrabold text-white tracking-tight">
-              {requests.filter(r => r.status !== 'Completed').length}
-            </h3>
-            <span className="text-[11px] text-amber-300 font-semibold mt-1 inline-block">2 Urgent Priority</span>
+            {loading.requests ? (
+              <div className="flex items-center gap-2 my-1">
+                <Loader2 className="w-5 h-5 animate-spin text-amber-400" />
+                <span className="text-sm font-semibold text-slate-400 animate-pulse">Syncing...</span>
+              </div>
+            ) : (
+              <h3 className="text-2xl font-extrabold text-white tracking-tight">
+                {activeRequestsCount.toLocaleString()}
+              </h3>
+            )}
+            <span className="text-[11px] text-amber-300 font-semibold mt-1 inline-block">
+              {urgentRequestsCount > 0 ? `${urgentRequestsCount} Urgent Priority` : '0 Urgent Priority'}
+            </span>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
         </div>
@@ -170,8 +344,19 @@ export default function DashboardView() {
             </div>
           </div>
           <div className="mt-4">
-            <h3 className="text-2xl font-extrabold text-white tracking-tight">3,892</h3>
-            <span className="text-[11px] text-blue-300 font-semibold mt-1 inline-block">6 Categories Live</span>
+            {loading.products ? (
+              <div className="flex items-center gap-2 my-1">
+                <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
+                <span className="text-sm font-semibold text-slate-400 animate-pulse">Syncing...</span>
+              </div>
+            ) : (
+              <h3 className="text-2xl font-extrabold text-white tracking-tight">
+                {productsCount.toLocaleString()}
+              </h3>
+            )}
+            <span className="text-[11px] text-blue-300 font-semibold mt-1 inline-block">
+              {loading.categories ? '...' : `${categoriesCount} Categories Live`}
+            </span>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
         </div>
@@ -185,8 +370,19 @@ export default function DashboardView() {
             </div>
           </div>
           <div className="mt-4">
-            <h3 className="text-2xl font-extrabold text-white tracking-tight">৳142,850</h3>
-            <span className="text-[11px] text-emerald-400 font-semibold mt-1 inline-block">↑ 18.5% growth</span>
+            {loading.revenue ? (
+              <div className="flex items-center gap-2 my-1">
+                <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
+                <span className="text-sm font-semibold text-slate-400 animate-pulse">Syncing...</span>
+              </div>
+            ) : (
+              <h3 className="text-2xl font-extrabold text-white tracking-tight">
+                ৳{totalRevenue.toLocaleString()}
+              </h3>
+            )}
+            <span className="text-[11px] text-emerald-400 font-semibold mt-1 inline-block">
+              Completed orders total
+            </span>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
         </div>
@@ -256,7 +452,7 @@ export default function DashboardView() {
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#10B981]" />
                   <span className="text-xs font-semibold text-slate-200">Active RO Units</span>
                 </div>
-                <span className="text-xs font-bold text-white">3,710</span>
+                <span className="text-xs font-bold text-white">{productsCount > 0 ? productsCount : 3710}</span>
               </div>
 
               <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
