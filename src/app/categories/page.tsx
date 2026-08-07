@@ -10,14 +10,12 @@ import {
   List, 
   AlertCircle, 
   X, 
-  Sparkles,
   Edit2,
   Trash2,
   Loader2,
   CheckCircle2,
   Package,
-  ArrowUpRight,
-  RefreshCw
+  ArrowUpRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { uploadToCloudinary } from '@/lib/cloudinary';
@@ -30,45 +28,6 @@ import {
   CategoryDoc,
   ProductDoc 
 } from '@/lib/firebase';
-
-const CORE_CATEGORIES = [
-  {
-    name: 'RO Purifiers',
-    slug: 'ro-purifiers',
-    description: 'Advanced Reverse Osmosis multi-stage purification systems for homes & offices.',
-    imageUrl: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop'
-  },
-  {
-    name: 'Cabinet Purifiers',
-    slug: 'cabinet-purifiers',
-    description: 'Sleek wall-mounted and tabletop cabinet water purifiers with high storage.',
-    imageUrl: 'https://images.unsplash.com/photo-1527264935190-1401c51b5bab?q=80&w=800&auto=format&fit=crop'
-  },
-  {
-    name: 'Water Dispensers',
-    slug: 'water-dispensers',
-    description: 'Hot, Cold, and Normal temperature dispenser units with built-in filtration.',
-    imageUrl: 'https://images.unsplash.com/photo-1585837575652-267c041d77d4?q=80&w=800&auto=format&fit=crop'
-  },
-  {
-    name: 'Filters & Cartridges',
-    slug: 'filters-cartridges',
-    description: 'Sediment filters, Carbon block, RO membranes, UV lamps, and Mineral cartridges.',
-    imageUrl: 'https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?q=80&w=800&auto=format&fit=crop'
-  },
-  {
-    name: 'Spare Parts',
-    slug: 'spare-parts',
-    description: 'Booster pumps, adapters, solenoid valves, connectors, and replacement fittings.',
-    imageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=800&auto=format&fit=crop'
-  },
-  {
-    name: 'Industrial RO Plants',
-    slug: 'industrial-ro-plants',
-    description: 'High capacity commercial & industrial reverse osmosis water treatment plants.',
-    imageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800&auto=format&fit=crop'
-  }
-];
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<CategoryDoc[]>([]);
@@ -84,7 +43,6 @@ export default function CategoriesPage() {
   // Delete Modal State
   const [deletingCategory, setDeletingCategory] = useState<CategoryDoc | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isSeeding, setIsSeeding] = useState(false);
 
   // Form State
   const [name, setName] = useState('');
@@ -218,30 +176,6 @@ export default function CategoriesPage() {
     }
   };
 
-  const handleSeedCoreCategories = async () => {
-    setIsSeeding(true);
-    try {
-      for (const coreCat of CORE_CATEGORIES) {
-        const exists = categories.some(c => c.name.toLowerCase() === coreCat.name.toLowerCase());
-        if (!exists) {
-          await addCategoryToFirestore({
-            name: coreCat.name,
-            slug: coreCat.slug,
-            description: coreCat.description,
-            imageUrl: coreCat.imageUrl,
-            productCount: products.filter(p => p.category === coreCat.name).length
-          });
-        }
-      }
-      setSuccessMessage('Core categories seeded to Cloud Firestore successfully!');
-      setTimeout(() => setSuccessMessage(''), 3500);
-    } catch (err: any) {
-      console.error('Error seeding categories:', err);
-      alert(`Error seeding categories: ${err.message}`);
-    } finally {
-      setIsSeeding(false);
-    }
-  };
 
   const filteredCategories = categories.filter(c => 
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -271,15 +205,6 @@ export default function CategoriesPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleSeedCoreCategories}
-            disabled={isSeeding}
-            className="px-3.5 py-2.5 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-400/30 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
-            title="Populate 6 Core AQUA POINT Categories"
-          >
-            {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-            Seed Core Categories
-          </button>
           <button
             onClick={openAddModal}
             className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
@@ -346,21 +271,14 @@ export default function CategoriesPage() {
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
             {searchTerm
               ? 'No categories match your search term.'
-              : 'You have no custom categories yet. Click "Seed Core Categories" to load the 6 default categories instantly!'}
+              : 'There are currently no categories in your catalog.'}
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             <button
-              onClick={handleSeedCoreCategories}
-              disabled={isSeeding}
-              className="px-4 py-2 text-xs font-semibold rounded-xl bg-cyan-500 text-slate-950 hover:bg-cyan-400 cursor-pointer font-bold shadow-[0_0_15px_rgba(0,229,255,0.3)]"
-            >
-              Seed 6 Core Categories
-            </button>
-            <button
               onClick={openAddModal}
-              className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-white/10 cursor-pointer"
+              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
             >
-              Add Custom Category
+              <Plus className="w-4 h-4 stroke-[3]" /> Add Category
             </button>
           </div>
         </div>
