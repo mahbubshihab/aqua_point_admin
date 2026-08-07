@@ -267,23 +267,12 @@ export default function ProductsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleSeedProducts}
-            disabled={isSeeding}
-            className="px-3.5 py-2.5 text-xs font-bold rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-400/30 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
-            title="Seed 19 Authentic Aqua Point Products into Firestore"
-          >
-            {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-            Seed 19 Products
-          </button>
-          <button
-            onClick={openAddModal}
-            className="px-4 py-2.5 text-xs rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
-          >
-            <Plus className="w-4 h-4 stroke-[3]" /> Add New Product
-          </button>
-        </div>
+        <button
+          onClick={openAddModal}
+          className="px-4 py-2.5 text-xs rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
+        >
+          <Plus className="w-4 h-4 stroke-[3]" /> Add New Product
+        </button>
       </div>
 
       {/* Control Bar: Search Input + Stock Filter Dropdown + Grid/Table View Toggles */}
