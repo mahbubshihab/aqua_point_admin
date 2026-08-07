@@ -125,9 +125,9 @@ export default function MessagesView() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Subscribe to Customer Threads
+  // Subscribe to Customer Threads with limit(15)
   useEffect(() => {
-    const unsub = subscribeToCustomerThreads((firestoreThreads) => {
+    const unsub = subscribeToCustomerThreads(15, (firestoreThreads) => {
       if (firestoreThreads && firestoreThreads.length > 0) {
         setThreads(firestoreThreads);
         if (!selectedCustomerId || !firestoreThreads.some(t => t.id === selectedCustomerId)) {
@@ -141,13 +141,13 @@ export default function MessagesView() {
     return () => unsub();
   }, [selectedCustomerId]);
 
-  // Subscribe to Selected Customer's Messages
+  // Subscribe to Selected Customer's Messages with limit(20)
   useEffect(() => {
     if (!selectedCustomerId) return;
 
     markThreadAsRead(selectedCustomerId).catch(console.error);
 
-    const unsub = subscribeToCustomerMessages(selectedCustomerId, (firestoreMsgs) => {
+    const unsub = subscribeToCustomerMessages(selectedCustomerId, 20, (firestoreMsgs) => {
       if (firestoreMsgs && firestoreMsgs.length > 0) {
         setMessages(firestoreMsgs);
       } else {
@@ -165,10 +165,7 @@ export default function MessagesView() {
 
   const activeCustomer = threads.find(t => t.id === selectedCustomerId) || threads[0] || INITIAL_DEMO_THREADS[0];
 
-  const filteredThreads = threads.filter(t => 
-    t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.phone.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredThreads = threads;
 
   const totalUnread = threads.reduce((acc, t) => acc + (t.unreadCount || 0), 0);
 

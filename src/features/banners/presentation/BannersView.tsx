@@ -59,10 +59,10 @@ export default function BannersView() {
   const [formError, setFormError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
 
-  // Real-time Firestore Sync
+  // Real-time Firestore Sync with limit(15)
   useEffect(() => {
     setLoading(true);
-    const unsub = subscribeToBanners((data) => {
+    const unsub = subscribeToBanners(15, (data) => {
       setBanners(data);
       setLoading(false);
     });
@@ -112,16 +112,11 @@ export default function BannersView() {
       return;
     }
 
-    if (!selectedFile && !existingImageUrl) {
-      setFormError('Please select or upload a banner image.');
-      return;
-    }
-
     setIsSaving(true);
     setFormError('');
 
     try {
-      let finalImageUrl = existingImageUrl;
+      let finalImageUrl = existingImageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop';
 
       if (selectedFile) {
         // Upload to folder 'banners/' on Cloudinary
@@ -141,7 +136,7 @@ export default function BannersView() {
         setSuccessMessage(`Banner "${title}" updated successfully!`);
       } else {
         await addBannerToFirestore(payload);
-        setSuccessMessage(`Banner "${title}" added to Cloud Firestore!`);
+        setSuccessMessage(`Banner "${title}" created in Cloud Firestore!`);
       }
 
       setTimeout(() => setSuccessMessage(''), 3500);
@@ -184,18 +179,7 @@ export default function BannersView() {
 
   const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Inactive'>('All');
 
-  const filteredBanners = banners.filter(b => {
-    const matchesSearch =
-      b.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (b.tag && b.tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (b.ctaLink && b.ctaLink.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    let matchesStatus = true;
-    if (statusFilter === 'Active') matchesStatus = b.isActive;
-    if (statusFilter === 'Inactive') matchesStatus = !b.isActive;
-
-    return matchesSearch && matchesStatus;
-  });
+  const filteredBanners = banners;
 
   return (
     <div className="space-y-8 pb-12">

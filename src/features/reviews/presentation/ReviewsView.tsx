@@ -57,12 +57,13 @@ export default function ReviewsView() {
   // Firestore Realtime Subscription
   useEffect(() => {
     setLoading(true);
-    const unsub = subscribeToReviews((data) => {
+    const approvedParam = filterApproved === 'approved' ? true : filterApproved === 'pending' ? false : 'all';
+    const unsub = subscribeToReviews(approvedParam, 15, (data) => {
       setReviews(data);
       setLoading(false);
     });
     return () => unsub();
-  }, []);
+  }, [filterApproved]);
 
   const openAddModal = () => {
     setEditingReviewId(null);
@@ -155,21 +156,7 @@ export default function ReviewsView() {
 
   const [ratingFilter, setRatingFilter] = useState<'All' | number>('All');
 
-  const filteredReviews = reviews.filter((rev) => {
-    const matchesSearch =
-      rev.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rev.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rev.comment.toLowerCase().includes(searchTerm.toLowerCase());
-
-    if (!matchesSearch) return false;
-
-    if (filterApproved === 'approved' && !rev.isApproved) return false;
-    if (filterApproved === 'pending' && rev.isApproved) return false;
-
-    if (ratingFilter !== 'All' && rev.rating !== ratingFilter) return false;
-
-    return true;
-  });
+  const filteredReviews = reviews;
 
   const totalReviews = reviews.length;
   const approvedCount = reviews.filter((r) => r.isApproved).length;

@@ -36,12 +36,12 @@ export default function ServiceRequestsView() {
 
   useEffect(() => {
     setLoading(true);
-    const unsubscribe = subscribeToServiceRequests((data) => {
+    const unsubscribe = subscribeToServiceRequests(activeStatus, 15, (data) => {
       setItems(data);
       setLoading(false);
     });
     return () => unsubscribe();
-  }, []);
+  }, [activeStatus]);
 
   const handleUpdateStatus = async (id: string, newStatus: ServiceRequestDoc['status']) => {
     try {
@@ -74,16 +74,7 @@ export default function ServiceRequestsView() {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [priorityFilter, setPriorityFilter] = useState<'All' | 'Urgent' | 'Normal'>('All');
 
-  const filteredItems = items.filter(item => {
-    const matchesStatus = activeStatus === 'All' ? true : item.status === activeStatus;
-    const matchesPriority = priorityFilter === 'All' ? true : item.priority === priorityFilter;
-    const matchesSearch =
-      item.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.machineModel.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.phone.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesPriority && matchesSearch;
-  });
+  const filteredItems = items;
 
   return (
     <div className="space-y-8 pb-12">

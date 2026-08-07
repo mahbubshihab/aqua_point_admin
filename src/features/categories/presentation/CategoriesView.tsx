@@ -58,14 +58,14 @@ export default function CategoriesView() {
   const [formError, setFormError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
 
-  // Real-time Firestore Sync
+  // Real-time Firestore Sync with limit(15)
   useEffect(() => {
     setLoading(true);
-    const unsubCat = subscribeToCategories((cats) => {
+    const unsubCat = subscribeToCategories(15, (cats) => {
       setCategories(cats);
       setLoading(false);
     });
-    const unsubProd = subscribeToProducts((prods) => {
+    const unsubProd = subscribeToProducts(15, (prods) => {
       setProducts(prods);
     });
 
@@ -179,19 +179,7 @@ export default function CategoriesView() {
 
   const [selectedFilter, setSelectedFilter] = useState('All');
 
-  const filteredCategories = categories.filter(c => {
-    const matchesSearch = 
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (c.description && c.description.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    const liveCount = products.filter(p => p.category.toLowerCase() === c.name.toLowerCase()).length;
-    let matchesFilter = true;
-    if (selectedFilter === 'WithProducts') matchesFilter = liveCount > 0;
-    if (selectedFilter === 'Empty') matchesFilter = liveCount === 0;
-
-    return matchesSearch && matchesFilter;
-  });
+  const filteredCategories = categories;
 
   return (
     <div className="space-y-8 pb-12">

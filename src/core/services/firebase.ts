@@ -11,6 +11,8 @@ import {
   onSnapshot,
   query,
   orderBy,
+  where,
+  limit,
   serverTimestamp,
   DocumentData,
   Timestamp
@@ -66,6 +68,29 @@ export interface CustomerThreadDoc {
   unreadCount?: number;
 }
 
+export interface CustomerDoc {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  joinedDate?: string;
+  rewardPoints: number;
+  referralCode: string;
+  activeDevices: number;
+  totalOrders: number;
+  createdAt?: any;
+}
+
+export interface CustomProductDoc {
+  id: string;
+  name: string;
+  model?: string;
+  price: number;
+  description?: string;
+  imageUrl?: string;
+  createdAt?: any;
+}
+
 export interface BannerDoc {
   id: string;
   title: string;
@@ -89,6 +114,7 @@ export interface ProductDoc {
   name: string;
   model?: string;
   category: string;
+  categoryId?: string;
   price: number;
   originalPrice?: number;
   description?: string;
@@ -172,37 +198,62 @@ export interface ReviewDoc {
 }
 
 // -------------------------------------------------------------
-// Real-time Firestore Subscriptions & Operations
+// Real-time Firestore Subscriptions & Server-Side Paginated Operations
 // -------------------------------------------------------------
 
+function parseParams<T>(
+  param1?: any,
+  param2?: any,
+  param3?: any
+): { filterVal?: any; limitCount: number; callback: (data: T[]) => void } {
+  let filterVal: any = undefined;
+  let limitCount = 15;
+  let callback: (data: T[]) => void = () => {};
+
+  if (typeof param1 === 'function') {
+    callback = param1;
+  } else if (typeof param1 === 'number') {
+    limitCount = param1;
+    if (typeof param2 === 'function') callback = param2;
+  } else {
+    filterVal = param1;
+    if (typeof param2 === 'function') {
+      callback = param2;
+    } else {
+      if (typeof param2 === 'number') limitCount = param2;
+      if (typeof param3 === 'function') callback = param3;
+    }
+  }
+
+  return { filterVal, limitCount, callback };
+}
+
 // PRODUCTS
-export function subscribeToProducts(callback: (products: ProductDoc[]) => void) {
-  const q = query(collection(db, PRODUCTS_COLLECTION), orderBy('createdAt', 'desc'));
-  return onSnapshot(q, (snapshot) => {
-    const list: ProductDoc[] = snapshot.docs.map((docSnap) => {
-      const data = docSnap.data();
-      return {
-        id: docSnap.id,
-        name: data.name || data.title || 'Unnamed Product',
-        model: data.model || '',
-        category: data.category || 'RO Purifiers',
-        price: Number(data.price) || 0,
-        originalPrice: data.originalPrice !== undefined && data.originalPrice !== null ? Number(data.originalPrice) : undefined,
-        description: data.description || '',
-        application: data.application || '',
-        warranty: data.warranty || '1 Year Standard Warranty',
-        stockStatus: data.stockStatus || 'In Stock',
-        featured: Boolean(data.featured),
-        filterHealth: Number(data.filterHealth) || 100,
-        imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop',
-        createdAt: data.createdAt,
-      };
-    });
-    callback(list);
-  }, (error) => {
-    console.error('Error fetching products snapshot:', error);
-    const fallbackQ = collection(db, PRODUCTS_COLLECTION);
-    onSnapshot(fallbackQ, (snapshot) => {
+export function subscribeToProducts(
+  categoryOrCb?: string | number | ((products: ProductDoc[]) => void),
+  limitOrCb?: number | ((products: ProductDoc[]) => void),
+  cbParam?: (products: ProductDoc[]) => void
+) {
+  const { filterVal: selectedCategory, limitCount, callback } = parseParams<ProductDoc>(categoryOrCb, limitOrCb, cbParam);
+
+  let q;
+  if (selectedCategory && selectedCategory !== 'All') {
+    q = query(
+      collection(db, PRODUCTS_COLLECTION),
+      where('categoryId', '==', selectedCategory),
+      limit(limitCount)
+    );
+  } else {
+    q = query(
+      collection(db, PRODUCTS_COLLECTION),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount)
+    );
+  }
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
       const list: ProductDoc[] = snapshot.docs.map((docSnap) => {
         const data = docSnap.data();
         return {
@@ -210,6 +261,7 @@ export function subscribeToProducts(callback: (products: ProductDoc[]) => void) 
           name: data.name || data.title || 'Unnamed Product',
           model: data.model || '',
           category: data.category || 'RO Purifiers',
+          categoryId: data.categoryId || data.category || '',
           price: Number(data.price) || 0,
           originalPrice: data.originalPrice !== undefined && data.originalPrice !== null ? Number(data.originalPrice) : undefined,
           description: data.description || '',
@@ -223,20 +275,54 @@ export function subscribeToProducts(callback: (products: ProductDoc[]) => void) 
         };
       });
       callback(list);
-    });
-  });
+    },
+    (error) => {
+      console.error('Error fetching products snapshot, fallback:', error);
+      const fallbackQ = selectedCategory && selectedCategory !== 'All'
+        ? query(collection(db, PRODUCTS_COLLECTION), where('category', '==', selectedCategory), limit(limitCount))
+        : query(collection(db, PRODUCTS_COLLECTION), limit(limitCount));
+      onSnapshot(fallbackQ, (snapshot) => {
+        const list: ProductDoc[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return {
+            id: docSnap.id,
+            name: data.name || data.title || 'Unnamed Product',
+            model: data.model || '',
+            category: data.category || 'RO Purifiers',
+            categoryId: data.categoryId || data.category || '',
+            price: Number(data.price) || 0,
+            originalPrice: data.originalPrice !== undefined && data.originalPrice !== null ? Number(data.originalPrice) : undefined,
+            description: data.description || '',
+            application: data.application || '',
+            warranty: data.warranty || '1 Year Standard Warranty',
+            stockStatus: data.stockStatus || 'In Stock',
+            featured: Boolean(data.featured),
+            filterHealth: Number(data.filterHealth) || 100,
+            imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop',
+            createdAt: data.createdAt,
+          };
+        });
+        callback(list);
+      });
+    }
+  );
 }
 
 export async function addProductToFirestore(data: Omit<ProductDoc, 'id'>) {
   return await addDoc(collection(db, PRODUCTS_COLLECTION), {
     ...data,
+    categoryId: data.categoryId || data.category,
     createdAt: serverTimestamp(),
   });
 }
 
 export async function updateProductInFirestore(id: string, data: Partial<ProductDoc>) {
   const docRef = doc(db, PRODUCTS_COLLECTION, id);
-  return await updateDoc(docRef, data);
+  const updateData: DocumentData = { ...data };
+  if (data.category && !data.categoryId) {
+    updateData.categoryId = data.category;
+  }
+  return await updateDoc(docRef, updateData);
 }
 
 export async function deleteProductFromFirestore(id: string) {
@@ -245,25 +331,58 @@ export async function deleteProductFromFirestore(id: string) {
 }
 
 // CATEGORIES
-export function subscribeToCategories(callback: (categories: CategoryDoc[]) => void) {
-  const q = collection(db, CATEGORIES_COLLECTION);
-  return onSnapshot(q, (snapshot) => {
-    const list: CategoryDoc[] = snapshot.docs.map((docSnap) => {
-      const data = docSnap.data();
-      return {
-        id: docSnap.id,
-        name: data.name || '',
-        slug: data.slug || '',
-        description: data.description || '',
-        imageUrl: data.imageUrl || '',
-        productCount: Number(data.productCount) || 0,
-        createdAt: data.createdAt,
-      };
-    });
-    callback(list);
-  }, (error) => {
-    console.error('Error fetching categories snapshot:', error);
-  });
+export function subscribeToCategories(
+  limitOrCb?: number | ((categories: CategoryDoc[]) => void),
+  cbParam?: (categories: CategoryDoc[]) => void
+) {
+  let limitCount = 15;
+  let callback: (categories: CategoryDoc[]) => void = () => {};
+
+  if (typeof limitOrCb === 'function') {
+    callback = limitOrCb;
+  } else {
+    if (typeof limitOrCb === 'number') limitCount = limitOrCb;
+    if (typeof cbParam === 'function') callback = cbParam;
+  }
+
+  const q = query(collection(db, CATEGORIES_COLLECTION), orderBy('createdAt', 'desc'), limit(limitCount));
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: CategoryDoc[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          name: data.name || '',
+          slug: data.slug || '',
+          description: data.description || '',
+          imageUrl: data.imageUrl || '',
+          productCount: Number(data.productCount) || 0,
+          createdAt: data.createdAt,
+        };
+      });
+      callback(list);
+    },
+    (error) => {
+      console.error('Error fetching categories snapshot, trying fallback:', error);
+      const fallbackQ = query(collection(db, CATEGORIES_COLLECTION), limit(limitCount));
+      onSnapshot(fallbackQ, (snapshot) => {
+        const list: CategoryDoc[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return {
+            id: docSnap.id,
+            name: data.name || '',
+            slug: data.slug || '',
+            description: data.description || '',
+            imageUrl: data.imageUrl || '',
+            productCount: Number(data.productCount) || 0,
+            createdAt: data.createdAt,
+          };
+        });
+        callback(list);
+      });
+    }
+  );
 }
 
 export async function addCategoryToFirestore(data: Omit<CategoryDoc, 'id'>) {
@@ -284,42 +403,89 @@ export async function deleteCategoryFromFirestore(id: string) {
 }
 
 // SERVICE REQUESTS
-export function subscribeToServiceRequests(callback: (requests: ServiceRequestDoc[]) => void) {
-  const q = collection(db, SERVICES_COLLECTION);
-  return onSnapshot(q, (snapshot) => {
-    const list: ServiceRequestDoc[] = snapshot.docs.map((docSnap) => {
-      const data = docSnap.data();
-      
-      let rawStatus = (data.status || 'Pending').toString();
-      let normalizedStatus: ServiceRequestDoc['status'] = 'Pending';
-      if (rawStatus.toUpperCase() === 'PENDING') normalizedStatus = 'Pending';
-      else if (rawStatus.toUpperCase() === 'IN PROGRESS' || rawStatus.toUpperCase() === 'CONFIRMED') normalizedStatus = 'In Progress';
-      else if (rawStatus.toUpperCase() === 'COMPLETED') normalizedStatus = 'Completed';
-      else if (rawStatus.toUpperCase() === 'CANCELLED') normalizedStatus = 'Cancelled';
-      else if (['Pending', 'In Progress', 'Completed', 'Cancelled'].includes(rawStatus)) {
-        normalizedStatus = rawStatus as ServiceRequestDoc['status'];
-      }
+export function subscribeToServiceRequests(
+  statusOrCb?: string | number | ((requests: ServiceRequestDoc[]) => void),
+  limitOrCb?: number | ((requests: ServiceRequestDoc[]) => void),
+  cbParam?: (requests: ServiceRequestDoc[]) => void
+) {
+  const { filterVal: selectedStatus, limitCount, callback } = parseParams<ServiceRequestDoc>(statusOrCb, limitOrCb, cbParam);
 
-      return {
-        id: docSnap.id,
-        customerName: data.customerName || data.name || 'Anonymous Customer',
-        phone: data.phone || 'N/A',
-        address: data.address || 'N/A',
-        machineModel: data.machineModel || data.machineType || 'RO Water Purifier',
-        appointmentDate: data.appointmentDate || data.preferredDate || new Date().toISOString().split('T')[0],
-        appointmentTime: data.appointmentTime || data.preferredSlot || '10:00 AM',
-        problemDetails: data.problemDetails || data.problemDescription || 'General servicing required',
-        status: normalizedStatus,
-        priority: data.priority || 'Normal',
-        technician: data.technician || 'Unassigned',
-        tdsReading: Number(data.tdsReading) || 45,
-        createdAt: data.createdAt,
-      };
-    });
-    callback(list);
-  }, (error) => {
-    console.error('Error fetching service requests:', error);
-  });
+  let q;
+  if (selectedStatus && selectedStatus !== 'All') {
+    q = query(collection(db, SERVICES_COLLECTION), where('status', '==', selectedStatus), limit(limitCount));
+  } else {
+    q = query(collection(db, SERVICES_COLLECTION), orderBy('createdAt', 'desc'), limit(limitCount));
+  }
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: ServiceRequestDoc[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        let rawStatus = (data.status || 'Pending').toString();
+        let normalizedStatus: ServiceRequestDoc['status'] = 'Pending';
+        if (rawStatus.toUpperCase() === 'PENDING') normalizedStatus = 'Pending';
+        else if (rawStatus.toUpperCase() === 'IN PROGRESS' || rawStatus.toUpperCase() === 'CONFIRMED') normalizedStatus = 'In Progress';
+        else if (rawStatus.toUpperCase() === 'COMPLETED') normalizedStatus = 'Completed';
+        else if (rawStatus.toUpperCase() === 'CANCELLED') normalizedStatus = 'Cancelled';
+        else if (['Pending', 'In Progress', 'Completed', 'Cancelled'].includes(rawStatus)) {
+          normalizedStatus = rawStatus as ServiceRequestDoc['status'];
+        }
+
+        return {
+          id: docSnap.id,
+          customerName: data.customerName || data.name || 'Anonymous Customer',
+          phone: data.phone || 'N/A',
+          address: data.address || 'N/A',
+          machineModel: data.machineModel || data.machineType || 'RO Water Purifier',
+          appointmentDate: data.appointmentDate || data.preferredDate || new Date().toISOString().split('T')[0],
+          appointmentTime: data.appointmentTime || data.preferredSlot || '10:00 AM',
+          problemDetails: data.problemDetails || data.problemDescription || 'General servicing required',
+          status: normalizedStatus,
+          priority: data.priority || 'Normal',
+          technician: data.technician || 'Unassigned',
+          tdsReading: Number(data.tdsReading) || 45,
+          createdAt: data.createdAt,
+        };
+      });
+      callback(list);
+    },
+    (error) => {
+      console.error('Error fetching service requests, trying fallback:', error);
+      const fallbackQ = query(collection(db, SERVICES_COLLECTION), limit(limitCount));
+      onSnapshot(fallbackQ, (snapshot) => {
+        const list: ServiceRequestDoc[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          let rawStatus = (data.status || 'Pending').toString();
+          let normalizedStatus: ServiceRequestDoc['status'] = 'Pending';
+          if (rawStatus.toUpperCase() === 'PENDING') normalizedStatus = 'Pending';
+          else if (rawStatus.toUpperCase() === 'IN PROGRESS' || rawStatus.toUpperCase() === 'CONFIRMED') normalizedStatus = 'In Progress';
+          else if (rawStatus.toUpperCase() === 'COMPLETED') normalizedStatus = 'Completed';
+          else if (rawStatus.toUpperCase() === 'CANCELLED') normalizedStatus = 'Cancelled';
+          else if (['Pending', 'In Progress', 'Completed', 'Cancelled'].includes(rawStatus)) {
+            normalizedStatus = rawStatus as ServiceRequestDoc['status'];
+          }
+
+          return {
+            id: docSnap.id,
+            customerName: data.customerName || data.name || 'Anonymous Customer',
+            phone: data.phone || 'N/A',
+            address: data.address || 'N/A',
+            machineModel: data.machineModel || data.machineType || 'RO Water Purifier',
+            appointmentDate: data.appointmentDate || data.preferredDate || new Date().toISOString().split('T')[0],
+            appointmentTime: data.appointmentTime || data.preferredSlot || '10:00 AM',
+            problemDetails: data.problemDetails || data.problemDescription || 'General servicing required',
+            status: normalizedStatus,
+            priority: data.priority || 'Normal',
+            technician: data.technician || 'Unassigned',
+            tdsReading: Number(data.tdsReading) || 45,
+            createdAt: data.createdAt,
+          };
+        });
+        callback(list);
+      });
+    }
+  );
 }
 
 export async function updateServiceRequestStatusInFirestore(id: string, status: ServiceRequestDoc['status'], technician?: string) {
@@ -337,42 +503,89 @@ export async function assignTechnicianInFirestore(id: string, technician: string
 }
 
 // ORDERS
-export function subscribeToOrders(callback: (orders: OrderDoc[]) => void) {
-  const q = collection(db, ORDERS_COLLECTION);
-  return onSnapshot(q, (snapshot) => {
-    const list: OrderDoc[] = snapshot.docs.map((docSnap) => {
-      const data = docSnap.data();
+export function subscribeToOrders(
+  statusOrCb?: string | number | ((orders: OrderDoc[]) => void),
+  limitOrCb?: number | ((orders: OrderDoc[]) => void),
+  cbParam?: (orders: OrderDoc[]) => void
+) {
+  const { filterVal: selectedStatus, limitCount, callback } = parseParams<OrderDoc>(statusOrCb, limitOrCb, cbParam);
 
-      let rawStatus = (data.status || 'Pending').toString();
-      let normalizedStatus: OrderDoc['status'] = 'Pending';
-      if (rawStatus.toUpperCase() === 'PENDING') normalizedStatus = 'Pending';
-      else if (rawStatus.toUpperCase() === 'PROCESSING') normalizedStatus = 'Processing';
-      else if (rawStatus.toUpperCase() === 'SHIPPED') normalizedStatus = 'Shipped';
-      else if (rawStatus.toUpperCase() === 'DELIVERED') normalizedStatus = 'Delivered';
-      else if (rawStatus.toUpperCase() === 'CANCELLED') normalizedStatus = 'Cancelled';
-      else if (['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(rawStatus)) {
-        normalizedStatus = rawStatus as OrderDoc['status'];
-      }
+  let q;
+  if (selectedStatus && selectedStatus !== 'All') {
+    q = query(collection(db, ORDERS_COLLECTION), where('status', '==', selectedStatus), limit(limitCount));
+  } else {
+    q = query(collection(db, ORDERS_COLLECTION), orderBy('createdAt', 'desc'), limit(limitCount));
+  }
 
-      return {
-        id: docSnap.id,
-        customerName: data.customerName || data.name || 'Anonymous Customer',
-        phone: data.phone || 'N/A',
-        email: data.email || '',
-        address: data.address || 'N/A',
-        district: data.district || '',
-        items: Array.isArray(data.items) ? data.items : [],
-        totalAmount: Number(data.totalAmount) || 0,
-        paymentMethod: data.paymentMethod || 'COD',
-        paymentStatus: data.paymentStatus || (data.paymentMethod === 'COD' ? 'Pending' : 'Paid'),
-        status: normalizedStatus,
-        createdAt: data.createdAt,
-      };
-    });
-    callback(list);
-  }, (error) => {
-    console.error('Error fetching orders snapshot:', error);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: OrderDoc[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        let rawStatus = (data.status || 'Pending').toString();
+        let normalizedStatus: OrderDoc['status'] = 'Pending';
+        if (rawStatus.toUpperCase() === 'PENDING') normalizedStatus = 'Pending';
+        else if (rawStatus.toUpperCase() === 'PROCESSING') normalizedStatus = 'Processing';
+        else if (rawStatus.toUpperCase() === 'SHIPPED') normalizedStatus = 'Shipped';
+        else if (rawStatus.toUpperCase() === 'DELIVERED') normalizedStatus = 'Delivered';
+        else if (rawStatus.toUpperCase() === 'CANCELLED') normalizedStatus = 'Cancelled';
+        else if (['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(rawStatus)) {
+          normalizedStatus = rawStatus as OrderDoc['status'];
+        }
+
+        return {
+          id: docSnap.id,
+          customerName: data.customerName || data.name || 'Anonymous Customer',
+          phone: data.phone || 'N/A',
+          email: data.email || '',
+          address: data.address || 'N/A',
+          district: data.district || '',
+          items: Array.isArray(data.items) ? data.items : [],
+          totalAmount: Number(data.totalAmount) || 0,
+          paymentMethod: data.paymentMethod || 'COD',
+          paymentStatus: data.paymentStatus || (data.paymentMethod === 'COD' ? 'Pending' : 'Paid'),
+          status: normalizedStatus,
+          createdAt: data.createdAt,
+        };
+      });
+      callback(list);
+    },
+    (error) => {
+      console.error('Error fetching orders snapshot, trying fallback:', error);
+      const fallbackQ = query(collection(db, ORDERS_COLLECTION), limit(limitCount));
+      onSnapshot(fallbackQ, (snapshot) => {
+        const list: OrderDoc[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          let rawStatus = (data.status || 'Pending').toString();
+          let normalizedStatus: OrderDoc['status'] = 'Pending';
+          if (rawStatus.toUpperCase() === 'PENDING') normalizedStatus = 'Pending';
+          else if (rawStatus.toUpperCase() === 'PROCESSING') normalizedStatus = 'Processing';
+          else if (rawStatus.toUpperCase() === 'SHIPPED') normalizedStatus = 'Shipped';
+          else if (rawStatus.toUpperCase() === 'DELIVERED') normalizedStatus = 'Delivered';
+          else if (rawStatus.toUpperCase() === 'CANCELLED') normalizedStatus = 'Cancelled';
+          else if (['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(rawStatus)) {
+            normalizedStatus = rawStatus as OrderDoc['status'];
+          }
+
+          return {
+            id: docSnap.id,
+            customerName: data.customerName || data.name || 'Anonymous Customer',
+            phone: data.phone || 'N/A',
+            email: data.email || '',
+            address: data.address || 'N/A',
+            district: data.district || '',
+            items: Array.isArray(data.items) ? data.items : [],
+            totalAmount: Number(data.totalAmount) || 0,
+            paymentMethod: data.paymentMethod || 'COD',
+            paymentStatus: data.paymentStatus || (data.paymentMethod === 'COD' ? 'Pending' : 'Paid'),
+            status: normalizedStatus,
+            createdAt: data.createdAt,
+          };
+        });
+        callback(list);
+      });
+    }
+  );
 }
 
 export async function updateOrderStatusInFirestore(id: string, status: OrderDoc['status'], paymentStatus?: OrderDoc['paymentStatus']) {
@@ -385,26 +598,59 @@ export async function updateOrderStatusInFirestore(id: string, status: OrderDoc[
 }
 
 // INQUIRIES
-export function subscribeToInquiries(callback: (inquiries: InquiryDoc[]) => void) {
-  const q = collection(db, INQUIRIES_COLLECTION);
-  return onSnapshot(q, (snapshot) => {
-    const list: InquiryDoc[] = snapshot.docs.map((docSnap) => {
-      const data = docSnap.data();
-      return {
-        id: docSnap.id,
-        name: data.name || 'Anonymous',
-        phone: data.phone || 'N/A',
-        email: data.email || '',
-        subject: data.subject || 'General Inquiry',
-        message: data.message || '',
-        status: data.status || 'New',
-        createdAt: data.createdAt,
-      };
-    });
-    callback(list);
-  }, (error) => {
-    console.error('Error fetching inquiries snapshot:', error);
-  });
+export function subscribeToInquiries(
+  statusOrCb?: string | number | ((inquiries: InquiryDoc[]) => void),
+  limitOrCb?: number | ((inquiries: InquiryDoc[]) => void),
+  cbParam?: (inquiries: InquiryDoc[]) => void
+) {
+  const { filterVal: selectedStatus, limitCount, callback } = parseParams<InquiryDoc>(statusOrCb, limitOrCb, cbParam);
+
+  let q;
+  if (selectedStatus && selectedStatus !== 'All') {
+    q = query(collection(db, INQUIRIES_COLLECTION), where('status', '==', selectedStatus), limit(limitCount));
+  } else {
+    q = query(collection(db, INQUIRIES_COLLECTION), orderBy('createdAt', 'desc'), limit(limitCount));
+  }
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: InquiryDoc[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          name: data.name || 'Anonymous',
+          phone: data.phone || 'N/A',
+          email: data.email || '',
+          subject: data.subject || 'General Inquiry',
+          message: data.message || '',
+          status: data.status || 'New',
+          createdAt: data.createdAt,
+        };
+      });
+      callback(list);
+    },
+    (error) => {
+      console.error('Error fetching inquiries snapshot, fallback:', error);
+      const fallbackQ = query(collection(db, INQUIRIES_COLLECTION), limit(limitCount));
+      onSnapshot(fallbackQ, (snapshot) => {
+        const list: InquiryDoc[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return {
+            id: docSnap.id,
+            name: data.name || 'Anonymous',
+            phone: data.phone || 'N/A',
+            email: data.email || '',
+            subject: data.subject || 'General Inquiry',
+            message: data.message || '',
+            status: data.status || 'New',
+            createdAt: data.createdAt,
+          };
+        });
+        callback(list);
+      });
+    }
+  );
 }
 
 export async function updateInquiryStatusInFirestore(id: string, status: InquiryDoc['status']) {
@@ -418,26 +664,23 @@ export async function deleteInquiryFromFirestore(id: string) {
 }
 
 // REVIEWS
-export function subscribeToReviews(callback: (reviews: ReviewDoc[]) => void) {
-  const q = query(collection(db, REVIEWS_COLLECTION), orderBy('createdAt', 'desc'));
-  return onSnapshot(q, (snapshot) => {
-    const list: ReviewDoc[] = snapshot.docs.map((docSnap) => {
-      const data = docSnap.data();
-      return {
-        id: docSnap.id,
-        customerName: data.customerName || data.name || 'Anonymous Customer',
-        location: data.location || 'Dhaka',
-        rating: Number(data.rating) || 5,
-        comment: data.comment || '',
-        isApproved: data.isApproved !== undefined ? Boolean(data.isApproved) : true,
-        createdAt: data.createdAt,
-      };
-    });
-    callback(list);
-  }, (error) => {
-    console.error('Error fetching reviews snapshot:', error);
-    const fallbackQ = collection(db, REVIEWS_COLLECTION);
-    onSnapshot(fallbackQ, (snapshot) => {
+export function subscribeToReviews(
+  approvedOrCb?: boolean | 'all' | number | ((reviews: ReviewDoc[]) => void),
+  limitOrCb?: number | ((reviews: ReviewDoc[]) => void),
+  cbParam?: (reviews: ReviewDoc[]) => void
+) {
+  const { filterVal: isApprovedFilter, limitCount, callback } = parseParams<ReviewDoc>(approvedOrCb, limitOrCb, cbParam);
+
+  let q;
+  if (typeof isApprovedFilter === 'boolean') {
+    q = query(collection(db, REVIEWS_COLLECTION), where('isApproved', '==', isApprovedFilter), limit(limitCount));
+  } else {
+    q = query(collection(db, REVIEWS_COLLECTION), orderBy('createdAt', 'desc'), limit(limitCount));
+  }
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
       const list: ReviewDoc[] = snapshot.docs.map((docSnap) => {
         const data = docSnap.data();
         return {
@@ -451,8 +694,27 @@ export function subscribeToReviews(callback: (reviews: ReviewDoc[]) => void) {
         };
       });
       callback(list);
-    });
-  });
+    },
+    (error) => {
+      console.error('Error fetching reviews snapshot, fallback:', error);
+      const fallbackQ = query(collection(db, REVIEWS_COLLECTION), limit(limitCount));
+      onSnapshot(fallbackQ, (snapshot) => {
+        const list: ReviewDoc[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return {
+            id: docSnap.id,
+            customerName: data.customerName || data.name || 'Anonymous Customer',
+            location: data.location || 'Dhaka',
+            rating: Number(data.rating) || 5,
+            comment: data.comment || '',
+            isApproved: data.isApproved !== undefined ? Boolean(data.isApproved) : true,
+            createdAt: data.createdAt,
+          };
+        });
+        callback(list);
+      });
+    }
+  );
 }
 
 export async function addReviewToFirestore(data: Omit<ReviewDoc, 'id'>) {
@@ -538,8 +800,21 @@ export async function saveCompanyInfoToFirestore(data: Partial<CompanySettingsDo
 }
 
 // CORPORATE CLIENTS
-export function subscribeToClients(callback: (clients: ClientDoc[]) => void) {
-  const q = query(collection(db, CLIENTS_COLLECTION), orderBy('createdAt', 'desc'));
+export function subscribeToClients(
+  limitOrCb?: number | ((clients: ClientDoc[]) => void),
+  cbParam?: (clients: ClientDoc[]) => void
+) {
+  let limitCount = 15;
+  let callback: (clients: ClientDoc[]) => void = () => {};
+
+  if (typeof limitOrCb === 'function') {
+    callback = limitOrCb;
+  } else {
+    if (typeof limitOrCb === 'number') limitCount = limitOrCb;
+    if (typeof cbParam === 'function') callback = cbParam;
+  }
+
+  const q = query(collection(db, CLIENTS_COLLECTION), orderBy('createdAt', 'desc'), limit(limitCount));
   return onSnapshot(q, (snapshot) => {
     const list: ClientDoc[] = snapshot.docs.map((docSnap) => {
       const data = docSnap.data();
@@ -554,7 +829,7 @@ export function subscribeToClients(callback: (clients: ClientDoc[]) => void) {
     callback(list);
   }, (error) => {
     console.error('Error fetching clients snapshot with orderBy, trying fallback:', error);
-    const fallbackQ = collection(db, CLIENTS_COLLECTION);
+    const fallbackQ = query(collection(db, CLIENTS_COLLECTION), limit(limitCount));
     onSnapshot(fallbackQ, (snapshot) => {
       const list: ClientDoc[] = snapshot.docs.map((docSnap) => {
         const data = docSnap.data();
@@ -589,8 +864,21 @@ export async function deleteClientFromFirestore(id: string) {
 }
 
 // BANNERS
-export function subscribeToBanners(callback: (banners: BannerDoc[]) => void) {
-  const q = query(collection(db, BANNERS_COLLECTION), orderBy('createdAt', 'desc'));
+export function subscribeToBanners(
+  limitOrCb?: number | ((banners: BannerDoc[]) => void),
+  cbParam?: (banners: BannerDoc[]) => void
+) {
+  let limitCount = 15;
+  let callback: (banners: BannerDoc[]) => void = () => {};
+
+  if (typeof limitOrCb === 'function') {
+    callback = limitOrCb;
+  } else {
+    if (typeof limitOrCb === 'number') limitCount = limitOrCb;
+    if (typeof cbParam === 'function') callback = cbParam;
+  }
+
+  const q = query(collection(db, BANNERS_COLLECTION), orderBy('createdAt', 'desc'), limit(limitCount));
   return onSnapshot(q, (snapshot) => {
     const list: BannerDoc[] = snapshot.docs.map((docSnap) => {
       const data = docSnap.data();
@@ -607,7 +895,7 @@ export function subscribeToBanners(callback: (banners: BannerDoc[]) => void) {
     callback(list);
   }, (error) => {
     console.error('Error fetching banners snapshot with orderBy, trying fallback:', error);
-    const fallbackQ = collection(db, BANNERS_COLLECTION);
+    const fallbackQ = query(collection(db, BANNERS_COLLECTION), limit(limitCount));
     onSnapshot(fallbackQ, (snapshot) => {
       const list: BannerDoc[] = snapshot.docs.map((docSnap) => {
         const data = docSnap.data();
@@ -643,9 +931,113 @@ export async function deleteBannerFromFirestore(id: string) {
   return await deleteDoc(docRef);
 }
 
+// CUSTOMERS & CUSTOM PRODUCTS
+export function subscribeToCustomers(
+  limitOrCb?: number | ((customers: CustomerDoc[]) => void),
+  cbParam?: (customers: CustomerDoc[]) => void
+) {
+  let limitCount = 15;
+  let callback: (customers: CustomerDoc[]) => void = () => {};
+
+  if (typeof limitOrCb === 'function') {
+    callback = limitOrCb;
+  } else {
+    if (typeof limitOrCb === 'number') limitCount = limitOrCb;
+    if (typeof cbParam === 'function') callback = cbParam;
+  }
+
+  const q = query(
+    collection(db, CUSTOMERS_COLLECTION),
+    limit(limitCount)
+  );
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: CustomerDoc[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          name: data.name || data.customerName || 'Unnamed Customer',
+          email: data.email || '',
+          phone: data.phone || '',
+          joinedDate: data.joinedDate || (data.createdAt?.seconds ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'Recent'),
+          rewardPoints: Number(data.rewardPoints) || 500,
+          referralCode: data.referralCode || `AQUA-${docSnap.id.substring(0, 6).toUpperCase()}`,
+          activeDevices: Number(data.activeDevices) || 1,
+          totalOrders: Number(data.totalOrders) || 1,
+          createdAt: data.createdAt,
+        };
+      });
+      callback(list);
+    },
+    (error) => {
+      console.error('Error fetching customers snapshot:', error);
+    }
+  );
+}
+
+export function subscribeToCustomerCustomProducts(
+  customerId: string,
+  limitOrCb?: number | ((products: CustomProductDoc[]) => void),
+  cbParam?: (products: CustomProductDoc[]) => void
+) {
+  if (!customerId) return () => {};
+
+  let limitCount = 15;
+  let callback: (products: CustomProductDoc[]) => void = () => {};
+
+  if (typeof limitOrCb === 'function') {
+    callback = limitOrCb;
+  } else {
+    if (typeof limitOrCb === 'number') limitCount = limitOrCb;
+    if (typeof cbParam === 'function') callback = cbParam;
+  }
+
+  const q = query(
+    collection(db, CUSTOMERS_COLLECTION, customerId, 'custom_products'),
+    limit(limitCount)
+  );
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list: CustomProductDoc[] = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          name: data.name || data.title || 'Custom Purifier Unit',
+          model: data.model || 'CUSTOM-RO',
+          price: Number(data.price) || 0,
+          description: data.description || data.specs || '',
+          imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop',
+          createdAt: data.createdAt,
+        };
+      });
+      callback(list);
+    },
+    (error) => {
+      console.error('Error fetching custom products snapshot:', error);
+    }
+  );
+}
+
 // CUSTOMER LIVE MESSAGING
-export function subscribeToCustomerThreads(callback: (threads: CustomerThreadDoc[]) => void) {
-  const q = collection(db, CUSTOMERS_COLLECTION);
+export function subscribeToCustomerThreads(
+  limitOrCb?: number | ((threads: CustomerThreadDoc[]) => void),
+  cbParam?: (threads: CustomerThreadDoc[]) => void
+) {
+  let limitCount = 15;
+  let callback: (threads: CustomerThreadDoc[]) => void = () => {};
+
+  if (typeof limitOrCb === 'function') {
+    callback = limitOrCb;
+  } else {
+    if (typeof limitOrCb === 'number') limitCount = limitOrCb;
+    if (typeof cbParam === 'function') callback = cbParam;
+  }
+
+  const q = query(collection(db, CUSTOMERS_COLLECTION), limit(limitCount));
   return onSnapshot(q, (snapshot) => {
     const list: CustomerThreadDoc[] = snapshot.docs.map((docSnap) => {
       const data = docSnap.data();
@@ -667,12 +1059,29 @@ export function subscribeToCustomerThreads(callback: (threads: CustomerThreadDoc
   });
 }
 
-export function subscribeToCustomerMessages(customerId: string, callback: (messages: CustomerMessageDoc[]) => void) {
-  if (!customerId) return () => {};
+export function subscribeToCustomerMessages(
+  selectedUserId: string,
+  limitOrCb?: number | ((messages: CustomerMessageDoc[]) => void),
+  cbParam?: (messages: CustomerMessageDoc[]) => void
+) {
+  if (!selectedUserId) return () => {};
+
+  let limitCount = 20;
+  let callback: (messages: CustomerMessageDoc[]) => void = () => {};
+
+  if (typeof limitOrCb === 'function') {
+    callback = limitOrCb;
+  } else {
+    if (typeof limitOrCb === 'number') limitCount = limitOrCb;
+    if (typeof cbParam === 'function') callback = cbParam;
+  }
+
   const q = query(
-    collection(db, CUSTOMERS_COLLECTION, customerId, 'messages'),
-    orderBy('createdAt', 'asc')
+    collection(db, CUSTOMERS_COLLECTION, selectedUserId, 'messages'),
+    orderBy('createdAt', 'asc'),
+    limit(limitCount)
   );
+
   return onSnapshot(q, (snapshot) => {
     const list: CustomerMessageDoc[] = snapshot.docs.map((docSnap) => {
       const data = docSnap.data();
@@ -687,7 +1096,10 @@ export function subscribeToCustomerMessages(customerId: string, callback: (messa
     callback(list);
   }, (error) => {
     console.error('Fallback subscribing to customer messages without orderBy:', error);
-    const fallbackQ = collection(db, CUSTOMERS_COLLECTION, customerId, 'messages');
+    const fallbackQ = query(
+      collection(db, CUSTOMERS_COLLECTION, selectedUserId, 'messages'),
+      limit(limitCount)
+    );
     return onSnapshot(fallbackQ, (snapshot) => {
       const list: CustomerMessageDoc[] = snapshot.docs.map((docSnap) => {
         const data = docSnap.data();
@@ -734,5 +1146,3 @@ export async function markThreadAsRead(customerId: string) {
     unreadCount: 0,
   }, { merge: true });
 }
-
-

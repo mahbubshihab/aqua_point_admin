@@ -32,12 +32,12 @@ export default function InquiriesView() {
 
   useEffect(() => {
     setLoading(true);
-    const unsubscribe = subscribeToInquiries((data) => {
+    const unsubscribe = subscribeToInquiries(activeFilter, 15, (data) => {
       setInquiries(data);
       setLoading(false);
     });
     return () => unsubscribe();
-  }, []);
+  }, [activeFilter]);
 
   const handleUpdateStatus = async (id: string, status: InquiryDoc['status']) => {
     try {
@@ -66,16 +66,7 @@ export default function InquiriesView() {
 
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
-  const filteredInquiries = inquiries.filter(inq => {
-    const matchesFilter = activeFilter === 'All' ? true : inq.status === activeFilter;
-    const matchesSearch =
-      inq.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      inq.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      inq.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      inq.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (inq.email && inq.email.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesFilter && matchesSearch;
-  });
+  const filteredInquiries = inquiries;
 
   return (
     <div className="space-y-8 pb-12">

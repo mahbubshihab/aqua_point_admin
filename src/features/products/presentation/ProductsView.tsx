@@ -69,14 +69,14 @@ export default function ProductsView() {
   const [formError, setFormError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
 
-  // Real-time Firestore Sync
+  // Real-time Firestore Sync with Server-Side Query
   useEffect(() => {
     setLoading(true);
-    const unsubProducts = subscribeToProducts((data) => {
+    const unsubProducts = subscribeToProducts(selectedCategoryFilter, 15, (data) => {
       setProducts(data);
       setLoading(false);
     });
-    const unsubCategories = subscribeToCategories((cats) => {
+    const unsubCategories = subscribeToCategories(15, (cats) => {
       setCategories(cats);
     });
 
@@ -84,7 +84,7 @@ export default function ProductsView() {
       unsubProducts();
       unsubCategories();
     };
-  }, []);
+  }, [selectedCategoryFilter]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -158,6 +158,7 @@ export default function ProductsView() {
         name: name.trim(),
         model: model.trim() || 'AP-' + Math.floor(100 + Math.random() * 900),
         category,
+        categoryId: category,
         price: parseFloat(price),
         originalPrice: originalPrice ? parseFloat(originalPrice) : undefined,
         warranty: warranty.trim() || '1 Year Standard Warranty',
@@ -204,18 +205,7 @@ export default function ProductsView() {
     }
   };
 
-  const filteredProducts = products.filter(p => {
-    const matchesSearch = 
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (p.model && p.model.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (p.description && p.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      p.category.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = selectedCategoryFilter === 'All' || p.category === selectedCategoryFilter;
-    const matchesStock = selectedStockFilter === 'All' || p.stockStatus === selectedStockFilter;
-
-    return matchesSearch && matchesCategory && matchesStock;
-  });
+  const filteredProducts = products;
 
   return (
     <div className="space-y-8 pb-12">

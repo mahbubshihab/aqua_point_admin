@@ -33,12 +33,12 @@ export default function OrdersView() {
 
   useEffect(() => {
     setLoading(true);
-    const unsubscribe = subscribeToOrders((data) => {
+    const unsubscribe = subscribeToOrders(activeStatus, 15, (data) => {
       setOrders(data);
       setLoading(false);
     });
     return () => unsubscribe();
-  }, []);
+  }, [activeStatus]);
 
   const handleUpdateStatus = async (id: string, newStatus: OrderDoc['status'], paymentStatus?: OrderDoc['paymentStatus']) => {
     try {
@@ -53,23 +53,7 @@ export default function OrdersView() {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [paymentFilter, setPaymentFilter] = useState<'All' | 'Paid' | 'Unpaid'>('All');
 
-  const filteredOrders = orders.filter(order => {
-    const matchesStatus = activeStatus === 'All' ? true : order.status === activeStatus;
-    const matchesPayment =
-      paymentFilter === 'All'
-        ? true
-        : paymentFilter === 'Paid'
-        ? order.paymentStatus === 'Paid'
-        : order.paymentStatus !== 'Paid';
-
-    const matchesSearch =
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (order.email && order.email.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    return matchesStatus && matchesPayment && matchesSearch;
-  });
+  const filteredOrders = orders;
 
   return (
     <div className="space-y-8 pb-12">
