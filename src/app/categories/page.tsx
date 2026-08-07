@@ -262,11 +262,11 @@ export default function CategoriesPage() {
       {/* Header Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            Category Management <Sparkles className="w-5 h-5 text-cyan-400" />
+          <h1 className="text-2xl font-bold tracking-tight text-white">
+            Categories
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Organize & manage products across the 6 core categories with Cloud Firestore (<code className="text-cyan-400">categories</code>) & Cloudinary media.
+            Manage product categories.
           </p>
         </div>
 
