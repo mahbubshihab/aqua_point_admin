@@ -11,8 +11,8 @@
   --text-secondary: #A0AEC0;
 }
 
-body {
-  background-color: #141b2d;
+html, body {
+  background-color: #141b2d !important;
   color: #ffffff;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   overflow-x: hidden;
@@ -21,15 +21,15 @@ body {
 
 /* Glassmorphism & Panel Background Styles */
 .glass-panel {
-  background: #1f2940;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #1f2940 !important;
+  border: 1px solid #2c3754 !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
 .glass-panel-cyan {
-  background: #1f2940;
-  border: 1px solid rgba(76, 206, 172, 0.3);
-  box-shadow: 0 10px 30px rgba(76, 206, 172, 0.1);
+  background: #1f2940 !important;
+  border: 1px solid #2c3754 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
 .glass-card-hover {
@@ -38,7 +38,7 @@ body {
 
 .glass-card-hover:hover {
   transform: translateY(-2px);
-  border-color: rgba(76, 206, 172, 0.4);
+  border-color: #4cceac !important;
   box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.3);
 }
 

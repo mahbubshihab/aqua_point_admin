@@ -97,10 +97,10 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className={`fixed left-0 top-0 bottom-0 z-40 bg-[#1f2940] border-r border-[#141b2d] flex flex-col justify-between p-4 shadow-2xl transition-all duration-300 ${collapsed ? 'w-20' : 'w-64'}`}>
+    <aside className={`fixed left-0 top-0 bottom-0 z-40 bg-[#1f2940] border-r border-[#2c3754] flex flex-col justify-between p-4 shadow-2xl transition-all duration-300 ${collapsed ? 'w-20' : 'w-64'}`}>
       <div className="overflow-y-auto scrollbar-none pr-1">
         {/* Top Bar: Brand AQUA POINT with collapse menu icon ≡ */}
-        <div className="flex items-center justify-between px-2 py-3 mb-4 border-b border-[#141b2d]">
+        <div className="flex items-center justify-between px-2 py-3 mb-4 border-b border-[#2c3754]">
           {!collapsed && (
             <div className="flex items-center gap-2">
               <span className="text-lg font-black tracking-wider text-white uppercase">
@@ -117,23 +117,6 @@ export default function Sidebar() {
           </button>
         </div>
 
-        {/* Profile Card Section */}
-        {!collapsed && (
-          <div className="flex flex-col items-center text-center p-4 mb-6 rounded-2xl bg-[#141b2d]/70 border border-slate-700/40">
-            <div className="relative mb-3">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#3e4396] to-[#4cceac] flex items-center justify-center text-white font-extrabold text-xl shadow-lg border-2 border-[#4cceac]">
-                MS
-              </div>
-              <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#4cceac] rounded-full border-2 border-[#141b2d]" />
-            </div>
-            <h3 className="text-base font-bold text-white leading-tight">
-              Mahbub Shihab
-            </h3>
-            <p className="text-xs font-semibold text-[#4cceac] mt-1">
-              Super Admin
-            </p>
-          </div>
-        )}
 
         {/* Grouped Menu Section Headers */}
         <nav className="space-y-6">

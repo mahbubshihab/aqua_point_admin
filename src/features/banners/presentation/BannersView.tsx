@@ -213,20 +213,20 @@ export default function BannersView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Banners
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
             {filteredBanners.length} banners
           </span>
         </div>
         <button
           onClick={openAddModal}
-          className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
+          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Add Banner
         </button>
       </div>
 
       {/* Unified Filter Bar (Single Consolidated Bar) */}
-      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 space-y-3">
+      <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
             {/* In-Page Search Input */}
@@ -236,17 +236,17 @@ export default function BannersView() {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search banner by title, tag, or CTA link..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
+                placeholder="Search banner by title or tag..."
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#4cceac] transition-all"
               />
             </div>
 
-            {/* Status Filter Dropdown */}
+            {/* Filter Dropdown */}
             <div className="relative w-full sm:w-48">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 cursor-pointer transition-all"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] cursor-pointer transition-all"
               >
                 <option value="All">All Banner Status</option>
                 <option value="Active">Active Only</option>
@@ -255,13 +255,13 @@ export default function BannersView() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-800/80">
-            <div className="p-1 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-1">
+          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-[#2c3754]">
+            <div className="p-1 rounded-xl bg-[#141b2d] border border-[#2c3754] flex items-center gap-1">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
+                    ? 'bg-[#3e4396] text-white shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
                 title="Grid View"
@@ -272,7 +272,7 @@ export default function BannersView() {
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
+                    ? 'bg-[#3e4396] text-white shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
                 title="Table View"
@@ -284,7 +284,7 @@ export default function BannersView() {
         </div>
 
         {/* Banner Status Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-slate-800/60 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-[#2c3754] scrollbar-none">
           {(['All', 'Active', 'Inactive'] as const).map((st) => {
             const label = st === 'All' ? 'All Banners' : st === 'Active' ? 'Active Hero Slides' : 'Disabled Slides';
             const count = st === 'All' ? banners.length : banners.filter(b => st === 'Active' ? b.isActive : !b.isActive).length;
@@ -295,13 +295,13 @@ export default function BannersView() {
                 onClick={() => setStatusFilter(st)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                   isActive
-                    ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                    : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
+                    ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                    : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
                 }`}
               >
                 <span>{label}</span>
                 <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                  isActive ? 'bg-slate-950/25 text-slate-950' : 'bg-white/10 text-[#00BCE1]'
+                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
                 }`}>
                   {count}
                 </span>
@@ -313,15 +313,15 @@ export default function BannersView() {
 
       {/* Loading & Empty States */}
       {loading ? (
-        <div className="glass-panel rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
-          <p className="text-xs text-slate-400">Loading banners from Cloud Firestore...</p>
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
+          <Loader2 className="w-10 h-10 text-[#4cceac] animate-spin" />
+          <p className="text-xs text-[#A0AEC0]">Loading banners from Cloud Firestore...</p>
         </div>
       ) : filteredBanners.length === 0 ? (
-        <div className="glass-panel rounded-2xl p-16 text-center space-y-4">
-          <ImageIcon className="w-12 h-12 text-slate-600 mx-auto" />
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 text-center space-y-4">
+          <ImageIcon className="w-12 h-12 text-[#A0AEC0] mx-auto" />
           <h3 className="text-base font-bold text-white">No Banners Found</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+          <p className="text-xs text-[#A0AEC0] max-w-sm mx-auto">
             {searchTerm
               ? 'No banners match your search query.'
               : 'Add your first promotional hero slider banner for the website.'}
@@ -329,7 +329,7 @@ export default function BannersView() {
           <div className="flex items-center justify-center gap-3 pt-2">
             <button
               onClick={openAddModal}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
+              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 shadow-md transition-all flex items-center gap-2 cursor-pointer font-bold"
             >
               <Plus className="w-4 h-4 stroke-[3]" /> Add Banner
             </button>
@@ -341,13 +341,13 @@ export default function BannersView() {
           {filteredBanners.map((banner) => (
             <div
               key={banner.id}
-              className={`glass-panel glass-card-hover rounded-2xl overflow-hidden flex flex-col justify-between group relative border transition-all ${
-                banner.isActive ? 'border-cyan-500/30' : 'border-slate-800 opacity-75'
+              className={`bg-[#1f2940] border rounded-2xl overflow-hidden flex flex-col justify-between group relative transition-all ${
+                banner.isActive ? 'border-[#4cceac]/40' : 'border-[#2c3754] opacity-75'
               }`}
             >
               <div>
                 {/* Banner Image Preview */}
-                <div className="relative w-full h-48 bg-slate-900 overflow-hidden">
+                <div className="relative w-full h-48 bg-[#141b2d] overflow-hidden">
                   {banner.imageUrl ? (
                     <img
                       src={banner.imageUrl}
@@ -355,19 +355,19 @@ export default function BannersView() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-600">
+                    <div className="w-full h-full flex items-center justify-center text-[#A0AEC0]">
                       <ImageIcon className="w-10 h-10" />
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0D16] via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1f2940] via-transparent to-transparent" />
 
                   {/* Status Badge */}
                   <div className="absolute top-3 left-3 flex items-center gap-2">
                     <span
-                      className={`px-3 py-1 text-[11px] font-extrabold rounded-full backdrop-blur-md border flex items-center gap-1.5 shadow-lg ${
+                      className={`px-3 py-1 text-[11px] font-extrabold rounded-full border flex items-center gap-1.5 shadow-lg ${
                         banner.isActive
-                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 shadow-emerald-500/10'
-                          : 'bg-slate-800/80 text-slate-400 border-slate-700'
+                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754]'
                       }`}
                     >
                       {banner.isActive ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -377,20 +377,20 @@ export default function BannersView() {
 
                   {/* Tag / Badge */}
                   {banner.tag && (
-                    <div className="absolute top-3 right-3 px-3 py-1 text-[11px] font-extrabold rounded-full bg-cyan-500/20 backdrop-blur-md text-cyan-300 border border-cyan-400/40 flex items-center gap-1 shadow-[0_0_15px_rgba(0,229,255,0.2)]">
-                      <Tag className="w-3 h-3 text-cyan-400" /> {banner.tag}
+                    <div className="absolute top-3 right-3 px-3 py-1 text-[11px] font-extrabold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754] flex items-center gap-1">
+                      <Tag className="w-3 h-3 text-[#4cceac]" /> {banner.tag}
                     </div>
                   )}
                 </div>
 
                 {/* Content */}
                 <div className="p-5 space-y-2 relative">
-                  <h3 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-2">
+                  <h3 className="text-base font-bold text-white group-hover:text-[#4cceac] transition-colors line-clamp-2">
                     {banner.title}
                   </h3>
 
                   {banner.ctaLink && (
-                    <div className="flex items-center gap-1.5 text-xs text-cyan-400/90 font-mono truncate pt-1">
+                    <div className="flex items-center gap-1.5 text-xs text-[#4cceac]/90 font-mono truncate pt-1">
                       <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                       <span className="truncate">{banner.ctaLink}</span>
                     </div>
@@ -399,20 +399,20 @@ export default function BannersView() {
               </div>
 
               {/* Card Actions */}
-              <div className="p-5 pt-0 flex items-center justify-between border-t border-white/5 mt-2">
+              <div className="p-5 pt-0 flex items-center justify-between border-t border-[#2c3754] mt-2 pt-3">
                 <button
                   onClick={() => handleToggleActive(banner)}
                   className={`text-xs font-semibold px-3 py-1.5 rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer ${
                     banner.isActive
-                      ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20'
-                      : 'bg-slate-900 text-slate-400 border-slate-700 hover:text-white'
+                      ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                      : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754] hover:text-white'
                   }`}
                   title="Toggle active visibility on website hero slider"
                 >
                   {banner.isActive ? (
-                    <ToggleRight className="w-4 h-4 text-emerald-400" />
+                    <ToggleRight className="w-4 h-4 text-[#4cceac]" />
                   ) : (
-                    <ToggleLeft className="w-4 h-4 text-slate-500" />
+                    <ToggleLeft className="w-4 h-4 text-[#A0AEC0]" />
                   )}
                   <span>{banner.isActive ? 'Active' : 'Disabled'}</span>
                 </button>
@@ -420,14 +420,14 @@ export default function BannersView() {
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => openEditModal(banner)}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/30 transition-all cursor-pointer"
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
                     title="Edit Banner"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => setDeletingBanner(banner)}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-rose-950 text-rose-400 border border-rose-500/30 transition-all cursor-pointer"
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
                     title="Delete Banner"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -439,10 +439,10 @@ export default function BannersView() {
         </div>
       ) : (
         /* Table View */
-        <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-200">
-              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
+              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-[#2c3754]">
                 <tr>
                   <th className="py-3.5 px-4">Banner Preview</th>
                   <th className="py-3.5 px-4">Title</th>
@@ -452,14 +452,14 @@ export default function BannersView() {
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
+              <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
                 {filteredBanners.map((banner) => (
                   <tr key={banner.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-3 px-4">
                       <img
                         src={banner.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop'}
                         alt={banner.title}
-                        className="w-20 h-12 rounded-lg object-cover border border-slate-700 shrink-0"
+                        className="w-20 h-12 rounded-lg object-cover border border-[#2c3754] shrink-0"
                       />
                     </td>
                     <td className="py-4 px-4 font-bold text-white">{banner.title}</td>
@@ -469,7 +469,7 @@ export default function BannersView() {
                           {banner.tag}
                         </span>
                       ) : (
-                        <span className="text-slate-500">-</span>
+                        <span className="text-[#A0AEC0]">-</span>
                       )}
                     </td>
                     <td className="py-4 px-4 font-mono text-[#4cceac] max-w-xs truncate">
@@ -481,7 +481,7 @@ export default function BannersView() {
                         className={`px-3 py-1 rounded-full text-[10px] font-bold border flex items-center gap-1 cursor-pointer transition-colors ${
                           banner.isActive
                             ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
-                            : 'bg-slate-800 text-slate-400 border-slate-700'
+                            : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754]'
                         }`}
                       >
                         {banner.isActive ? 'Active' : 'Inactive'}
@@ -491,14 +491,14 @@ export default function BannersView() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openEditModal(banner)}
-                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-slate-700 cursor-pointer transition-all"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setDeletingBanner(banner)}
-                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-slate-700 cursor-pointer transition-all"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-[#2c3754] cursor-pointer transition-all"
                           title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -516,16 +516,16 @@ export default function BannersView() {
 
       {/* Add / Edit Banner Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="glass-panel-cyan w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/80 backdrop-blur-md">
+          <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                {editingBannerId ? <Edit2 className="w-5 h-5 text-cyan-400" /> : <Plus className="w-5 h-5 text-cyan-400" />}
+                {editingBannerId ? <Edit2 className="w-5 h-5 text-[#4cceac]" /> : <Plus className="w-5 h-5 text-[#4cceac]" />}
                 {editingBannerId ? 'Edit Banner' : 'Add New Banner'}
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 cursor-pointer"
+                className="p-1 rounded-xl text-[#A0AEC0] hover:text-white hover:bg-[#141b2d] cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -547,7 +547,7 @@ export default function BannersView() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Livotec & RO Water Purifiers Showcase"
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
                 />
               </div>
 
@@ -559,7 +559,7 @@ export default function BannersView() {
                     value={tag}
                     onChange={(e) => setTag(e.target.value)}
                     placeholder="e.g. Featured, Offer, New"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
                   />
                 </div>
 
@@ -570,7 +570,7 @@ export default function BannersView() {
                     value={ctaLink}
                     onChange={(e) => setCtaLink(e.target.value)}
                     placeholder="e.g. /products or https://..."
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-cyan-400 font-mono focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#4cceac] font-mono focus:outline-none focus:border-[#4cceac]"
                   />
                 </div>
               </div>
@@ -578,25 +578,25 @@ export default function BannersView() {
               {/* Cloudinary Image Upload */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Banner Image * (Cloudinary Folder: <span className="text-cyan-400">banners/</span>)
+                  Banner Image * (Cloudinary Folder: <span className="text-[#4cceac]">banners/</span>)
                 </label>
-                <div className="border-2 border-dashed border-cyan-500/30 rounded-2xl p-4 text-center hover:border-cyan-400 transition-colors bg-slate-900/50">
+                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#4cceac] transition-colors bg-[#141b2d]">
                   {previewUrl || existingImageUrl ? (
-                    <div className="relative w-full h-36 mx-auto rounded-xl overflow-hidden border border-cyan-400/40">
+                    <div className="relative w-full h-36 mx-auto rounded-xl overflow-hidden border border-[#2c3754]">
                       <img src={previewUrl || existingImageUrl} alt="Preview" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => { setSelectedFile(null); setPreviewUrl(''); setExistingImageUrl(''); }}
-                        className="absolute top-2 right-2 p-1.5 bg-slate-950/80 rounded-full text-white cursor-pointer hover:bg-rose-600"
+                        className="absolute top-2 right-2 p-1.5 bg-[#141b2d] rounded-full text-white cursor-pointer hover:bg-rose-600"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                   ) : (
                     <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-4">
-                      <Upload className="w-8 h-8 text-cyan-400 animate-bounce" />
+                      <Upload className="w-8 h-8 text-[#4cceac] animate-bounce" />
                       <span className="text-xs text-slate-300">Click to upload banner image file</span>
-                      <span className="text-[10px] text-slate-500 font-mono">Preset: aqua_point | Folder: banners</span>
+                      <span className="text-[10px] text-[#A0AEC0] font-mono">Preset: aqua_point | Folder: banners</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -609,37 +609,37 @@ export default function BannersView() {
               </div>
 
               {/* Active Status Toggle */}
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900/80 border border-white/10">
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#141b2d] border border-[#2c3754]">
                 <div>
                   <p className="text-xs font-semibold text-white">Active Visibility</p>
-                  <p className="text-[11px] text-slate-400">Show this banner in the user website hero slider</p>
+                  <p className="text-[11px] text-[#A0AEC0]">Show this banner in the user website hero slider</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsActive(!isActive)}
                   className={`p-1.5 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
                     isActive
-                      ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-300'
-                      : 'bg-slate-800 border-slate-700 text-slate-400'
+                      ? 'bg-[#4cceac]/20 border-[#4cceac]/40 text-[#4cceac]'
+                      : 'bg-[#141b2d] border-[#2c3754] text-[#A0AEC0]'
                   }`}
                 >
-                  {isActive ? <ToggleRight className="w-6 h-6 text-emerald-400" /> : <ToggleLeft className="w-6 h-6 text-slate-500" />}
+                  {isActive ? <ToggleRight className="w-6 h-6 text-[#4cceac]" /> : <ToggleLeft className="w-6 h-6 text-[#A0AEC0]" />}
                   <span className="text-xs font-bold pr-1">{isActive ? 'Active' : 'Inactive'}</span>
                 </button>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-white/10">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#2c3754]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-slate-300 border border-[#2c3754] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-[0_0_15px_rgba(0,229,255,0.4)] disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
+                  className="px-5 py-2 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
                 >
                   {isSaving ? (
                     <>
@@ -658,15 +658,15 @@ export default function BannersView() {
 
       {/* Delete Confirmation Modal */}
       {deletingBanner && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="glass-panel w-full max-w-md rounded-3xl p-6 border-rose-500/30 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/80 backdrop-blur-md">
+          <div className="bg-[#1f2940] border border-rose-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center gap-3 text-rose-400">
               <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30">
                 <AlertCircle className="w-6 h-6" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">Delete Banner</h3>
-                <p className="text-xs text-slate-400">Confirm deletion of banner slide.</p>
+                <p className="text-xs text-[#A0AEC0]">Confirm deletion of banner slide.</p>
               </div>
             </div>
 
@@ -674,18 +674,18 @@ export default function BannersView() {
               Are you sure you want to delete banner <strong className="text-white">"{deletingBanner.title}"</strong>? It will immediately be removed from the user website hero slider.
             </p>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2c3754]">
               <button
                 onClick={() => setDeletingBanner(null)}
                 disabled={isDeleting}
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 cursor-pointer"
+                className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-slate-300 border border-[#2c3754] cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteBanner}
                 disabled={isDeleting}
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-rose-600 hover:bg-rose-500 text-white shadow-[0_0_15px_rgba(244,63,94,0.4)] disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
+                className="px-4 py-2 text-xs font-semibold rounded-xl bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
               >
                 {isDeleting ? (
                   <>

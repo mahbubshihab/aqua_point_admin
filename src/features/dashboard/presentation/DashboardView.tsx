@@ -265,20 +265,20 @@ export default function DashboardView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Dashboard Overview
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live Sync
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754] flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4cceac] animate-pulse" /> Live Sync
           </span>
         </div>
         <Link
           href="/requests"
-          className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
+          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Wrench className="w-4 h-4 stroke-[2.5]" /> View Service Queue ({loading.requests ? '...' : activeRequestsCount})
         </Link>
       </div>
 
       {/* Unified Section Toolbar Bar */}
-      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10">
+      <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
           {[
             { id: 'all', label: 'System Overview' },
@@ -290,8 +290,8 @@ export default function DashboardView() {
               key={tab.id}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap ${
                 idx === 0
-                  ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                  : 'bg-slate-950/70 text-slate-400 border border-slate-800/80'
+                  ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                  : 'bg-[#141b2d] text-slate-400 border border-[#2c3754]'
               }`}
             >
               {tab.label}
@@ -303,140 +303,140 @@ export default function DashboardView() {
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Total Customers */}
-        <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between hover:border-[#00BCE1]/40 hover:-translate-y-1 transition-all duration-300 shadow-xl shadow-cyan-950/10 group">
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#4cceac]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Customers</span>
-            <div className="p-2.5 rounded-xl bg-[#00BCE1]/10 border border-[#00BCE1]/20 text-[#00BCE1] group-hover:scale-110 transition-transform">
+            <div className="bg-[#4cceac]/15 text-[#4cceac] p-3.5 rounded-2xl border border-[#4cceac]/30 group-hover:scale-110 transition-transform">
               <Users className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4">
             {loading.customers ? (
               <div className="flex items-center gap-2 my-1">
-                <Loader2 className="w-5 h-5 animate-spin text-[#00BCE1]" />
+                <Loader2 className="w-5 h-5 animate-spin text-[#4cceac]" />
                 <span className="text-sm font-semibold text-slate-400 animate-pulse">Syncing...</span>
               </div>
             ) : (
-              <h3 className="text-2xl font-extrabold text-white tracking-tight">
+              <h3 className="text-3xl font-extrabold text-white tracking-tight">
                 {customersCount.toLocaleString()}
               </h3>
             )}
-            <span className="text-[11px] text-emerald-400 font-semibold mt-1 inline-block">
+            <span className="text-[11px] text-[#4cceac] font-semibold mt-1 inline-block">
               {customersCount === 0 ? '0 registered customers' : '↑ Live from Firestore'}
             </span>
           </div>
-          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#4cceac]/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 
         {/* Card 2: Active Requests */}
-        <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between hover:border-amber-500/40 hover:-translate-y-1 transition-all duration-300 shadow-xl shadow-cyan-950/10 group">
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#4cceac]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Active Requests</span>
-            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 group-hover:scale-110 transition-transform">
+            <div className="bg-[#4cceac]/15 text-[#4cceac] p-3.5 rounded-2xl border border-[#4cceac]/30 group-hover:scale-110 transition-transform">
               <Wrench className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4">
             {loading.requests ? (
               <div className="flex items-center gap-2 my-1">
-                <Loader2 className="w-5 h-5 animate-spin text-amber-400" />
+                <Loader2 className="w-5 h-5 animate-spin text-[#4cceac]" />
                 <span className="text-sm font-semibold text-slate-400 animate-pulse">Syncing...</span>
               </div>
             ) : (
-              <h3 className="text-2xl font-extrabold text-white tracking-tight">
+              <h3 className="text-3xl font-extrabold text-white tracking-tight">
                 {activeRequestsCount.toLocaleString()}
               </h3>
             )}
-            <span className="text-[11px] text-amber-300 font-semibold mt-1 inline-block">
+            <span className="text-[11px] text-[#4cceac] font-semibold mt-1 inline-block">
               {urgentRequestsCount > 0 ? `${urgentRequestsCount} Urgent Priority` : '0 Urgent Priority'}
             </span>
           </div>
-          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#4cceac]/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 
         {/* Card 3: Products Catalog */}
-        <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between hover:border-blue-500/40 hover:-translate-y-1 transition-all duration-300 shadow-xl shadow-cyan-950/10 group">
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#4cceac]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Products Catalog</span>
-            <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
+            <div className="bg-[#4cceac]/15 text-[#4cceac] p-3.5 rounded-2xl border border-[#4cceac]/30 group-hover:scale-110 transition-transform">
               <Package className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4">
             {loading.products ? (
               <div className="flex items-center gap-2 my-1">
-                <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
+                <Loader2 className="w-5 h-5 animate-spin text-[#4cceac]" />
                 <span className="text-sm font-semibold text-slate-400 animate-pulse">Syncing...</span>
               </div>
             ) : (
-              <h3 className="text-2xl font-extrabold text-white tracking-tight">
+              <h3 className="text-3xl font-extrabold text-white tracking-tight">
                 {productsCount.toLocaleString()}
               </h3>
             )}
-            <span className="text-[11px] text-blue-300 font-semibold mt-1 inline-block">
+            <span className="text-[11px] text-[#4cceac] font-semibold mt-1 inline-block">
               {loading.categories ? '...' : `${categoriesCount} Categories Live`}
             </span>
           </div>
-          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#4cceac]/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 
         {/* Card 4: Total Revenue */}
-        <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between hover:border-emerald-500/40 hover:-translate-y-1 transition-all duration-300 shadow-xl shadow-cyan-950/10 group">
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#4cceac]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Revenue</span>
-            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
+            <div className="bg-[#4cceac]/15 text-[#4cceac] p-3.5 rounded-2xl border border-[#4cceac]/30 group-hover:scale-110 transition-transform">
               <CreditCard className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4">
             {loading.revenue ? (
               <div className="flex items-center gap-2 my-1">
-                <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
+                <Loader2 className="w-5 h-5 animate-spin text-[#4cceac]" />
                 <span className="text-sm font-semibold text-slate-400 animate-pulse">Syncing...</span>
               </div>
             ) : (
-              <h3 className="text-2xl font-extrabold text-white tracking-tight">
+              <h3 className="text-3xl font-extrabold text-white tracking-tight">
                 ৳{totalRevenue.toLocaleString()}
               </h3>
             )}
-            <span className="text-[11px] text-emerald-400 font-semibold mt-1 inline-block">
+            <span className="text-[11px] text-[#4cceac] font-semibold mt-1 inline-block">
               Completed orders total
             </span>
           </div>
-          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#4cceac]/10 rounded-full blur-2xl pointer-events-none" />
         </div>
       </div>
 
       {/* System Overview & TDS Health Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Water Quality Index */}
-        <div className="lg:col-span-2 backdrop-blur-xl bg-slate-900/80 border border-[#00BCE1]/30 rounded-2xl p-6 relative shadow-2xl shadow-cyan-950/20">
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+        <div className="lg:col-span-2 bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 relative shadow-xl">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#2c3754]">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Activity className="w-4 h-4 text-[#00BCE1]" /> Water Quality Index
+              <Activity className="w-4 h-4 text-[#4cceac]" /> Water Quality Index
             </h2>
-            <span className="px-3 py-1 text-xs font-semibold rounded-full bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/30 shadow-[0_0_10px_rgba(0,188,225,0.2)]">
+            <span className="px-3 py-1 text-xs font-semibold rounded-full bg-[#4cceac]/15 text-[#4cceac] border border-[#4cceac]/30 shadow-[0_0_10px_rgba(76,206,172,0.2)]">
               Optimal Grade A
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+            <div className="p-4 rounded-xl bg-[#141b2d] border border-[#2c3754]">
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Avg Output TDS</p>
-              <p className="text-2xl font-extrabold text-[#00BCE1] mt-1">42 <span className="text-xs text-slate-400 font-normal">PPM</span></p>
-              <span className="text-[10px] text-emerald-400 font-medium">Pure Mineral Water</span>
+              <p className="text-2xl font-extrabold text-[#4cceac] mt-1">42 <span className="text-xs text-slate-400 font-normal">PPM</span></p>
+              <span className="text-[10px] text-[#4cceac] font-medium">Pure Mineral Water</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+            <div className="p-4 rounded-xl bg-[#141b2d] border border-[#2c3754]">
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Avg Filter Lifespan</p>
-              <p className="text-2xl font-extrabold text-blue-400 mt-1">88 <span className="text-xs text-slate-400 font-normal">%</span></p>
+              <p className="text-2xl font-extrabold text-[#00BCE1] mt-1">88 <span className="text-xs text-slate-400 font-normal">%</span></p>
               <span className="text-[10px] text-slate-400 font-medium">Next cycle in 45 days</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+            <div className="p-4 rounded-xl bg-[#141b2d] border border-[#2c3754]">
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Daily Purified Water</p>
               <p className="text-2xl font-extrabold text-white mt-1">45.2 <span className="text-xs text-slate-400 font-normal">kL</span></p>
-              <span className="text-[10px] text-[#00BCE1] font-medium">Peak demand high</span>
+              <span className="text-[10px] text-[#4cceac] font-medium">Peak demand high</span>
             </div>
           </div>
 
@@ -444,10 +444,10 @@ export default function DashboardView() {
           <div className="space-y-3">
             <div className="flex justify-between text-xs text-slate-300">
               <span className="font-medium">TDS Purity Level (0 - 150 PPM scale)</span>
-              <span className="text-[#00BCE1] font-bold">42 PPM (Ideal Drinking Range)</span>
+              <span className="text-[#4cceac] font-bold">42 PPM (Ideal Drinking Range)</span>
             </div>
-            <div className="w-full h-3 rounded-full bg-slate-950 overflow-hidden border border-slate-800 p-0.5 shadow-inner">
-              <div className="h-full rounded-full bg-gradient-to-r from-[#00BCE1] via-blue-500 to-indigo-500 w-[28%] shadow-[0_0_12px_#00BCE1]" />
+            <div className="w-full h-3 rounded-full bg-[#141b2d] overflow-hidden border border-[#2c3754] p-0.5 shadow-inner">
+              <div className="h-full rounded-full bg-gradient-to-r from-[#4cceac] to-[#00BCE1] w-[28%] shadow-[0_0_12px_#4cceac]" />
             </div>
             <div className="flex justify-between text-[10px] text-slate-500">
               <span>0 (Ultra Pure)</span>
@@ -459,53 +459,53 @@ export default function DashboardView() {
         </div>
 
         {/* Equipment Status */}
-        <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between shadow-2xl">
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 flex flex-col justify-between shadow-xl">
           <div>
-            <h2 className="text-base font-bold text-white flex items-center gap-2 mb-6 pb-4 border-b border-slate-800">
-              <Zap className="w-4 h-4 text-[#00BCE1]" /> Equipment Status
+            <h2 className="text-base font-bold text-white flex items-center gap-2 mb-6 pb-4 border-b border-[#2c3754]">
+              <Zap className="w-4 h-4 text-[#4cceac]" /> Equipment Status
             </h2>
             
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#141b2d] border border-[#2c3754]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#10B981]" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#4cceac] shadow-[0_0_8px_#4cceac]" />
                   <span className="text-xs font-semibold text-slate-200">Active RO Units</span>
                 </div>
-                <span className="text-xs font-bold text-white">{productsCount > 0 ? productsCount : 3710}</span>
+                <span className="text-xs font-bold text-[#4cceac]">{productsCount > 0 ? productsCount : 3710}</span>
               </div>
 
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#141b2d] border border-[#2c3754]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_#F59E0B]" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#f59e0b] shadow-[0_0_8px_#f59e0b]" />
                   <span className="text-xs font-semibold text-slate-200">Maintenance Warnings</span>
                 </div>
-                <span className="text-xs font-bold text-amber-300">142</span>
+                <span className="text-xs font-bold text-[#f59e0b]">142</span>
               </div>
 
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#141b2d] border border-[#2c3754]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_#EF4444]" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#ef4444] shadow-[0_0_8px_#ef4444]" />
                   <span className="text-xs font-semibold text-slate-200">Filter Replacement Due</span>
                 </div>
-                <span className="text-xs font-bold text-rose-300">40</span>
+                <span className="text-xs font-bold text-[#ef4444]">40</span>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-slate-800">
+          <div className="mt-6 pt-4 border-t border-[#2c3754]">
             <Link 
               href="/products" 
-              className="w-full py-3 text-xs font-bold rounded-xl bg-slate-950 hover:bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/30 flex items-center justify-center gap-2 transition-all duration-200 shadow-sm"
+              className="w-full py-3 text-xs font-bold rounded-xl bg-[#141b2d] hover:bg-[#4cceac]/15 text-[#4cceac] border border-[#2c3754] flex items-center justify-center gap-2 transition-all duration-200 shadow-sm"
             >
-              Manage Products & Devices <ArrowUpRight className="w-3.5 h-3.5 text-[#00BCE1]" />
+              Manage Products & Devices <ArrowUpRight className="w-3.5 h-3.5 text-[#4cceac]" />
             </Link>
           </div>
         </div>
       </div>
 
       {/* Service Requests Interactive Table */}
-      <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
-        <div className="p-6 border-b border-slate-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-xl">
+        <div className="p-6 border-b border-[#2c3754] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-base font-bold text-white flex items-center gap-2">
               <Wrench className="w-4 h-4 text-[#4cceac]" /> Recent Service Requests
@@ -514,7 +514,7 @@ export default function DashboardView() {
           </div>
 
           {/* Filter tabs */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#141b2d] border border-slate-700">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#141b2d] border border-[#2c3754]">
             {['All', 'Pending', 'In Progress', 'Completed'].map((status) => (
               <button
                 key={status}
@@ -534,7 +534,7 @@ export default function DashboardView() {
         {/* Requests Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-200">
-            <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
+            <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-[#2c3754]">
               <tr>
                 <th className="py-3.5 px-4">Request ID</th>
                 <th className="py-3.5 px-4">Customer</th>
@@ -545,7 +545,7 @@ export default function DashboardView() {
                 <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
+            <tbody className="divide-y divide-[#2c3754]/50 bg-[#1f2940]">
               {filteredRequests.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-8 text-slate-500">
@@ -554,7 +554,7 @@ export default function DashboardView() {
                 </tr>
               ) : (
                 filteredRequests.map((req) => (
-                  <tr key={req.id} className="hover:bg-[#2c3754] transition-colors">
+                  <tr key={req.id} className="hover:bg-[#2c3754]/30 transition-colors">
                     <td className="py-4 px-4 font-mono font-bold text-[#4cceac]">
                       {req.id}
                       {req.priority === 'Urgent' && (
@@ -591,7 +591,7 @@ export default function DashboardView() {
                     <td className="py-4 px-4 text-right">
                       <Link
                         href="/requests"
-                        className="p-2 rounded-xl bg-[#141b2d] border border-slate-700 hover:border-[#4cceac]/50 text-slate-300 hover:text-[#4cceac] inline-flex items-center gap-1 transition-all"
+                        className="p-2 rounded-xl bg-[#141b2d] border border-[#2c3754] hover:border-[#4cceac]/50 text-slate-300 hover:text-[#4cceac] inline-flex items-center gap-1 transition-all"
                       >
                         <Eye className="w-3.5 h-3.5 text-[#4cceac]" /> Details
                       </Link>

@@ -30,7 +30,7 @@ export default function TableFooter({
           type="button"
           disabled={currentPage <= 1}
           onClick={() => onPageChange?.(currentPage - 1)}
-          className="px-3 py-1.5 rounded-lg bg-[#1f2940] text-slate-200 hover:text-white hover:bg-[#141b2d] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer border border-slate-700/50"
+          className="px-3 py-1.5 rounded-lg bg-[#1f2940] text-slate-200 hover:text-white hover:bg-[#141b2d] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer border border-[#2c3754]"
         >
           Previous
         </button>
@@ -41,7 +41,7 @@ export default function TableFooter({
           type="button"
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange?.(currentPage + 1)}
-          className="px-3 py-1.5 rounded-lg bg-[#1f2940] text-slate-200 hover:text-white hover:bg-[#141b2d] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer border border-slate-700/50"
+          className="px-3 py-1.5 rounded-lg bg-[#1f2940] text-slate-200 hover:text-white hover:bg-[#141b2d] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer border border-[#2c3754]"
         >
           Next
         </button>

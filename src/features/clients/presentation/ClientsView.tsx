@@ -233,7 +233,7 @@ export default function ClientsView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Clients
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
             {filteredClients.length} clients
           </span>
         </div>
@@ -242,15 +242,15 @@ export default function ClientsView() {
             <button
               onClick={handleSeedDefaultClients}
               disabled={isSeeding}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 transition-all flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] border border-[#2c3754] transition-all flex items-center gap-2 cursor-pointer"
             >
-              {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-cyan-400" />}
+              {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-[#4cceac]" />}
               Seed Default Clients
             </button>
           )}
           <button
             onClick={openAddModal}
-            className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer"
+            className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium shadow-lg shadow-[#00BCE1]/20 rounded-xl px-5 py-2.5 text-xs transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[3]" /> Add Corporate Client
           </button>
@@ -259,39 +259,39 @@ export default function ClientsView() {
 
       {/* Overview Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center justify-between shadow-lg">
+        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center justify-between shadow-xl">
           <div className="space-y-1">
             <p className="text-xs text-slate-400 font-medium">Total Clients</p>
-            <p className="text-2xl font-black text-white">{clients.length}</p>
+            <p className="text-3xl font-extrabold text-white">{clients.length}</p>
           </div>
-          <div className="p-3 rounded-xl bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/30">
+          <div className="p-3.5 rounded-2xl bg-[#4cceac]/15 text-[#4cceac] border border-[#4cceac]/30">
             <Building2 className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center justify-between shadow-lg">
+        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center justify-between shadow-xl">
           <div className="space-y-1">
             <p className="text-xs text-slate-400 font-medium">Industries Served</p>
-            <p className="text-2xl font-black text-white">{industries.length}</p>
+            <p className="text-3xl font-extrabold text-white">{industries.length}</p>
           </div>
-          <div className="p-3 rounded-xl bg-blue-500/15 text-blue-400 border border-blue-500/30">
+          <div className="p-3.5 rounded-2xl bg-[#4cceac]/15 text-[#4cceac] border border-[#4cceac]/30">
             <Briefcase className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center justify-between shadow-lg">
+        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center justify-between shadow-xl">
           <div className="space-y-1">
             <p className="text-xs text-slate-400 font-medium">Showcase Status</p>
-            <p className="text-2xl font-black text-emerald-400">Live Active</p>
+            <p className="text-3xl font-extrabold text-[#4cceac]">Live Active</p>
           </div>
-          <div className="p-3 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+          <div className="p-3.5 rounded-2xl bg-[#4cceac]/15 text-[#4cceac] border border-[#4cceac]/30">
             <Globe className="w-6 h-6" />
           </div>
         </div>
       </div>
 
       {/* Unified Filter Bar (Single Consolidated Bar) */}
-      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 space-y-3">
+      <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
             {/* In-Page Search Input */}
@@ -302,7 +302,7 @@ export default function ClientsView() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by client name or industry sector..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#4cceac] transition-all"
               />
             </div>
 
@@ -312,7 +312,7 @@ export default function ClientsView() {
                 <select
                   value={selectedIndustry}
                   onChange={(e) => setSelectedIndustry(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 cursor-pointer transition-all"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] cursor-pointer transition-all"
                 >
                   <option value="All">All Industries ({clients.length})</option>
                   {industries.map((ind) => (
@@ -325,13 +325,13 @@ export default function ClientsView() {
             )}
           </div>
 
-          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-800/80">
-            <div className="p-1 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-1">
+          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-[#2c3754]">
+            <div className="p-1 rounded-xl bg-[#141b2d] border border-[#2c3754] flex items-center gap-1">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
+                    ? 'bg-[#3e4396] text-white shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
                 title="Grid View"
@@ -342,7 +342,7 @@ export default function ClientsView() {
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
+                    ? 'bg-[#3e4396] text-white shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
                 title="Table View"
@@ -355,18 +355,18 @@ export default function ClientsView() {
 
         {/* Industry Filter Tabs */}
         {industries.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-slate-800/60 scrollbar-none">
+          <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-[#2c3754] scrollbar-none">
             <button
               onClick={() => setSelectedIndustry('All')}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                 selectedIndustry === 'All'
-                  ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                  : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
+                  ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                  : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
               }`}
             >
               <span>All Clients</span>
               <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                selectedIndustry === 'All' ? 'bg-slate-950/25 text-slate-950' : 'bg-white/10 text-[#00BCE1]'
+                selectedIndustry === 'All' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
               }`}>
                 {clients.length}
               </span>
@@ -381,13 +381,13 @@ export default function ClientsView() {
                   onClick={() => setSelectedIndustry(ind)}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                     isActive
-                      ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                      : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
+                      ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                      : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
                   }`}
                 >
                   <span>{ind}</span>
                   <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                    isActive ? 'bg-slate-950/25 text-slate-950' : 'bg-white/10 text-[#00BCE1]'
+                    isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
                   }`}>
                     {count}
                   </span>
@@ -400,15 +400,15 @@ export default function ClientsView() {
 
       {/* Loading & Empty States */}
       {loading ? (
-        <div className="glass-panel rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
-          <p className="text-xs text-slate-400">Loading corporate clients from Cloud Firestore...</p>
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
+          <Loader2 className="w-10 h-10 text-[#4cceac] animate-spin" />
+          <p className="text-xs text-[#A0AEC0]">Loading corporate clients from Cloud Firestore...</p>
         </div>
       ) : filteredClients.length === 0 ? (
-        <div className="glass-panel rounded-2xl p-16 text-center space-y-4">
-          <Building2 className="w-12 h-12 text-slate-600 mx-auto" />
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 text-center space-y-4">
+          <Building2 className="w-12 h-12 text-[#A0AEC0] mx-auto" />
           <h3 className="text-base font-bold text-white">No Corporate Clients Found</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+          <p className="text-xs text-[#A0AEC0] max-w-sm mx-auto">
             {searchTerm
               ? 'No clients match your filter term.'
               : 'Add your corporate clients (e.g. BRAC, Navana Group, TECNO, Bangladesh Army) to show on user website.'}
@@ -417,14 +417,14 @@ export default function ClientsView() {
             <button
               onClick={handleSeedDefaultClients}
               disabled={isSeeding}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 transition-all flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] transition-all flex items-center gap-2 cursor-pointer"
             >
-              {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-cyan-400" />}
+              {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-[#4cceac]" />}
               Seed Default Clients
             </button>
             <button
               onClick={openAddModal}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
+              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 shadow-md transition-all flex items-center gap-2 cursor-pointer font-bold"
             >
               <Plus className="w-4 h-4 stroke-[3]" /> Add Corporate Client
             </button>
@@ -434,10 +434,10 @@ export default function ClientsView() {
         /* Grid View */
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredClients.map((client) => (
-            <div key={client.id} className="glass-panel glass-card-hover rounded-2xl overflow-hidden p-5 flex flex-col justify-between space-y-4 group relative">
+            <div key={client.id} className="bg-[#1f2940] border border-[#2c3754] hover:border-[#4cceac]/50 rounded-2xl overflow-hidden p-5 flex flex-col justify-between space-y-4 group relative transition-all">
               <div className="space-y-4 text-center">
                 {/* Logo Container */}
-                <div className="relative w-full h-32 rounded-xl bg-white/95 border border-slate-200/80 flex items-center justify-center p-4 overflow-hidden shadow-inner group-hover:scale-[1.02] transition-transform duration-300">
+                <div className="relative w-full h-32 rounded-xl bg-white/95 border border-[#2c3754] flex items-center justify-center p-4 overflow-hidden shadow-inner group-hover:scale-[1.02] transition-transform duration-300">
                   <img
                     src={client.logoUrl || 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?q=80&w=400&auto=format&fit=crop'}
                     alt={client.name}
@@ -447,27 +447,27 @@ export default function ClientsView() {
 
                 {/* Info */}
                 <div className="space-y-1">
-                  <h3 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
+                  <h3 className="text-base font-bold text-white group-hover:text-[#4cceac] transition-colors">
                     {client.name}
                   </h3>
-                  <span className="inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300">
+                  <span className="inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-[#141b2d] border border-[#2c3754] text-[#4cceac]">
                     {client.industry || 'Corporate Partner'}
                   </span>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="pt-3 border-t border-white/5 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-[#2c3754] flex items-center justify-end gap-2">
                 <button
                   onClick={() => openEditModal(client)}
-                  className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/30 transition-all cursor-pointer"
+                  className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
                   title="Edit Client"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => setDeletingClient(client)}
-                  className="p-2 rounded-xl bg-slate-900 hover:bg-rose-950 text-rose-400 border border-rose-500/30 transition-all cursor-pointer"
+                  className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
                   title="Delete Client"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -478,10 +478,10 @@ export default function ClientsView() {
         </div>
       ) : (
         /* Table View */
-        <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-200">
-              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
+              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-[#2c3754]">
                 <tr>
                   <th className="py-3.5 px-4">Client Logo</th>
                   <th className="py-3.5 px-4">Client Name</th>
@@ -489,11 +489,11 @@ export default function ClientsView() {
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
+              <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
                 {filteredClients.map((client) => (
                   <tr key={client.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-3 px-4">
-                      <div className="w-12 h-12 rounded-xl bg-white p-1.5 border border-slate-200 flex items-center justify-center overflow-hidden">
+                      <div className="w-12 h-12 rounded-xl bg-white p-1.5 border border-[#2c3754] flex items-center justify-center overflow-hidden">
                         <img
                           src={client.logoUrl}
                           alt={client.name}
@@ -511,14 +511,14 @@ export default function ClientsView() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => openEditModal(client)}
-                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-slate-700 cursor-pointer transition-all"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setDeletingClient(client)}
-                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-slate-700 cursor-pointer transition-all"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-[#2c3754] cursor-pointer transition-all"
                           title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -536,16 +536,16 @@ export default function ClientsView() {
 
       {/* Add / Edit Client Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="glass-panel-cyan w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/80 backdrop-blur-md">
+          <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                {editingClientId ? <Edit2 className="w-5 h-5 text-cyan-400" /> : <Plus className="w-5 h-5 text-cyan-400" />}
+                {editingClientId ? <Edit2 className="w-5 h-5 text-[#4cceac]" /> : <Plus className="w-5 h-5 text-[#4cceac]" />}
                 {editingClientId ? 'Edit Corporate Client' : 'Add New Corporate Client'}
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 cursor-pointer"
+                className="p-1 rounded-xl text-[#A0AEC0] hover:text-white hover:bg-[#141b2d] cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -568,7 +568,7 @@ export default function ClientsView() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. BRAC, Navana Group, TECNO"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
                   />
                 </div>
 
@@ -579,7 +579,7 @@ export default function ClientsView() {
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
                     placeholder="e.g. Defense, Conglomerate, Tech"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-cyan-400 focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#4cceac] focus:outline-none focus:border-[#4cceac]"
                   />
                 </div>
               </div>
@@ -587,25 +587,25 @@ export default function ClientsView() {
               {/* Cloudinary Image Upload */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Client Logo Image (Cloudinary Folder: <span className="text-cyan-400">clients/</span>)
+                  Client Logo Image (Cloudinary Folder: <span className="text-[#4cceac]">clients/</span>)
                 </label>
-                <div className="border-2 border-dashed border-cyan-500/30 rounded-2xl p-4 text-center hover:border-cyan-400 transition-colors bg-slate-900/50">
+                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#4cceac] transition-colors bg-[#141b2d]">
                   {previewUrl || logoUrl ? (
-                    <div className="relative w-40 h-28 mx-auto rounded-xl overflow-hidden bg-white p-2 border border-cyan-400/40 flex items-center justify-center">
+                    <div className="relative w-40 h-28 mx-auto rounded-xl overflow-hidden bg-white p-2 border border-[#2c3754] flex items-center justify-center">
                       <img src={previewUrl || logoUrl} alt="Preview" className="max-h-full max-w-full object-contain" />
                       <button
                         type="button"
                         onClick={() => { setSelectedFile(null); setPreviewUrl(''); setLogoUrl(''); }}
-                        className="absolute top-1.5 right-1.5 p-1 bg-slate-950/80 rounded-full text-white cursor-pointer hover:bg-rose-600"
+                        className="absolute top-1.5 right-1.5 p-1 bg-[#141b2d] rounded-full text-white cursor-pointer hover:bg-rose-600"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (
                     <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-3">
-                      <Upload className="w-8 h-8 text-cyan-400 animate-bounce" />
+                      <Upload className="w-8 h-8 text-[#4cceac] animate-bounce" />
                       <span className="text-xs text-slate-300">Click to upload client logo photo</span>
-                      <span className="text-[10px] text-slate-500 font-mono">Folder: clients/ | Preset: aqua_point</span>
+                      <span className="text-[10px] text-[#A0AEC0] font-mono">Folder: clients/ | Preset: aqua_point</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -627,22 +627,22 @@ export default function ClientsView() {
                   value={logoUrl}
                   onChange={(e) => setLogoUrl(e.target.value)}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
                 />
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-white/10">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#2c3754]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-slate-300 border border-[#2c3754] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-[0_0_15px_rgba(0,229,255,0.4)] disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
+                  className="px-5 py-2 text-xs font-semibold rounded-xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
                 >
                   {isSaving ? (
                     <>
@@ -661,15 +661,15 @@ export default function ClientsView() {
 
       {/* Delete Confirmation Modal */}
       {deletingClient && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="glass-panel w-full max-w-md rounded-3xl p-6 border-rose-500/30 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/80 backdrop-blur-md">
+          <div className="bg-[#1f2940] border border-rose-500/30 w-full max-w-md rounded-3xl p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center gap-3 text-rose-400">
               <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30">
                 <AlertCircle className="w-6 h-6" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">Delete Corporate Client</h3>
-                <p className="text-xs text-slate-400">Confirm deletion from Firestore.</p>
+                <p className="text-xs text-[#A0AEC0]">Confirm deletion from Firestore.</p>
               </div>
             </div>
 
@@ -677,18 +677,18 @@ export default function ClientsView() {
               Are you sure you want to remove <strong className="text-white">"{deletingClient.name}"</strong>? It will no longer be visible on the public website client showcase.
             </p>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2c3754]">
               <button
                 onClick={() => setDeletingClient(null)}
                 disabled={isDeleting}
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 cursor-pointer"
+                className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-slate-300 border border-[#2c3754] cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteClient}
                 disabled={isDeleting}
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-rose-600 hover:bg-rose-500 text-white shadow-[0_0_15px_rgba(244,63,94,0.4)] disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
+                className="px-4 py-2 text-xs font-semibold rounded-xl bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold"
               >
                 {isDeleting ? (
                   <>

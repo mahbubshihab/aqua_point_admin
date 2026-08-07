@@ -93,14 +93,14 @@ export default function InquiriesView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Inquiries
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#1f2940] text-[#4cceac] border border-[#2c3754]">
             {filteredInquiries.length} messages
           </span>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => alert('Compose new customer message / reply dispatch!')}
-            className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
+            className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-[#4cceac] text-[#141b2d] hover:bg-[#4cceac]/90 shadow-lg shadow-[#4cceac]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
           >
             <MessageSquare className="w-4 h-4 stroke-[2.5]" /> + New Inquiry
           </button>
@@ -108,18 +108,18 @@ export default function InquiriesView() {
       </div>
 
       {/* Unified Filter Bar (Single Consolidated Bar) */}
-      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 space-y-3">
+      <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
             {/* In-Page Search Input */}
             <div className="relative flex-1 w-full">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A0AEC0]" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by customer name, phone, email or subject..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-[#A0AEC0] focus:outline-none focus:border-[#4cceac] focus:ring-1 focus:ring-[#4cceac]/50 transition-all"
               />
             </div>
 
@@ -128,7 +128,7 @@ export default function InquiriesView() {
               <select
                 value={activeFilter}
                 onChange={(e) => setActiveFilter(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 cursor-pointer transition-all"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] focus:ring-1 focus:ring-[#4cceac]/50 cursor-pointer transition-all"
               >
                 <option value="All">All Inquiries</option>
                 <option value="New">New Messages</option>
@@ -139,14 +139,14 @@ export default function InquiriesView() {
           </div>
 
           {/* View Toggles */}
-          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-800/80">
-            <div className="p-1 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-1">
+          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-[#2c3754]">
+            <div className="p-1 rounded-xl bg-[#141b2d] border border-[#2c3754] flex items-center gap-1">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40'
+                    : 'text-[#A0AEC0] hover:text-white'
                 }`}
                 title="Grid View"
               >
@@ -156,8 +156,8 @@ export default function InquiriesView() {
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40'
+                    : 'text-[#A0AEC0] hover:text-white'
                 }`}
                 title="Table View"
               >
@@ -168,7 +168,7 @@ export default function InquiriesView() {
         </div>
 
         {/* Status Filter Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-slate-800/60 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-[#2c3754] scrollbar-none">
           {['All', 'New', 'In Progress', 'Resolved'].map((filter) => {
             const count = filter === 'All' ? inquiries.length : inquiries.filter(i => i.status === filter).length;
             const isActive = activeFilter === filter;
@@ -178,13 +178,13 @@ export default function InquiriesView() {
                 onClick={() => setActiveFilter(filter)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                   isActive
-                    ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                    : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
+                    ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-md'
+                    : 'bg-[#141b2d] text-[#A0AEC0] border border-[#2c3754] hover:text-white'
                 }`}
               >
                 <span>{filter}</span>
                 <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                  isActive ? 'bg-slate-950/25 text-slate-950' : 'bg-white/10 text-[#00BCE1]'
+                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
                 }`}>
                   {count}
                 </span>
@@ -196,24 +196,24 @@ export default function InquiriesView() {
 
       {/* Inquiries List */}
       {loading ? (
-        <div className="glass-panel rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
-          <p className="text-xs text-slate-400">Loading customer messages...</p>
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
+          <Loader2 className="w-10 h-10 text-[#4cceac] animate-spin" />
+          <p className="text-xs text-[#A0AEC0]">Loading customer messages...</p>
         </div>
       ) : filteredInquiries.length === 0 ? (
-        <div className="glass-panel rounded-2xl p-16 text-center space-y-3">
-          <MessageSquare className="w-12 h-12 text-slate-600 mx-auto" />
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 text-center space-y-3">
+          <MessageSquare className="w-12 h-12 text-[#A0AEC0] mx-auto" />
           <h3 className="text-base font-bold text-white">No Inquiries Found</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+          <p className="text-xs text-[#A0AEC0] max-w-sm mx-auto">
             {searchTerm ? 'No customer messages match your search term.' : 'There are currently no customer contact messages.'}
           </p>
         </div>
       ) : viewMode === 'table' ? (
         /* Table View */
-        <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-200">
-              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
+              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-[#2c3754]">
                 <tr>
                   <th className="py-3.5 px-4">Customer</th>
                   <th className="py-3.5 px-4">Contact</th>
@@ -223,7 +223,7 @@ export default function InquiriesView() {
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
+              <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
                 {filteredInquiries.map((inq) => (
                   <tr key={inq.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-4 px-4 font-bold text-white">{inq.name}</td>
@@ -232,7 +232,7 @@ export default function InquiriesView() {
                       {inq.email && <div className="text-[11px] text-[#4cceac]">{inq.email}</div>}
                     </td>
                     <td className="py-4 px-4 font-semibold text-[#4cceac]">{inq.subject}</td>
-                    <td className="py-4 px-4 text-slate-400 max-w-xs truncate">{inq.message}</td>
+                    <td className="py-4 px-4 text-[#A0AEC0] max-w-xs truncate">{inq.message}</td>
                     <td className="py-4 px-4">
                       <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
                         inq.status === 'Resolved'
@@ -248,7 +248,7 @@ export default function InquiriesView() {
                       <button
                         onClick={() => handleDelete(inq.id)}
                         disabled={isDeleting === inq.id}
-                        className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-slate-700 cursor-pointer disabled:opacity-50 transition-all"
+                        className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-[#2c3754] cursor-pointer disabled:opacity-50 transition-all"
                         title="Delete Inquiry"
                       >
                         {isDeleting === inq.id ? (
@@ -270,9 +270,9 @@ export default function InquiriesView() {
           {filteredInquiries.map((inq) => (
             <div
               key={inq.id}
-              className="bg-[#1f2940] border border-slate-700/50 rounded-2xl p-6 transition-all duration-200"
+              className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 transition-all duration-200"
             >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-700/50">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#2c3754]">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#3e4396] text-[#4cceac] flex items-center justify-center font-bold text-sm border border-[#4cceac]/40">
                     {inq.name.charAt(0).toUpperCase()}
@@ -290,7 +290,7 @@ export default function InquiriesView() {
                         {inq.status || 'New'}
                       </span>
                     </h3>
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-0.5">
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-[#A0AEC0] mt-0.5">
                       <span className="flex items-center gap-1">
                         <Phone className="w-3 h-3 text-[#4cceac]" /> {inq.phone}
                       </span>
@@ -315,7 +315,7 @@ export default function InquiriesView() {
                             : st === 'In Progress'
                             ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
                             : 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
-                          : 'bg-[#141b2d] text-slate-400 border-slate-700 hover:text-white'
+                          : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754] hover:text-white'
                       }`}
                     >
                       {st}
@@ -324,7 +324,7 @@ export default function InquiriesView() {
                   <button
                     onClick={() => handleDelete(inq.id)}
                     disabled={isDeleting === inq.id}
-                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-slate-700 cursor-pointer disabled:opacity-50 ml-2 transition-all"
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-[#2c3754] cursor-pointer disabled:opacity-50 ml-2 transition-all"
                     title="Delete Inquiry"
                   >
                     {isDeleting === inq.id ? (
@@ -341,7 +341,7 @@ export default function InquiriesView() {
                 <div className="font-bold text-[#4cceac] flex items-center gap-1.5 text-sm">
                   <Tag className="w-3.5 h-3.5" /> Subject: {inq.subject}
                 </div>
-                <div className="p-3.5 rounded-xl bg-[#141b2d] border border-slate-700/50 text-slate-300 leading-relaxed">
+                <div className="p-3.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-300 leading-relaxed">
                   {inq.message}
                 </div>
               </div>
