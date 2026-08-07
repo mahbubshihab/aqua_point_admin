@@ -34,6 +34,7 @@ if (typeof window !== 'undefined') {
 
 // Collection References
 export const PRODUCTS_COLLECTION = 'products';
+export const CATEGORIES_COLLECTION = 'categories';
 export const SERVICES_COLLECTION = 'services';
 export const ORDERS_COLLECTION = 'orders';
 export const INQUIRIES_COLLECTION = 'inquiries';
@@ -42,14 +43,27 @@ export const INQUIRIES_COLLECTION = 'inquiries';
 export interface ProductDoc {
   id: string;
   name: string;
-  model: string;
+  model?: string;
   category: string;
   price: number;
-  warranty: string;
-  description: string;
-  stockStatus: 'In Stock' | 'Low Stock' | 'Pre-Order';
-  filterHealth: number;
+  originalPrice?: number;
+  description?: string;
+  application?: string;
+  warranty?: string;
+  stockStatus: 'In Stock' | 'Low Stock' | 'Out of Stock' | 'Pre-Order';
+  featured?: boolean;
+  filterHealth?: number;
   imageUrl: string;
+  createdAt?: any;
+}
+
+export interface CategoryDoc {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  imageUrl?: string;
+  productCount?: number;
   createdAt?: any;
 }
 
@@ -116,12 +130,15 @@ export function subscribeToProducts(callback: (products: ProductDoc[]) => void) 
       return {
         id: docSnap.id,
         name: data.name || data.title || 'Unnamed Product',
-        model: data.model || 'AP-STANDARD',
+        model: data.model || '',
         category: data.category || 'RO Purifiers',
         price: Number(data.price) || 0,
-        warranty: data.warranty || '1 Year Standard Warranty',
+        originalPrice: data.originalPrice !== undefined && data.originalPrice !== null ? Number(data.originalPrice) : undefined,
         description: data.description || '',
-        stockStatus: data.stockStatus || (data.stock && data.stock > 0 ? 'In Stock' : 'In Stock'),
+        application: data.application || '',
+        warranty: data.warranty || '1 Year Standard Warranty',
+        stockStatus: data.stockStatus || 'In Stock',
+        featured: Boolean(data.featured),
         filterHealth: Number(data.filterHealth) || 100,
         imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop',
         createdAt: data.createdAt,
@@ -138,12 +155,15 @@ export function subscribeToProducts(callback: (products: ProductDoc[]) => void) 
         return {
           id: docSnap.id,
           name: data.name || data.title || 'Unnamed Product',
-          model: data.model || 'AP-STANDARD',
+          model: data.model || '',
           category: data.category || 'RO Purifiers',
           price: Number(data.price) || 0,
-          warranty: data.warranty || '1 Year Standard Warranty',
+          originalPrice: data.originalPrice !== undefined && data.originalPrice !== null ? Number(data.originalPrice) : undefined,
           description: data.description || '',
+          application: data.application || '',
+          warranty: data.warranty || '1 Year Standard Warranty',
           stockStatus: data.stockStatus || 'In Stock',
+          featured: Boolean(data.featured),
           filterHealth: Number(data.filterHealth) || 100,
           imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop',
           createdAt: data.createdAt,
@@ -168,6 +188,45 @@ export async function updateProductInFirestore(id: string, data: Partial<Product
 
 export async function deleteProductFromFirestore(id: string) {
   const docRef = doc(db, PRODUCTS_COLLECTION, id);
+  return await deleteDoc(docRef);
+}
+
+// CATEGORIES
+export function subscribeToCategories(callback: (categories: CategoryDoc[]) => void) {
+  const q = collection(db, CATEGORIES_COLLECTION);
+  return onSnapshot(q, (snapshot) => {
+    const list: CategoryDoc[] = snapshot.docs.map((docSnap) => {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        name: data.name || '',
+        slug: data.slug || '',
+        description: data.description || '',
+        imageUrl: data.imageUrl || '',
+        productCount: Number(data.productCount) || 0,
+        createdAt: data.createdAt,
+      };
+    });
+    callback(list);
+  }, (error) => {
+    console.error('Error fetching categories snapshot:', error);
+  });
+}
+
+export async function addCategoryToFirestore(data: Omit<CategoryDoc, 'id'>) {
+  return await addDoc(collection(db, CATEGORIES_COLLECTION), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateCategoryInFirestore(id: string, data: Partial<CategoryDoc>) {
+  const docRef = doc(db, CATEGORIES_COLLECTION, id);
+  return await updateDoc(docRef, data);
+}
+
+export async function deleteCategoryFromFirestore(id: string) {
+  const docRef = doc(db, CATEGORIES_COLLECTION, id);
   return await deleteDoc(docRef);
 }
 

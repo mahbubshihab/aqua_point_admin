@@ -14,7 +14,7 @@ export interface CloudinaryUploadResponse {
   created_at: string;
 }
 
-export async function uploadToCloudinary(file: File): Promise<string> {
+export async function uploadToCloudinary(file: File, folder: string = 'products'): Promise<string> {
   const cloudName = 'rvoym2gw';
   const uploadPreset = 'aqua_point';
   const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
@@ -22,6 +22,9 @@ export async function uploadToCloudinary(file: File): Promise<string> {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', uploadPreset);
+  if (folder) {
+    formData.append('folder', folder);
+  }
 
   try {
     const response = await fetch(url, {

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Droplets, 
+  Layers,
   Wrench, 
   ShoppingBag,
   MessageSquare,
@@ -26,6 +27,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Products', href: '/products', icon: Droplets },
+  { name: 'Categories', href: '/categories', icon: Layers },
   { name: 'Service Requests', href: '/requests', icon: Wrench, badge: '12' },
   { name: 'Orders', href: '/orders', icon: ShoppingBag },
   { name: 'Inquiries', href: '/inquiries', icon: MessageSquare },
