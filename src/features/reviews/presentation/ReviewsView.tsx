@@ -183,11 +183,19 @@ export default function ReviewsView() {
         </div>
       )}
 
-      {/* Top Action Bar */}
-      <div className="flex items-center justify-end">
+      {/* Page Header Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+            Reviews
+          </h1>
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30">
+            {filteredReviews.length} reviews
+          </span>
+        </div>
         <button
           onClick={openAddModal}
-          className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
+          className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Add Review
         </button>
@@ -195,8 +203,8 @@ export default function ReviewsView() {
 
       {/* Metrics Banner */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="glass-panel p-4 rounded-2xl border border-white/10 flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+        <div className="p-4 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center gap-3 shadow-lg">
+          <div className="p-3 rounded-xl bg-[#00BCE1]/10 border border-[#00BCE1]/30 text-[#00BCE1]">
             <MessageSquareQuote className="w-5 h-5" />
           </div>
           <div>
@@ -205,7 +213,7 @@ export default function ReviewsView() {
           </div>
         </div>
 
-        <div className="glass-panel p-4 rounded-2xl border border-white/10 flex items-center gap-3">
+        <div className="p-4 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center gap-3 shadow-lg">
           <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
             <CheckCircle2 className="w-5 h-5" />
           </div>
@@ -215,7 +223,7 @@ export default function ReviewsView() {
           </div>
         </div>
 
-        <div className="glass-panel p-4 rounded-2xl border border-white/10 flex items-center gap-3">
+        <div className="p-4 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center gap-3 shadow-lg">
           <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
             <AlertCircle className="w-5 h-5" />
           </div>
@@ -225,7 +233,7 @@ export default function ReviewsView() {
           </div>
         </div>
 
-        <div className="glass-panel p-4 rounded-2xl border border-white/10 flex items-center gap-3">
+        <div className="p-4 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center gap-3 shadow-lg">
           <div className="p-3 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400">
             <Star className="w-5 h-5 fill-amber-400" />
           </div>
@@ -236,8 +244,8 @@ export default function ReviewsView() {
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 glass-panel rounded-2xl">
+      {/* Unified Filter Bar (Single Consolidated Bar) */}
+      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -245,18 +253,18 @@ export default function ReviewsView() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by customer name, location, or comment..."
-            className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-900/80 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50"
+            className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
           />
         </div>
 
         <div className="flex items-center gap-3 flex-wrap justify-between sm:justify-end">
-          {/* Status Filter */}
-          <div className="flex items-center p-1 rounded-xl bg-slate-900/80 border border-white/10 text-xs">
+          {/* Status Filter Tabs */}
+          <div className="flex items-center p-1 rounded-xl bg-slate-950/80 border border-slate-800 text-xs">
             <button
               onClick={() => setFilterApproved('all')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-medium ${
                 filterApproved === 'all'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 font-bold'
+                  ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 font-bold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -266,7 +274,7 @@ export default function ReviewsView() {
               onClick={() => setFilterApproved('approved')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-medium ${
                 filterApproved === 'approved'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-bold'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 font-bold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -276,7 +284,7 @@ export default function ReviewsView() {
               onClick={() => setFilterApproved('pending')}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-medium ${
                 filterApproved === 'pending'
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-400/30 font-bold'
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -284,13 +292,13 @@ export default function ReviewsView() {
             </button>
           </div>
 
-          {/* Grid / Table Toggle */}
-          <div className="p-1 rounded-xl bg-slate-900/80 border border-white/10 flex items-center gap-1">
+          {/* View Toggles */}
+          <div className="p-1 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-1">
             <button
               onClick={() => setViewMode('grid')}
               className={`p-2 rounded-lg transition-all cursor-pointer ${
                 viewMode === 'grid'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30'
+                  ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
                   : 'text-slate-400 hover:text-white'
               }`}
               title="Grid View"
@@ -301,7 +309,7 @@ export default function ReviewsView() {
               onClick={() => setViewMode('table')}
               className={`p-2 rounded-lg transition-all cursor-pointer ${
                 viewMode === 'table'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30'
+                  ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
                   : 'text-slate-400 hover:text-white'
               }`}
               title="Table View"

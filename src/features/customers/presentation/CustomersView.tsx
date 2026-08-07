@@ -105,34 +105,42 @@ export default function CustomersView() {
 
   return (
     <div className="space-y-8">
-      {/* Top Action Bar */}
-      <div className="flex items-center justify-end">
-        <button className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold">
+      {/* Page Header Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+            Customers
+          </h1>
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30">
+            {filteredCustomers.length} customers
+          </span>
+        </div>
+        <button className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0">
           <UserPlus className="w-4 h-4 stroke-[2.5]" /> Register Customer
         </button>
       </div>
 
       {/* Stats Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="glass-panel rounded-2xl p-5">
+        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 shadow-lg">
           <div className="flex items-center justify-between text-slate-400 text-xs">
             <span>Total Active Users</span>
-            <Users className="w-4 h-4 text-cyan-400" />
+            <Users className="w-4 h-4 text-[#00BCE1]" />
           </div>
           <p className="text-2xl font-extrabold text-white mt-2">1,428</p>
           <span className="text-[11px] text-emerald-400 mt-1 inline-block">+34 new this week</span>
         </div>
 
-        <div className="glass-panel rounded-2xl p-5">
+        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 shadow-lg">
           <div className="flex items-center justify-between text-slate-400 text-xs">
             <span>Reward Points Issued</span>
             <Gift className="w-4 h-4 text-amber-400" />
           </div>
           <p className="text-2xl font-extrabold text-amber-300 mt-2">342,900 <span className="text-xs text-slate-400 font-normal">PTS</span></p>
-          <span className="text-[11px] text-cyan-400 mt-1 inline-block">Aqua Loyalty Program</span>
+          <span className="text-[11px] text-[#00BCE1] mt-1 inline-block">Aqua Loyalty Program</span>
         </div>
 
-        <div className="glass-panel rounded-2xl p-5">
+        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 shadow-lg">
           <div className="flex items-center justify-between text-slate-400 text-xs">
             <span>Referrals Converted</span>
             <Award className="w-4 h-4 text-emerald-400" />
@@ -142,8 +150,8 @@ export default function CustomersView() {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="glass-panel rounded-2xl p-4 flex items-center gap-4">
+      {/* Unified Filter Bar (Single Consolidated Bar) */}
+      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 flex items-center gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -151,7 +159,7 @@ export default function CustomersView() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search customer by name, email, or referral code..."
-            className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-900/80 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400"
+            className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
           />
         </div>
       </div>

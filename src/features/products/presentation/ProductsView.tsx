@@ -239,21 +239,29 @@ export default function ProductsView() {
         </div>
       )}
 
-      {/* Top Control Bar */}
-      <div className="flex items-center justify-end">
+      {/* Page Header Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+            Products
+          </h1>
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30">
+            {filteredProducts.length} items
+          </span>
+        </div>
         <button
           onClick={openAddModal}
-          className="px-5 py-3 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer"
+          className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Add New Product
         </button>
       </div>
 
-      {/* Control Bar: Search Input + Stock Filter Dropdown + Grid/Table View Toggles */}
-      <div className="space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10">
+      {/* Unified Filter Bar (Single Consolidated Bar) */}
+      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
-            {/* Search Input */}
+            {/* In-Page Search Input */}
             <div className="relative flex-1 w-full">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
@@ -265,14 +273,14 @@ export default function ProductsView() {
               />
             </div>
 
-            {/* Stock Status Filter */}
-            <div className="relative w-full sm:w-40">
+            {/* Stock Filter Dropdown */}
+            <div className="relative w-full sm:w-44">
               <select
                 value={selectedStockFilter}
                 onChange={(e) => setSelectedStockFilter(e.target.value)}
                 className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 cursor-pointer transition-all"
               >
-                <option value="All">All Stock Status</option>
+                <option value="All">All Stock</option>
                 <option value="In Stock">In Stock</option>
                 <option value="Low Stock">Low Stock</option>
                 <option value="Out of Stock">Out of Stock</option>
@@ -282,9 +290,6 @@ export default function ProductsView() {
           </div>
 
           <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-800/80">
-            <span className="text-xs text-slate-400 font-mono">
-              Showing {filteredProducts.length} of {products.length} Products
-            </span>
             <div className="p-1 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-1">
               <button
                 onClick={() => setViewMode('grid')}
@@ -312,14 +317,14 @@ export default function ProductsView() {
           </div>
         </div>
 
-        {/* Category Pills Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {/* Category Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-slate-800/60 scrollbar-none">
           <button
             onClick={() => setSelectedCategoryFilter('All')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
               selectedCategoryFilter === 'All'
                 ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                : 'bg-slate-900/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
+                : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
             }`}
           >
             <span>All Products</span>
@@ -337,10 +342,10 @@ export default function ProductsView() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategoryFilter(cat)}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                   isActive
                     ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                    : 'bg-slate-900/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
+                    : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800/80 hover:border-[#00BCE1]/30'
                 }`}
               >
                 <span>{cat}</span>

@@ -67,20 +67,30 @@ export default function OrdersView() {
         </div>
       )}
 
-      {/* Quick Summary Badges */}
-      <div className="flex items-center justify-end gap-3">
-        <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center gap-2">
-          <Clock className="w-4 h-4 text-amber-400" />
-          <span>{orders.filter(o => o.status === 'Pending').length} Pending</span>
+      {/* Page Header Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+            Orders
+          </h1>
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30">
+            {filteredOrders.length} orders
+          </span>
         </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center gap-2">
-          <PackageCheck className="w-4 h-4 text-cyan-400" />
-          <span>{orders.filter(o => o.status === 'Processing').length} Processing</span>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center gap-2">
+            <Clock className="w-4 h-4 text-amber-400" />
+            <span>{orders.filter(o => o.status === 'Pending').length} Pending</span>
+          </div>
+          <div className="px-3.5 py-1.5 rounded-xl bg-[#00BCE1]/10 border border-[#00BCE1]/30 text-[#00BCE1] text-xs font-semibold flex items-center gap-2">
+            <PackageCheck className="w-4 h-4 text-[#00BCE1]" />
+            <span>{orders.filter(o => o.status === 'Processing').length} Processing</span>
+          </div>
         </div>
       </div>
 
-      {/* Control Bar: Search & Status Filters */}
-      <div className="glass-panel rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Unified Filter Bar (Single Consolidated Bar) */}
+      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -88,19 +98,19 @@ export default function OrdersView() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by customer name, order ID, phone or email..."
-            className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-900/80 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400"
+            className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
           {['All', 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map((status) => (
             <button
               key={status}
               onClick={() => setActiveStatus(status)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                 activeStatus === status
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-[0_0_12px_rgba(0,229,255,0.2)]'
-                  : 'text-slate-400 hover:text-white bg-slate-900/60 border border-white/5'
+                  ? 'bg-[#00BCE1] text-slate-950 font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
+                  : 'text-slate-400 hover:text-white bg-slate-950/70 border border-slate-800/80 hover:border-[#00BCE1]/30'
               }`}
             >
               {status}

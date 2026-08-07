@@ -258,13 +258,21 @@ export default function DashboardView() {
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Top Action Bar */}
-      <div className="flex items-center justify-end">
+      {/* Page Header Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+            Dashboard Overview
+          </h1>
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live Sync
+          </span>
+        </div>
         <Link
           href="/requests"
-          className="px-4.5 py-2.5 text-xs font-bold rounded-2xl bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_20px_rgba(0,188,225,0.15)] hover:bg-[#00BCE1]/25 hover:border-[#00BCE1]/70 hover:scale-[1.02] transition-all duration-300 flex items-center gap-2"
+          className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer shrink-0"
         >
-          <Wrench className="w-4 h-4 text-[#00BCE1]" /> View Queue ({loading.requests ? '...' : activeRequestsCount})
+          <Wrench className="w-4 h-4 stroke-[2.5]" /> View Service Queue ({loading.requests ? '...' : activeRequestsCount})
         </Link>
       </div>
 

@@ -226,29 +226,39 @@ export default function ClientsView() {
         </div>
       )}
 
-      {/* Top Action Bar */}
-      <div className="flex items-center justify-end gap-3">
-        {clients.length === 0 && (
+      {/* Page Header Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+            Clients
+          </h1>
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-slate-800 text-[#00BCE1] border border-[#00BCE1]/30">
+            {filteredClients.length} clients
+          </span>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          {clients.length === 0 && (
+            <button
+              onClick={handleSeedDefaultClients}
+              disabled={isSeeding}
+              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-cyan-400" />}
+              Seed Default Clients
+            </button>
+          )}
           <button
-            onClick={handleSeedDefaultClients}
-            disabled={isSeeding}
-            className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 transition-all flex items-center gap-2 cursor-pointer"
+            onClick={openAddModal}
+            className="px-5 py-2.5 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer"
           >
-            {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-cyan-400" />}
-            Seed Default Clients
+            <Plus className="w-4 h-4 stroke-[3]" /> Add Corporate Client
           </button>
-        )}
-        <button
-          onClick={openAddModal}
-          className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
-        >
-          <Plus className="w-4 h-4 stroke-[3]" /> Add Corporate Client
-        </button>
+        </div>
       </div>
 
       {/* Overview Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl glass-panel border border-white/10 flex items-center justify-between">
+        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center justify-between shadow-lg">
           <div className="space-y-1">
             <p className="text-xs text-slate-400 font-medium">Total Clients</p>
             <p className="text-2xl font-black text-white">{clients.length}</p>
@@ -258,7 +268,7 @@ export default function ClientsView() {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border border-white/10 flex items-center justify-between">
+        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center justify-between shadow-lg">
           <div className="space-y-1">
             <p className="text-xs text-slate-400 font-medium">Industries Served</p>
             <p className="text-2xl font-black text-white">{industries.length}</p>
@@ -268,7 +278,7 @@ export default function ClientsView() {
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-panel border border-white/10 flex items-center justify-between">
+        <div className="p-5 rounded-2xl backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 flex items-center justify-between shadow-lg">
           <div className="space-y-1">
             <p className="text-xs text-slate-400 font-medium">Showcase Status</p>
             <p className="text-2xl font-black text-emerald-400">Live Active</p>
@@ -279,8 +289,8 @@ export default function ClientsView() {
         </div>
       </div>
 
-      {/* Search & View Mode Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 glass-panel rounded-2xl">
+      {/* Unified Filter Bar (Single Consolidated Bar) */}
+      <div className="p-4 backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl shadow-xl shadow-cyan-950/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -289,7 +299,7 @@ export default function ClientsView() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by client name or industry..."
-              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-900/80 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50"
+              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
             />
           </div>
 
@@ -297,7 +307,7 @@ export default function ClientsView() {
             <select
               value={selectedIndustry}
               onChange={(e) => setSelectedIndustry(e.target.value)}
-              className="px-3 py-2 text-xs rounded-xl bg-slate-900/80 border border-white/10 text-white focus:outline-none focus:border-cyan-400"
+              className="px-3 py-2 text-xs rounded-xl bg-slate-950/80 border border-slate-800 text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer"
             >
               <option value="All">All Industries ({clients.length})</option>
               {industries.map((ind) => (
