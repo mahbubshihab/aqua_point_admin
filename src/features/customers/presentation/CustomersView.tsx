@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { 
   Users, 
-  Search, 
   Gift, 
   Award, 
   Phone, 
@@ -18,6 +17,7 @@ import {
   List
 } from 'lucide-react';
 import TableFooter from '@/core/components/TableFooter';
+import { useSearch } from '@/core/context/SearchContext';
 
 interface Customer {
   id: string;
@@ -33,55 +33,55 @@ interface Customer {
 
 const initialCustomers: Customer[] = [
   {
-    id: 'CUST-801',
-    name: 'Mahbub Shihab',
-    email: 'mahbub.shihab@aquapoint.com',
-    phone: '+1 (555) 019-2834',
-    joinedDate: '2025-01-15',
+    id: 'CUST-001',
+    name: 'Sarah Ahmed',
+    email: 'sarah.ahmed@example.com',
+    phone: '01711-223344',
+    joinedDate: '12 Jan 2025',
     rewardPoints: 1250,
-    referralCode: 'AQUA-MAHBUB99',
+    referralCode: 'AQUA-SARAH1',
     activeDevices: 3,
     totalOrders: 14,
   },
   {
-    id: 'CUST-802',
-    name: 'Sarah Jenkins',
-    email: 'sarah.j@example.com',
-    phone: '+1 (555) 234-5678',
-    joinedDate: '2025-04-10',
-    rewardPoints: 450,
-    referralCode: 'AQUA-SARAH45',
+    id: 'CUST-002',
+    name: 'Tanvir Hossain',
+    email: 'tanvir.h@example.com',
+    phone: '01822-334455',
+    joinedDate: '04 Feb 2025',
+    rewardPoints: 480,
+    referralCode: 'AQUA-TANVIR2',
     activeDevices: 1,
-    totalOrders: 5,
+    totalOrders: 4,
   },
   {
-    id: 'CUST-803',
-    name: 'Marcus Vance',
-    email: 'marcus.vance@techcorp.io',
-    phone: '+1 (555) 876-5432',
-    joinedDate: '2025-06-22',
-    rewardPoints: 820,
-    referralCode: 'AQUA-MARCUS82',
+    id: 'CUST-003',
+    name: 'Nusrat Jahan',
+    email: 'nusrat.j@example.com',
+    phone: '01933-445566',
+    joinedDate: '28 Feb 2025',
+    rewardPoints: 920,
+    referralCode: 'AQUA-NUSRAT3',
     activeDevices: 2,
-    totalOrders: 8,
+    totalOrders: 9,
   },
   {
-    id: 'CUST-804',
-    name: 'Elena Rostova',
-    email: 'elena.rostova@designstudio.org',
-    phone: '+1 (555) 345-6789',
-    joinedDate: '2025-09-05',
+    id: 'CUST-004',
+    name: 'Mahmudur Rahman',
+    email: 'mahmud.r@example.com',
+    phone: '01644-556677',
+    joinedDate: '10 Mar 2025',
     rewardPoints: 310,
-    referralCode: 'AQUA-ELENA31',
+    referralCode: 'AQUA-MAHMUD4',
     activeDevices: 1,
-    totalOrders: 3,
+    totalOrders: 2,
   },
   {
-    id: 'CUST-805',
-    name: 'David Kim',
-    email: 'david.kim@innovate.co',
-    phone: '+1 (555) 987-6543',
-    joinedDate: '2025-11-18',
+    id: 'CUST-005',
+    name: 'Kimberly Chen',
+    email: 'kim.chen@example.com',
+    phone: '01555-667788',
+    joinedDate: '15 Apr 2025',
     rewardPoints: 600,
     referralCode: 'AQUA-KIM60',
     activeDevices: 2,
@@ -91,7 +91,7 @@ const initialCustomers: Customer[] = [
 
 export default function CustomersView() {
   const [customers] = useState<Customer[]>(initialCustomers);
-  const [searchTerm, setSearchTerm] = useState('');
+  const { searchTerm } = useSearch();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
   const [statusFilter, setStatusFilter] = useState<'All' | 'VIP' | 'Regular'>('All');
@@ -173,18 +173,6 @@ export default function CustomersView() {
       <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
-            {/* In-Page Search Input */}
-            <div className="relative flex-1 w-full">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search customer by name, email, or referral code..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] transition-all"
-              />
-            </div>
-
             {/* Filter Dropdown */}
             <div className="relative w-full sm:w-48">
               <select
