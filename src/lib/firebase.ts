@@ -1,4 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAnalytics, isSupported } from 'firebase/analytics';
 import {
   getFirestore,
   collection,
@@ -15,16 +16,21 @@ import {
 } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDemoConfigKeyForAquaPointBD123",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "aqua-point-bd.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "aqua-point-bd",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "aqua-point-bd.appspot.com",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "102938475612",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:102938475612:web:a1b2c3d4e5f6g7h8"
+  apiKey: "AIzaSyDtWGfMVTfYAULRNNxVx3WcRdy_WZaK0MY",
+  authDomain: "aqua-point-bd.firebaseapp.com",
+  projectId: "aqua-point-bd",
+  storageBucket: "aqua-point-bd.firebasestorage.app",
+  messagingSenderId: "246078088676",
+  appId: "1:246078088676:web:d4a22f9eaa4d5fd58393f1",
+  measurementId: "G-YHDCLHFWVG"
 };
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+
+if (typeof window !== 'undefined') {
+  isSupported().then(yes => yes && getAnalytics(app));
+}
 
 // Collection References
 export const PRODUCTS_COLLECTION = 'products';
