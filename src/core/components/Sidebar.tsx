@@ -99,21 +99,26 @@ export default function Sidebar() {
   return (
     <aside className={`fixed left-0 top-0 bottom-0 z-40 bg-[#1f2940] border-r border-[#2c3754] flex flex-col justify-between p-4 shadow-2xl transition-all duration-300 ${collapsed ? 'w-20' : 'w-64'}`}>
       <div className="overflow-y-auto scrollbar-none pr-1">
-        {/* Top Bar: Brand AQUA POINT with collapse menu icon ≡ */}
+        {/* Top Bar: Brand AQUA POINT with official logo and collapse menu icon */}
         <div className="flex items-center justify-between px-2 py-3 mb-4 border-b border-[#2c3754]">
-          {!collapsed && (
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-black tracking-wider text-white uppercase">
+          <div className="flex items-center gap-2.5 overflow-hidden">
+            <img 
+              src="/app_logo.png" 
+              alt="Aqua Point Logo" 
+              className="w-8 h-8 shrink-0 object-contain drop-shadow-[0_0_8px_rgba(0,188,225,0.5)]" 
+            />
+            {!collapsed && (
+              <span className="text-lg font-black tracking-wider text-white uppercase whitespace-nowrap">
                 AQUA<span className="text-[#00BCE1]"> POINT</span>
               </span>
-            </div>
-          )}
+            )}
+          </div>
           <button 
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-lg text-[#A0AEC0] hover:text-white hover:bg-[#141b2d] cursor-pointer transition-colors"
+            className="p-1.5 rounded-lg text-[#A0AEC0] hover:text-white hover:bg-[#141b2d] cursor-pointer transition-colors shrink-0"
             title="Toggle Menu"
           >
-            <Menu className="w-6 h-6" />
+            <Menu className="w-5 h-5" />
           </button>
         </div>
 

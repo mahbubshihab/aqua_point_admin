@@ -8,11 +8,8 @@ export const metadata: Metadata = {
   title: 'Aqua Point | Web Admin Panel',
   description: 'Ultra-Premium Obsidian & Cyan Glassmorphic Admin Dashboard for Aqua Point',
   icons: {
-    icon: [
-      { url: '/favicon.ico' },
-      { url: '/app_logo.png' },
-    ],
-    shortcut: '/favicon.ico',
+    icon: '/favicon.ico',
+    shortcut: '/app_logo.png',
     apple: '/app_logo.png',
   },
 };
