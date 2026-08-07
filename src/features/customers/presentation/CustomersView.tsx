@@ -124,7 +124,7 @@ export default function CustomersView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Customers
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754]">
             {filteredCustomers.length} customers
           </span>
         </div>
@@ -135,18 +135,18 @@ export default function CustomersView() {
 
       {/* Stats Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] shadow-xl hover:border-[#4cceac]/60 transition-all duration-300">
+        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] shadow-xl hover:border-[#00BCE1]/60 transition-all duration-300">
           <div className="flex items-center justify-between text-slate-400 text-xs">
             <span className="font-medium">Total Active Users</span>
-            <div className="p-2.5 rounded-xl bg-[#4cceac]/15 text-[#4cceac]">
+            <div className="p-2.5 rounded-xl bg-[#00BCE1]/15 text-[#00BCE1]">
               <Users className="w-4 h-4" />
             </div>
           </div>
           <p className="text-3xl font-extrabold text-white mt-2">1,428</p>
-          <span className="text-[11px] text-[#4cceac] font-medium mt-1 inline-block">+34 new this week</span>
+          <span className="text-[11px] text-[#00BCE1] font-medium mt-1 inline-block">+34 new this week</span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] shadow-xl hover:border-[#4cceac]/60 transition-all duration-300">
+        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] shadow-xl hover:border-[#00BCE1]/60 transition-all duration-300">
           <div className="flex items-center justify-between text-slate-400 text-xs">
             <span className="font-medium">Reward Points Issued</span>
             <div className="p-2.5 rounded-xl bg-[#f59e0b]/15 text-[#f59e0b]">
@@ -154,18 +154,18 @@ export default function CustomersView() {
             </div>
           </div>
           <p className="text-3xl font-extrabold text-amber-300 mt-2">342,900 <span className="text-xs text-slate-400 font-normal">PTS</span></p>
-          <span className="text-[11px] text-[#4cceac] font-medium mt-1 inline-block">Aqua Loyalty Program</span>
+          <span className="text-[11px] text-[#00BCE1] font-medium mt-1 inline-block">Aqua Loyalty Program</span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] shadow-xl hover:border-[#4cceac]/60 transition-all duration-300">
+        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] shadow-xl hover:border-[#00BCE1]/60 transition-all duration-300">
           <div className="flex items-center justify-between text-slate-400 text-xs">
             <span className="font-medium">Referrals Converted</span>
-            <div className="p-2.5 rounded-xl bg-[#4cceac]/15 text-[#4cceac]">
+            <div className="p-2.5 rounded-xl bg-[#00BCE1]/15 text-[#00BCE1]">
               <Award className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-3xl font-extrabold text-[#4cceac] mt-2">584</p>
-          <span className="text-[11px] text-[#4cceac] font-medium mt-1 inline-block">+18% growth month-over-month</span>
+          <p className="text-3xl font-extrabold text-[#00BCE1] mt-2">584</p>
+          <span className="text-[11px] text-[#00BCE1] font-medium mt-1 inline-block">+18% growth month-over-month</span>
         </div>
       </div>
 
@@ -181,7 +181,7 @@ export default function CustomersView() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search customer by name, email, or referral code..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#4cceac] transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] transition-all"
               />
             </div>
 
@@ -190,7 +190,7 @@ export default function CustomersView() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] cursor-pointer transition-all"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-all"
               >
                 <option value="All">All Loyalty Tiers</option>
                 <option value="VIP">VIP Gold (800+ PTS)</option>
@@ -205,7 +205,7 @@ export default function CustomersView() {
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
-                    ? 'bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40'
+                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40'
                     : 'text-[#A0AEC0] hover:text-white'
                 }`}
                 title="Grid View"
@@ -216,7 +216,7 @@ export default function CustomersView() {
                 onClick={() => setViewMode('table')}
                 className={`p-2 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40'
+                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40'
                     : 'text-[#A0AEC0] hover:text-white'
                 }`}
                 title="Table View"
@@ -239,13 +239,13 @@ export default function CustomersView() {
                 onClick={() => setStatusFilter(tier)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                   isActive
-                    ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-md'
+                    ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-md'
                     : 'bg-[#141b2d] text-[#A0AEC0] border border-[#2c3754] hover:text-white'
                 }`}
               >
                 <span>{label}</span>
                 <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
+                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
                 }`}>
                   {count}
                 </span>
@@ -274,28 +274,28 @@ export default function CustomersView() {
               {filteredCustomers.map((cust) => (
                 <tr key={cust.id} className="hover:bg-[#2c3754] transition-colors">
                   <td className="py-4 px-4 font-bold text-white flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#3e4396] to-[#4cceac] flex items-center justify-center text-white font-bold text-xs shadow-md">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#3e4396] to-[#00BCE1] flex items-center justify-center text-white font-bold text-xs shadow-md">
                       {cust.name.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div>
                       <div>{cust.name}</div>
-                      <div className="text-[10px] text-[#4cceac] font-mono">{cust.id}</div>
+                      <div className="text-[10px] text-[#00BCE1] font-mono">{cust.id}</div>
                     </div>
                   </td>
 
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-1.5 text-slate-300">
-                      <Mail className="w-3 h-3 text-[#4cceac]" /> {cust.email}
+                      <Mail className="w-3 h-3 text-[#00BCE1]" /> {cust.email}
                     </div>
                     <div className="flex items-center gap-1.5 text-[#A0AEC0] text-[11px] mt-0.5">
-                      <Phone className="w-3 h-3 text-[#4cceac]" /> {cust.phone}
+                      <Phone className="w-3 h-3 text-[#00BCE1]" /> {cust.phone}
                     </div>
                   </td>
 
                   <td className="py-4 px-4">
                     <button
                       onClick={() => copyReferral(cust.referralCode)}
-                      className="px-2.5 py-1 rounded-lg bg-[#141b2d] border border-[#2c3754] text-[#4cceac] font-mono text-[11px] flex items-center gap-1.5 hover:border-[#4cceac] transition-all cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono text-[11px] flex items-center gap-1.5 hover:border-[#00BCE1] transition-all cursor-pointer"
                       title="Click to copy referral code"
                     >
                       {cust.referralCode}
@@ -315,7 +315,7 @@ export default function CustomersView() {
 
                   <td className="py-4 px-4 font-medium text-slate-200">
                     <span className="flex items-center gap-1">
-                      <Droplets className="w-3.5 h-3.5 text-[#4cceac]" /> {cust.activeDevices} Units
+                      <Droplets className="w-3.5 h-3.5 text-[#00BCE1]" /> {cust.activeDevices} Units
                     </span>
                   </td>
 

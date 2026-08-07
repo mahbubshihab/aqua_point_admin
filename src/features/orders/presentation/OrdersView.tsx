@@ -87,7 +87,7 @@ export default function OrdersView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Orders
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754]">
             {filteredOrders.length} orders
           </span>
         </div>
@@ -113,7 +113,7 @@ export default function OrdersView() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search order by customer, ID, phone or email..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#4cceac] transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] transition-all"
               />
             </div>
 
@@ -122,7 +122,7 @@ export default function OrdersView() {
               <select
                 value={paymentFilter}
                 onChange={(e) => setPaymentFilter(e.target.value as any)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] cursor-pointer transition-all"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-all"
               >
                 <option value="All">All Payment Status</option>
                 <option value="Paid">Paid Only</option>
@@ -171,13 +171,13 @@ export default function OrdersView() {
                 onClick={() => setActiveStatus(status)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                   isActive
-                    ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                    ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
                     : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
                 }`}
               >
                 <span>{status}</span>
                 <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
+                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
                 }`}>
                   {count}
                 </span>
@@ -190,7 +190,7 @@ export default function OrdersView() {
       {/* Orders List / Table */}
       {loading ? (
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-[#4cceac] animate-spin" />
+          <Loader2 className="w-10 h-10 text-[#00BCE1] animate-spin" />
           <p className="text-xs text-[#A0AEC0]">Loading customer orders...</p>
         </div>
       ) : filteredOrders.length === 0 ? (
@@ -219,7 +219,7 @@ export default function OrdersView() {
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
                 {filteredOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-[#2c3754] transition-colors">
-                    <td className="py-4 px-4 font-mono font-bold text-[#4cceac]">
+                    <td className="py-4 px-4 font-mono font-bold text-[#00BCE1]">
                       {order.id.substring(0, 10)}
                     </td>
                     <td className="py-4 px-4">
@@ -231,7 +231,7 @@ export default function OrdersView() {
                     <td className="py-4 px-4">
                       <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
                         order.paymentStatus === 'Paid'
-                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                           : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                       }`}>
                         {order.paymentStatus}
@@ -240,7 +240,7 @@ export default function OrdersView() {
                     <td className="py-4 px-4">
                       <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
                         order.status === 'Delivered'
-                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                           : order.status === 'Shipped'
                           ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
                           : order.status === 'Processing'
@@ -266,7 +266,7 @@ export default function OrdersView() {
             >
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#2c3754]">
                 <div className="flex items-center gap-3">
-                  <div className="px-3 py-1.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#4cceac] font-mono font-bold text-xs">
+                  <div className="px-3 py-1.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono font-bold text-xs">
                     {order.id.substring(0, 12)}
                   </div>
                   <div>
@@ -274,7 +274,7 @@ export default function OrdersView() {
                       {order.customerName}
                       <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
                         order.paymentStatus === 'Paid'
-                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                           : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                       }`}>
                         {order.paymentMethod} • {order.paymentStatus}
@@ -282,10 +282,10 @@ export default function OrdersView() {
                     </h3>
                     <div className="flex flex-wrap items-center gap-4 text-xs text-[#A0AEC0] mt-0.5">
                       <span className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-[#4cceac]" /> {order.phone}
+                        <Phone className="w-3 h-3 text-[#00BCE1]" /> {order.phone}
                       </span>
                       <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-[#4cceac]" /> {order.address} {order.district ? `(${order.district})` : ''}
+                        <MapPin className="w-3 h-3 text-[#00BCE1]" /> {order.address} {order.district ? `(${order.district})` : ''}
                       </span>
                     </div>
                   </div>
@@ -307,7 +307,7 @@ export default function OrdersView() {
                             : st === 'Shipped'
                             ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
                             : st === 'Delivered'
-                            ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                            ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                             : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
                           : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754] hover:text-white'
                       }`}
@@ -329,7 +329,7 @@ export default function OrdersView() {
                           {item.imageUrl && (
                             <img src={item.imageUrl} alt={item.name} className="w-7 h-7 rounded-lg object-cover" />
                           )}
-                          <span>{item.name} <strong className="text-[#4cceac]">x{item.quantity}</strong></span>
+                          <span>{item.name} <strong className="text-[#00BCE1]">x{item.quantity}</strong></span>
                           <span className="text-[#A0AEC0]">(${item.price})</span>
                         </div>
                       ))}

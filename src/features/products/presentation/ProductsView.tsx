@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { 
   Droplets, 
   Plus, 
-  Search, 
   Upload, 
   LayoutGrid, 
   List, 
@@ -29,6 +28,7 @@ import {
   CategoryDoc 
 } from '@/core/services/firebase';
 import TableFooter from '@/core/components/TableFooter';
+import { useSearch } from '@/core/context/SearchContext';
 
 export default function ProductsView() {
   const [products, setProducts] = useState<ProductDoc[]>([]);
@@ -37,7 +37,7 @@ export default function ProductsView() {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   
   // Search & Filters
-  const [searchTerm, setSearchTerm] = useState('');
+  const { searchTerm } = useSearch();
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('All');
   const [selectedStockFilter, setSelectedStockFilter] = useState('All');
 
@@ -249,18 +249,6 @@ export default function ProductsView() {
       <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
-            {/* In-Page Search Input */}
-            <div className="relative flex-1 w-full">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A0AEC0]" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search products by title, model code, or description..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-[#A0AEC0] focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all"
-              />
-            </div>
-
             {/* Stock Filter Dropdown */}
             <div className="relative w-full sm:w-44">
               <select

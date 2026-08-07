@@ -195,7 +195,7 @@ export default function ReviewsView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Reviews
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754]">
             {filteredReviews.length} reviews
           </span>
         </div>
@@ -210,7 +210,7 @@ export default function ReviewsView() {
       {/* Metrics Banner */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
-          <div className="p-3.5 rounded-2xl bg-[#4cceac]/15 border border-[#4cceac]/30 text-[#4cceac]">
+          <div className="p-3.5 rounded-2xl bg-[#00BCE1]/15 border border-[#00BCE1]/30 text-[#00BCE1]">
             <MessageSquareQuote className="w-5 h-5" />
           </div>
           <div>
@@ -220,7 +220,7 @@ export default function ReviewsView() {
         </div>
 
         <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
-          <div className="p-3.5 rounded-2xl bg-[#4cceac]/15 border border-[#4cceac]/30 text-[#4cceac]">
+          <div className="p-3.5 rounded-2xl bg-[#00BCE1]/15 border border-[#00BCE1]/30 text-[#00BCE1]">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
@@ -262,7 +262,7 @@ export default function ReviewsView() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by customer name, location, or comment..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#4cceac] transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] transition-all"
               />
             </div>
 
@@ -271,7 +271,7 @@ export default function ReviewsView() {
               <select
                 value={ratingFilter}
                 onChange={(e) => setRatingFilter(e.target.value === 'All' ? 'All' : Number(e.target.value))}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] cursor-pointer transition-all"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-all"
               >
                 <option value="All">All Star Ratings</option>
                 <option value={5}>5 Stars ★★★★★</option>
@@ -317,13 +317,13 @@ export default function ReviewsView() {
             onClick={() => setFilterApproved('all')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
               filterApproved === 'all'
-                ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
                 : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
             }`}
           >
             <span>All Reviews</span>
             <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-              filterApproved === 'all' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
+              filterApproved === 'all' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
             }`}>
               {totalReviews}
             </span>
@@ -333,13 +333,13 @@ export default function ReviewsView() {
             onClick={() => setFilterApproved('approved')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
               filterApproved === 'approved'
-                ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
                 : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
             }`}
           >
             <span>Approved & Live</span>
             <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-              filterApproved === 'approved' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
+              filterApproved === 'approved' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
             }`}>
               {approvedCount}
             </span>
@@ -366,7 +366,7 @@ export default function ReviewsView() {
       {/* Main Content Area */}
       {loading ? (
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-[#4cceac] animate-spin" />
+          <Loader2 className="w-10 h-10 text-[#00BCE1] animate-spin" />
           <p className="text-xs text-[#A0AEC0]">Loading reviews from Cloud Firestore...</p>
         </div>
       ) : filteredReviews.length === 0 ? (
@@ -393,7 +393,7 @@ export default function ReviewsView() {
           {filteredReviews.map((rev) => (
             <div
               key={rev.id}
-              className="bg-[#1f2940] border border-[#2c3754] hover:border-[#4cceac]/50 rounded-2xl p-5 flex flex-col justify-between space-y-4 relative group transition-all"
+              className="bg-[#1f2940] border border-[#2c3754] hover:border-[#00BCE1]/50 rounded-2xl p-5 flex flex-col justify-between space-y-4 relative group transition-all"
             >
               <div className="space-y-3">
                 {/* Header: Star Rating & Approval Badge */}
@@ -442,7 +442,7 @@ export default function ReviewsView() {
               <div className="pt-3 border-t border-[#2c3754] flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-bold text-white">{rev.customerName}</h4>
-                  <p className="text-[11px] text-[#4cceac] flex items-center gap-1 font-medium mt-0.5">
+                  <p className="text-[11px] text-[#00BCE1] flex items-center gap-1 font-medium mt-0.5">
                     <MapPin className="w-3 h-3" /> {rev.location}
                   </p>
                 </div>
@@ -450,7 +450,7 @@ export default function ReviewsView() {
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => openEditModal(rev)}
-                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
                     title="Edit Review"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
@@ -486,7 +486,7 @@ export default function ReviewsView() {
                 {filteredReviews.map((rev) => (
                   <tr key={rev.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-4 px-4 font-bold text-white">{rev.customerName}</td>
-                    <td className="py-4 px-4 text-[#4cceac]">
+                    <td className="py-4 px-4 text-[#00BCE1]">
                       <span className="flex items-center gap-1">
                         <MapPin className="w-3 h-3 shrink-0" /> {rev.location}
                       </span>
@@ -506,7 +506,7 @@ export default function ReviewsView() {
                         onClick={() => handleToggleApproved(rev)}
                         className={`px-2.5 py-1 text-[10px] font-bold rounded-full border transition-colors ${
                           rev.isApproved
-                            ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                            ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                             : 'bg-amber-500/20 text-amber-300 border-amber-400/40'
                         }`}
                       >
@@ -517,7 +517,7 @@ export default function ReviewsView() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openEditModal(rev)}
-                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -547,9 +547,9 @@ export default function ReviewsView() {
             <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
                 {editingReviewId ? (
-                  <Edit2 className="w-5 h-5 text-[#4cceac]" />
+                  <Edit2 className="w-5 h-5 text-[#00BCE1]" />
                 ) : (
-                  <Plus className="w-5 h-5 text-[#4cceac]" />
+                  <Plus className="w-5 h-5 text-[#00BCE1]" />
                 )}
                 {editingReviewId ? 'Edit Review' : 'Add New Customer Review'}
               </h2>
@@ -580,7 +580,7 @@ export default function ReviewsView() {
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="e.g. Engr. Tanvir Ahmed"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
                   />
                 </div>
 
@@ -594,7 +594,7 @@ export default function ReviewsView() {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="e.g. Gulshan, Dhaka"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
                   />
                 </div>
               </div>
@@ -638,7 +638,7 @@ export default function ReviewsView() {
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="e.g. Excellent service and purified water TDS dropped significantly..."
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
+                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
                 />
               </div>
 

@@ -233,7 +233,7 @@ export default function ClientsView() {
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Clients
           </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#4cceac] border border-[#2c3754]">
+          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754]">
             {filteredClients.length} clients
           </span>
         </div>
@@ -242,9 +242,9 @@ export default function ClientsView() {
             <button
               onClick={handleSeedDefaultClients}
               disabled={isSeeding}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] border border-[#2c3754] transition-all flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] border border-[#2c3754] transition-all flex items-center gap-2 cursor-pointer"
             >
-              {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-[#4cceac]" />}
+              {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-[#00BCE1]" />}
               Seed Default Clients
             </button>
           )}
@@ -264,7 +264,7 @@ export default function ClientsView() {
             <p className="text-xs text-slate-400 font-medium">Total Clients</p>
             <p className="text-3xl font-extrabold text-white">{clients.length}</p>
           </div>
-          <div className="p-3.5 rounded-2xl bg-[#4cceac]/15 text-[#4cceac] border border-[#4cceac]/30">
+          <div className="p-3.5 rounded-2xl bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/30">
             <Building2 className="w-6 h-6" />
           </div>
         </div>
@@ -274,7 +274,7 @@ export default function ClientsView() {
             <p className="text-xs text-slate-400 font-medium">Industries Served</p>
             <p className="text-3xl font-extrabold text-white">{industries.length}</p>
           </div>
-          <div className="p-3.5 rounded-2xl bg-[#4cceac]/15 text-[#4cceac] border border-[#4cceac]/30">
+          <div className="p-3.5 rounded-2xl bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/30">
             <Briefcase className="w-6 h-6" />
           </div>
         </div>
@@ -282,9 +282,9 @@ export default function ClientsView() {
         <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center justify-between shadow-xl">
           <div className="space-y-1">
             <p className="text-xs text-slate-400 font-medium">Showcase Status</p>
-            <p className="text-3xl font-extrabold text-[#4cceac]">Live Active</p>
+            <p className="text-3xl font-extrabold text-[#00BCE1]">Live Active</p>
           </div>
-          <div className="p-3.5 rounded-2xl bg-[#4cceac]/15 text-[#4cceac] border border-[#4cceac]/30">
+          <div className="p-3.5 rounded-2xl bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/30">
             <Globe className="w-6 h-6" />
           </div>
         </div>
@@ -302,7 +302,7 @@ export default function ClientsView() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by client name or industry sector..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#4cceac] transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-400 focus:outline-none focus:border-[#00BCE1] transition-all"
               />
             </div>
 
@@ -312,7 +312,7 @@ export default function ClientsView() {
                 <select
                   value={selectedIndustry}
                   onChange={(e) => setSelectedIndustry(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#4cceac] cursor-pointer transition-all"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-all"
                 >
                   <option value="All">All Industries ({clients.length})</option>
                   {industries.map((ind) => (
@@ -360,13 +360,13 @@ export default function ClientsView() {
               onClick={() => setSelectedIndustry('All')}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                 selectedIndustry === 'All'
-                  ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                  ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
                   : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
               }`}
             >
               <span>All Clients</span>
               <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                selectedIndustry === 'All' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
+                selectedIndustry === 'All' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
               }`}>
                 {clients.length}
               </span>
@@ -381,13 +381,13 @@ export default function ClientsView() {
                   onClick={() => setSelectedIndustry(ind)}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                     isActive
-                      ? 'bg-[#4cceac] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(76,206,172,0.4)]'
+                      ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
                       : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
                   }`}
                 >
                   <span>{ind}</span>
                   <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                    isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#4cceac]'
+                    isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
                   }`}>
                     {count}
                   </span>
@@ -401,7 +401,7 @@ export default function ClientsView() {
       {/* Loading & Empty States */}
       {loading ? (
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="w-10 h-10 text-[#4cceac] animate-spin" />
+          <Loader2 className="w-10 h-10 text-[#00BCE1] animate-spin" />
           <p className="text-xs text-[#A0AEC0]">Loading corporate clients from Cloud Firestore...</p>
         </div>
       ) : filteredClients.length === 0 ? (
@@ -417,9 +417,9 @@ export default function ClientsView() {
             <button
               onClick={handleSeedDefaultClients}
               disabled={isSeeding}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] transition-all flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all flex items-center gap-2 cursor-pointer"
             >
-              {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-[#4cceac]" />}
+              {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-[#00BCE1]" />}
               Seed Default Clients
             </button>
             <button
@@ -434,7 +434,7 @@ export default function ClientsView() {
         /* Grid View */
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredClients.map((client) => (
-            <div key={client.id} className="bg-[#1f2940] border border-[#2c3754] hover:border-[#4cceac]/50 rounded-2xl overflow-hidden p-5 flex flex-col justify-between space-y-4 group relative transition-all">
+            <div key={client.id} className="bg-[#1f2940] border border-[#2c3754] hover:border-[#00BCE1]/50 rounded-2xl overflow-hidden p-5 flex flex-col justify-between space-y-4 group relative transition-all">
               <div className="space-y-4 text-center">
                 {/* Logo Container */}
                 <div className="relative w-full h-32 rounded-xl bg-white/95 border border-[#2c3754] flex items-center justify-center p-4 overflow-hidden shadow-inner group-hover:scale-[1.02] transition-transform duration-300">
@@ -447,10 +447,10 @@ export default function ClientsView() {
 
                 {/* Info */}
                 <div className="space-y-1">
-                  <h3 className="text-base font-bold text-white group-hover:text-[#4cceac] transition-colors">
+                  <h3 className="text-base font-bold text-white group-hover:text-[#00BCE1] transition-colors">
                     {client.name}
                   </h3>
-                  <span className="inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-[#141b2d] border border-[#2c3754] text-[#4cceac]">
+                  <span className="inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-[#141b2d] border border-[#2c3754] text-[#00BCE1]">
                     {client.industry || 'Corporate Partner'}
                   </span>
                 </div>
@@ -460,7 +460,7 @@ export default function ClientsView() {
               <div className="pt-3 border-t border-[#2c3754] flex items-center justify-end gap-2">
                 <button
                   onClick={() => openEditModal(client)}
-                  className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
+                  className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
                   title="Edit Client"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
@@ -503,7 +503,7 @@ export default function ClientsView() {
                     </td>
                     <td className="py-3 px-4 font-bold text-white text-sm">{client.name}</td>
                     <td className="py-3 px-4">
-                      <span className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40">
+                      <span className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
                         {client.industry || 'Corporate Partner'}
                       </span>
                     </td>
@@ -511,7 +511,7 @@ export default function ClientsView() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => openEditModal(client)}
-                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -540,7 +540,7 @@ export default function ClientsView() {
           <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                {editingClientId ? <Edit2 className="w-5 h-5 text-[#4cceac]" /> : <Plus className="w-5 h-5 text-[#4cceac]" />}
+                {editingClientId ? <Edit2 className="w-5 h-5 text-[#00BCE1]" /> : <Plus className="w-5 h-5 text-[#00BCE1]" />}
                 {editingClientId ? 'Edit Corporate Client' : 'Add New Corporate Client'}
               </h2>
               <button
@@ -568,7 +568,7 @@ export default function ClientsView() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. BRAC, Navana Group, TECNO"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
                   />
                 </div>
 
@@ -579,7 +579,7 @@ export default function ClientsView() {
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
                     placeholder="e.g. Defense, Conglomerate, Tech"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#4cceac] focus:outline-none focus:border-[#4cceac]"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] focus:outline-none focus:border-[#00BCE1]"
                   />
                 </div>
               </div>
@@ -587,9 +587,9 @@ export default function ClientsView() {
               {/* Cloudinary Image Upload */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Client Logo Image (Cloudinary Folder: <span className="text-[#4cceac]">clients/</span>)
+                  Client Logo Image (Cloudinary Folder: <span className="text-[#00BCE1]">clients/</span>)
                 </label>
-                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#4cceac] transition-colors bg-[#141b2d]">
+                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#00BCE1] transition-colors bg-[#141b2d]">
                   {previewUrl || logoUrl ? (
                     <div className="relative w-40 h-28 mx-auto rounded-xl overflow-hidden bg-white p-2 border border-[#2c3754] flex items-center justify-center">
                       <img src={previewUrl || logoUrl} alt="Preview" className="max-h-full max-w-full object-contain" />
@@ -603,7 +603,7 @@ export default function ClientsView() {
                     </div>
                   ) : (
                     <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-3">
-                      <Upload className="w-8 h-8 text-[#4cceac] animate-bounce" />
+                      <Upload className="w-8 h-8 text-[#00BCE1] animate-bounce" />
                       <span className="text-xs text-slate-300">Click to upload client logo photo</span>
                       <span className="text-[10px] text-[#A0AEC0] font-mono">Folder: clients/ | Preset: aqua_point</span>
                       <input
@@ -627,7 +627,7 @@ export default function ClientsView() {
                   value={logoUrl}
                   onChange={(e) => setLogoUrl(e.target.value)}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#4cceac]"
+                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
                 />
               </div>
 
