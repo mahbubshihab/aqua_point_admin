@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import Sidebar from '@/components/Sidebar';
-import Header from '@/components/Header';
+import Sidebar from '@/core/components/Sidebar';
+import Header from '@/core/components/Header';
 
 export const metadata: Metadata = {
   title: 'Aqua Point | Web Admin Panel',

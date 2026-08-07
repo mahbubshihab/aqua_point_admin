@@ -43,7 +43,6 @@ export const REVIEWS_COLLECTION = 'reviews';
 export const COMPANY_INFO_COLLECTION = 'company_info';
 export const CLIENTS_COLLECTION = 'clients';
 
-
 // Data Interfaces
 export interface ClientDoc {
   id: string;
@@ -52,6 +51,7 @@ export interface ClientDoc {
   logoUrl: string;
   createdAt?: any;
 }
+
 export interface ProductDoc {
   id: string;
   name: string;
@@ -139,7 +139,6 @@ export interface ReviewDoc {
   createdAt?: any;
 }
 
-
 // -------------------------------------------------------------
 // Real-time Firestore Subscriptions & Operations
 // -------------------------------------------------------------
@@ -170,7 +169,6 @@ export function subscribeToProducts(callback: (products: ProductDoc[]) => void) 
     callback(list);
   }, (error) => {
     console.error('Error fetching products snapshot:', error);
-    // Fallback if index missing or error
     const fallbackQ = collection(db, PRODUCTS_COLLECTION);
     onSnapshot(fallbackQ, (snapshot) => {
       const list: ProductDoc[] = snapshot.docs.map((docSnap) => {
@@ -260,7 +258,6 @@ export function subscribeToServiceRequests(callback: (requests: ServiceRequestDo
     const list: ServiceRequestDoc[] = snapshot.docs.map((docSnap) => {
       const data = docSnap.data();
       
-      // Normalize status string
       let rawStatus = (data.status || 'Pending').toString();
       let normalizedStatus: ServiceRequestDoc['status'] = 'Pending';
       if (rawStatus.toUpperCase() === 'PENDING') normalizedStatus = 'Pending';
@@ -314,7 +311,6 @@ export function subscribeToOrders(callback: (orders: OrderDoc[]) => void) {
     const list: OrderDoc[] = snapshot.docs.map((docSnap) => {
       const data = docSnap.data();
 
-      // Normalize status string
       let rawStatus = (data.status || 'Pending').toString();
       let normalizedStatus: OrderDoc['status'] = 'Pending';
       if (rawStatus.toUpperCase() === 'PENDING') normalizedStatus = 'Pending';

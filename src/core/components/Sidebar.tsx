@@ -14,7 +14,6 @@ import {
   MessageSquare,
   MessageSquareQuote,
   Users, 
-  BarChart3, 
   Settings, 
   ShieldCheck,
   ChevronRight,
@@ -24,7 +23,7 @@ import {
   subscribeToServiceRequests, 
   subscribeToOrders, 
   subscribeToInquiries 
-} from '@/lib/firebase';
+} from '@/core/services/firebase';
 
 interface NavItem {
   name: string;
@@ -42,7 +41,6 @@ const navItems: NavItem[] = [
   { name: 'Inquiries', href: '/inquiries', icon: MessageSquare },
   { name: 'Reviews', href: '/reviews', icon: MessageSquareQuote },
   { name: 'Customers', href: '/customers', icon: Users },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
