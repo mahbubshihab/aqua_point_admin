@@ -164,15 +164,15 @@ export default function SettingsView() {
       </div>
 
       {/* Company Contact Information Card */}
-      <div className="glass-panel-cyan rounded-2xl p-6 space-y-5">
-        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+      <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl p-6 space-y-5 shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-700/50 pb-4">
           <h2 className="text-base font-bold text-white flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+            <div className="p-2 rounded-xl bg-[#3e4396] text-[#4cceac]">
               <Building2 className="w-4 h-4" />
             </div>
             Company Contact Information
           </h2>
-          <span className="text-[11px] text-cyan-400 font-mono bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/20">
+          <span className="text-[11px] text-[#4cceac] font-mono bg-[#141b2d] px-2.5 py-1 rounded-full border border-slate-700">
             Firestore: company_info
           </span>
         </div>

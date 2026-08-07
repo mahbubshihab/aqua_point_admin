@@ -29,6 +29,7 @@ import {
   deleteBannerFromFirestore,
   BannerDoc 
 } from '@/core/services/firebase';
+import TableFooter from '@/core/components/TableFooter';
 
 export default function BannersView() {
   const [banners, setBanners] = useState<BannerDoc[]>([]);
@@ -438,10 +439,10 @@ export default function BannersView() {
         </div>
       ) : (
         /* Table View */
-        <div className="glass-panel rounded-2xl p-6">
+        <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-900/80 text-slate-400 font-semibold uppercase tracking-wider border-b border-white/10">
+            <table className="w-full text-left text-xs text-slate-200">
+              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
                 <tr>
                   <th className="py-3.5 px-4">Banner Preview</th>
                   <th className="py-3.5 px-4">Title</th>
@@ -451,35 +452,35 @@ export default function BannersView() {
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
                 {filteredBanners.map((banner) => (
-                  <tr key={banner.id} className="hover:bg-cyan-500/[0.03]">
+                  <tr key={banner.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-3 px-4">
                       <img
                         src={banner.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop'}
                         alt={banner.title}
-                        className="w-20 h-12 rounded-lg object-cover border border-white/10 shrink-0"
+                        className="w-20 h-12 rounded-lg object-cover border border-slate-700 shrink-0"
                       />
                     </td>
                     <td className="py-4 px-4 font-bold text-white">{banner.title}</td>
                     <td className="py-4 px-4">
                       {banner.tag ? (
-                        <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+                        <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40">
                           {banner.tag}
                         </span>
                       ) : (
                         <span className="text-slate-500">-</span>
                       )}
                     </td>
-                    <td className="py-4 px-4 font-mono text-cyan-400 max-w-xs truncate">
+                    <td className="py-4 px-4 font-mono text-[#4cceac] max-w-xs truncate">
                       {banner.ctaLink || '-'}
                     </td>
                     <td className="py-4 px-4">
                       <button
                         onClick={() => handleToggleActive(banner)}
-                        className={`px-3 py-1 rounded-full text-[10px] font-bold border flex items-center gap-1 cursor-pointer ${
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold border flex items-center gap-1 cursor-pointer transition-colors ${
                           banner.isActive
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
+                            ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
                             : 'bg-slate-800 text-slate-400 border-slate-700'
                         }`}
                       >
@@ -490,14 +491,14 @@ export default function BannersView() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openEditModal(banner)}
-                          className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-white/10 cursor-pointer"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-slate-700 cursor-pointer transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setDeletingBanner(banner)}
-                          className="p-1.5 rounded-lg bg-slate-900 hover:bg-rose-950 text-rose-400 border border-rose-500/30 cursor-pointer"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-slate-700 cursor-pointer transition-all"
                           title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -509,6 +510,7 @@ export default function BannersView() {
               </tbody>
             </table>
           </div>
+          <TableFooter totalItems={filteredBanners.length} />
         </div>
       )}
 

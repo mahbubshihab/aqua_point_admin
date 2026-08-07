@@ -23,12 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="bg-[#0A0D16] text-slate-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
-        <div className="flex min-h-screen">
+      <body className="bg-[#141b2d] text-white antialiased selection:bg-[#3e4396] selection:text-white">
+        <div className="flex min-h-screen bg-[#141b2d]">
           <Sidebar />
-          <div className="flex-1 ml-64 flex flex-col min-w-0">
+          <div className="flex-1 ml-64 flex flex-col min-w-0 bg-[#141b2d]">
             <Header />
-            <main className="flex-1 p-8 overflow-y-auto">
+            <main className="flex-1 p-8 overflow-y-auto bg-[#141b2d]">
               {children}
             </main>
           </div>

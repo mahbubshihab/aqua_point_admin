@@ -21,6 +21,7 @@ import {
   updateOrderStatusInFirestore, 
   OrderDoc 
 } from '@/core/services/firebase';
+import TableFooter from '@/core/components/TableFooter';
 
 export default function OrdersView() {
   const [orders, setOrders] = useState<OrderDoc[]>([]);
@@ -200,16 +201,72 @@ export default function OrdersView() {
             {searchTerm ? 'No orders match your filter criteria.' : 'There are currently no orders.'}
           </p>
         </div>
+      ) : viewMode === 'table' ? (
+        /* Table View */
+        <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-200">
+              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
+                <tr>
+                  <th className="py-3.5 px-4">Order ID</th>
+                  <th className="py-3.5 px-4">Customer</th>
+                  <th className="py-3.5 px-4">Address</th>
+                  <th className="py-3.5 px-4">Total Amount</th>
+                  <th className="py-3.5 px-4">Payment</th>
+                  <th className="py-3.5 px-4">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
+                {filteredOrders.map((order) => (
+                  <tr key={order.id} className="hover:bg-[#2c3754] transition-colors">
+                    <td className="py-4 px-4 font-mono font-bold text-[#4cceac]">
+                      {order.id.substring(0, 10)}
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="font-bold text-white">{order.customerName}</div>
+                      <div className="text-[11px] text-slate-400">{order.phone}</div>
+                    </td>
+                    <td className="py-4 px-4 text-slate-300 max-w-xs truncate">{order.address}</td>
+                    <td className="py-4 px-4 font-bold text-white">${order.totalAmount}</td>
+                    <td className="py-4 px-4">
+                      <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
+                        order.paymentStatus === 'Paid'
+                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                      }`}>
+                        {order.paymentStatus}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4">
+                      <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
+                        order.status === 'Delivered'
+                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          : order.status === 'Shipped'
+                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                          : order.status === 'Processing'
+                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
+                          : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                      }`}>
+                        {order.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <TableFooter totalItems={filteredOrders.length} />
+        </div>
       ) : (
         <div className="space-y-4">
           {filteredOrders.map((order) => (
             <div
               key={order.id}
-              className="glass-panel glass-card-hover rounded-2xl p-6 transition-all duration-200"
+              className="bg-[#1f2940] border border-slate-700/50 rounded-2xl p-6 transition-all duration-200"
             >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-700/50">
                 <div className="flex items-center gap-3">
-                  <div className="px-3 py-1.5 rounded-xl bg-slate-900 border border-cyan-500/30 text-cyan-400 font-mono font-bold text-xs">
+                  <div className="px-3 py-1.5 rounded-xl bg-[#141b2d] border border-slate-700 text-[#4cceac] font-mono font-bold text-xs">
                     {order.id.substring(0, 12)}
                   </div>
                   <div>
@@ -217,7 +274,7 @@ export default function OrdersView() {
                       {order.customerName}
                       <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
                         order.paymentStatus === 'Paid'
-                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
                           : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                       }`}>
                         {order.paymentMethod} • {order.paymentStatus}
@@ -225,10 +282,10 @@ export default function OrdersView() {
                     </h3>
                     <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-0.5">
                       <span className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-cyan-400" /> {order.phone}
+                        <Phone className="w-3 h-3 text-[#4cceac]" /> {order.phone}
                       </span>
                       <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-cyan-400" /> {order.address} {order.district ? `(${order.district})` : ''}
+                        <MapPin className="w-3 h-3 text-[#4cceac]" /> {order.address} {order.district ? `(${order.district})` : ''}
                       </span>
                     </div>
                   </div>
@@ -244,15 +301,15 @@ export default function OrdersView() {
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         order.status === st
                           ? st === 'Pending'
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
+                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                             : st === 'Processing'
-                            ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-[0_0_10px_rgba(0,229,255,0.2)]'
+                            ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                             : st === 'Shipped'
-                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40 shadow-[0_0_10px_rgba(59,130,246,0.2)]'
+                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
                             : st === 'Delivered'
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.2)]'
-                            : 'bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-[0_0_10px_rgba(244,63,94,0.2)]'
-                          : 'bg-slate-900/60 text-slate-400 border-white/5 hover:text-white'
+                            ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                            : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                          : 'bg-[#141b2d] text-slate-400 border-slate-700 hover:text-white'
                       }`}
                     >
                       {st}
@@ -268,11 +325,11 @@ export default function OrdersView() {
                   {order.items && order.items.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {order.items.map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-2 p-2 rounded-xl bg-slate-900/70 border border-white/10 text-xs text-white">
+                        <div key={idx} className="flex items-center gap-2 p-2 rounded-xl bg-[#141b2d] border border-slate-700/50 text-xs text-white">
                           {item.imageUrl && (
                             <img src={item.imageUrl} alt={item.name} className="w-7 h-7 rounded-lg object-cover" />
                           )}
-                          <span>{item.name} <strong className="text-cyan-400">x{item.quantity}</strong></span>
+                          <span>{item.name} <strong className="text-[#4cceac]">x{item.quantity}</strong></span>
                           <span className="text-slate-400">(${item.price})</span>
                         </div>
                       ))}
@@ -282,7 +339,7 @@ export default function OrdersView() {
                   )}
                 </div>
 
-                <div className="text-right flex flex-col items-end justify-center pt-2 md:pt-0 border-t md:border-t-0 border-white/10">
+                <div className="text-right flex flex-col items-end justify-center pt-2 md:pt-0 border-t md:border-t-0 border-slate-700/50">
                   <span className="text-xs text-slate-400">Total Order Amount</span>
                   <div className="text-xl font-extrabold text-white">
                     ${order.totalAmount}

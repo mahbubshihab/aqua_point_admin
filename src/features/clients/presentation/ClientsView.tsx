@@ -27,6 +27,7 @@ import {
   deleteClientFromFirestore,
   ClientDoc 
 } from '@/core/services/firebase';
+import TableFooter from '@/core/components/TableFooter';
 
 const DEFAULT_SAMPLE_CLIENTS: Omit<ClientDoc, 'id'>[] = [
   {
@@ -477,10 +478,10 @@ export default function ClientsView() {
         </div>
       ) : (
         /* Table View */
-        <div className="glass-panel rounded-2xl p-6">
+        <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-900/80 text-slate-400 font-semibold uppercase tracking-wider border-b border-white/10">
+            <table className="w-full text-left text-xs text-slate-200">
+              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
                 <tr>
                   <th className="py-3.5 px-4">Client Logo</th>
                   <th className="py-3.5 px-4">Client Name</th>
@@ -488,9 +489,9 @@ export default function ClientsView() {
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
                 {filteredClients.map((client) => (
-                  <tr key={client.id} className="hover:bg-cyan-500/[0.03]">
+                  <tr key={client.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-3 px-4">
                       <div className="w-12 h-12 rounded-xl bg-white p-1.5 border border-slate-200 flex items-center justify-center overflow-hidden">
                         <img
@@ -502,7 +503,7 @@ export default function ClientsView() {
                     </td>
                     <td className="py-3 px-4 font-bold text-white text-sm">{client.name}</td>
                     <td className="py-3 px-4">
-                      <span className="px-2.5 py-1 text-[11px] font-medium rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-400/30">
+                      <span className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40">
                         {client.industry || 'Corporate Partner'}
                       </span>
                     </td>
@@ -510,14 +511,14 @@ export default function ClientsView() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => openEditModal(client)}
-                          className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-white/10 cursor-pointer"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-slate-700 cursor-pointer transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setDeletingClient(client)}
-                          className="p-1.5 rounded-lg bg-slate-900 hover:bg-rose-950 text-rose-400 border border-rose-500/30 cursor-pointer"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-slate-700 cursor-pointer transition-all"
                           title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -529,6 +530,7 @@ export default function ClientsView() {
               </tbody>
             </table>
           </div>
+          <TableFooter totalItems={filteredClients.length} />
         </div>
       )}
 

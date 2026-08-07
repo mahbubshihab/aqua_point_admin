@@ -17,6 +17,7 @@ import {
   Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import TableFooter from '@/core/components/TableFooter';
 import { db, updateServiceRequestStatusInFirestore } from '@/core/services/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 
@@ -503,24 +504,24 @@ export default function DashboardView() {
       </div>
 
       {/* Service Requests Interactive Table */}
-      <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl p-6 shadow-2xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
+      <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="p-6 border-b border-slate-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Wrench className="w-4 h-4 text-[#00BCE1]" /> Recent Service Requests
+              <Wrench className="w-4 h-4 text-[#4cceac]" /> Recent Service Requests
             </h2>
             <p className="text-xs text-slate-400 mt-1">Click status badge to update request state in real-time</p>
           </div>
 
           {/* Filter tabs */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-950/80 border border-slate-800">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#141b2d] border border-slate-700">
             {['All', 'Pending', 'In Progress', 'Completed'].map((status) => (
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                   statusFilter === status
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
+                    ? 'bg-[#3e4396] text-white shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -532,8 +533,8 @@ export default function DashboardView() {
 
         {/* Requests Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-950/80 text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800">
+          <table className="w-full text-left text-xs text-slate-200">
+            <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
               <tr>
                 <th className="py-3.5 px-4">Request ID</th>
                 <th className="py-3.5 px-4">Customer</th>
@@ -544,7 +545,7 @@ export default function DashboardView() {
                 <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
               {filteredRequests.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-8 text-slate-500">
@@ -553,11 +554,11 @@ export default function DashboardView() {
                 </tr>
               ) : (
                 filteredRequests.map((req) => (
-                  <tr key={req.id} className="hover:bg-[#00BCE1]/[0.04] transition-colors">
-                    <td className="py-4 px-4 font-mono font-bold text-[#00BCE1]">
+                  <tr key={req.id} className="hover:bg-[#2c3754] transition-colors">
+                    <td className="py-4 px-4 font-mono font-bold text-[#4cceac]">
                       {req.id}
                       {req.priority === 'Urgent' && (
-                        <span className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                        <span className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/20 text-rose-300 border border-rose-500/40">
                           URGENT
                         </span>
                       )}
@@ -574,25 +575,25 @@ export default function DashboardView() {
                         onClick={() => toggleStatus(req.id)}
                         className={`px-3 py-1 rounded-full text-[11px] font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
                           req.status === 'Pending'
-                            ? 'bg-amber-500/15 text-amber-300 border-amber-500/30 hover:bg-amber-500/25'
+                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                             : req.status === 'In Progress'
-                            ? 'bg-[#00BCE1]/15 text-[#00BCE1] border-[#00BCE1]/40 hover:bg-[#00BCE1]/25 shadow-[0_0_10px_rgba(0,188,225,0.2)]'
-                            : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/25'
+                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                            : 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
                         }`}
                         title="Click to toggle status"
                       >
                         {req.status === 'Pending' && <Clock className="w-3 h-3 text-amber-400" />}
-                        {req.status === 'In Progress' && <Activity className="w-3 h-3 text-[#00BCE1] animate-spin" />}
-                        {req.status === 'Completed' && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
+                        {req.status === 'In Progress' && <Activity className="w-3 h-3 text-blue-400 animate-spin" />}
+                        {req.status === 'Completed' && <CheckCircle2 className="w-3 h-3 text-[#4cceac]" />}
                         {req.status}
                       </button>
                     </td>
                     <td className="py-4 px-4 text-right">
                       <Link
                         href="/requests"
-                        className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-[#00BCE1]/40 text-slate-400 hover:text-[#00BCE1] inline-flex items-center gap-1 transition-all"
+                        className="p-2 rounded-xl bg-[#141b2d] border border-slate-700 hover:border-[#4cceac]/50 text-slate-300 hover:text-[#4cceac] inline-flex items-center gap-1 transition-all"
                       >
-                        <Eye className="w-3.5 h-3.5 text-[#00BCE1]" /> Details
+                        <Eye className="w-3.5 h-3.5 text-[#4cceac]" /> Details
                       </Link>
                     </td>
                   </tr>
@@ -601,6 +602,7 @@ export default function DashboardView() {
             </tbody>
           </table>
         </div>
+        <TableFooter totalItems={filteredRequests.length} />
       </div>
     </div>
   );

@@ -20,6 +20,7 @@ import {
   deleteInquiryFromFirestore,
   InquiryDoc 
 } from '@/core/services/firebase';
+import TableFooter from '@/core/components/TableFooter';
 
 export default function InquiriesView() {
   const [inquiries, setInquiries] = useState<InquiryDoc[]>([]);
@@ -207,16 +208,73 @@ export default function InquiriesView() {
             {searchTerm ? 'No customer messages match your search term.' : 'There are currently no customer contact messages.'}
           </p>
         </div>
+      ) : viewMode === 'table' ? (
+        /* Table View */
+        <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-200">
+              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
+                <tr>
+                  <th className="py-3.5 px-4">Customer</th>
+                  <th className="py-3.5 px-4">Contact</th>
+                  <th className="py-3.5 px-4">Subject</th>
+                  <th className="py-3.5 px-4">Message Summary</th>
+                  <th className="py-3.5 px-4">Status</th>
+                  <th className="py-3.5 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
+                {filteredInquiries.map((inq) => (
+                  <tr key={inq.id} className="hover:bg-[#2c3754] transition-colors">
+                    <td className="py-4 px-4 font-bold text-white">{inq.name}</td>
+                    <td className="py-4 px-4 text-slate-300">
+                      <div>{inq.phone}</div>
+                      {inq.email && <div className="text-[11px] text-[#4cceac]">{inq.email}</div>}
+                    </td>
+                    <td className="py-4 px-4 font-semibold text-[#4cceac]">{inq.subject}</td>
+                    <td className="py-4 px-4 text-slate-400 max-w-xs truncate">{inq.message}</td>
+                    <td className="py-4 px-4">
+                      <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
+                        inq.status === 'Resolved'
+                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          : inq.status === 'In Progress'
+                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                          : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                      }`}>
+                        {inq.status || 'New'}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 text-right">
+                      <button
+                        onClick={() => handleDelete(inq.id)}
+                        disabled={isDeleting === inq.id}
+                        className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-slate-700 cursor-pointer disabled:opacity-50 transition-all"
+                        title="Delete Inquiry"
+                      >
+                        {isDeleting === inq.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <TableFooter totalItems={filteredInquiries.length} />
+        </div>
       ) : (
         <div className="space-y-4">
           {filteredInquiries.map((inq) => (
             <div
               key={inq.id}
-              className="glass-panel glass-card-hover rounded-2xl p-6 transition-all duration-200"
+              className="bg-[#1f2940] border border-slate-700/50 rounded-2xl p-6 transition-all duration-200"
             >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-700/50">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-bold text-sm border border-cyan-400/30">
+                  <div className="w-10 h-10 rounded-full bg-[#3e4396] text-[#4cceac] flex items-center justify-center font-bold text-sm border border-[#4cceac]/40">
                     {inq.name.charAt(0).toUpperCase()}
                   </div>
                   <div>
@@ -224,9 +282,9 @@ export default function InquiriesView() {
                       {inq.name}
                       <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
                         inq.status === 'Resolved'
-                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
                           : inq.status === 'In Progress'
-                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
                           : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                       }`}>
                         {inq.status || 'New'}
@@ -234,11 +292,11 @@ export default function InquiriesView() {
                     </h3>
                     <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-0.5">
                       <span className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-cyan-400" /> {inq.phone}
+                        <Phone className="w-3 h-3 text-[#4cceac]" /> {inq.phone}
                       </span>
                       {inq.email && (
                         <span className="flex items-center gap-1">
-                          <Mail className="w-3 h-3 text-cyan-400" /> {inq.email}
+                          <Mail className="w-3 h-3 text-[#4cceac]" /> {inq.email}
                         </span>
                       )}
                     </div>
@@ -255,9 +313,9 @@ export default function InquiriesView() {
                           ? st === 'New'
                             ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                             : st === 'In Progress'
-                            ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                            : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                          : 'bg-slate-900/60 text-slate-400 border-white/5 hover:text-white'
+                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                            : 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          : 'bg-[#141b2d] text-slate-400 border-slate-700 hover:text-white'
                       }`}
                     >
                       {st}
@@ -266,7 +324,7 @@ export default function InquiriesView() {
                   <button
                     onClick={() => handleDelete(inq.id)}
                     disabled={isDeleting === inq.id}
-                    className="p-2 rounded-xl bg-slate-900 hover:bg-rose-950 text-rose-400 border border-rose-500/30 cursor-pointer disabled:opacity-50 ml-2"
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-slate-700 cursor-pointer disabled:opacity-50 ml-2 transition-all"
                     title="Delete Inquiry"
                   >
                     {isDeleting === inq.id ? (
@@ -280,10 +338,10 @@ export default function InquiriesView() {
 
               {/* Subject & Message Content */}
               <div className="pt-4 space-y-2 text-xs">
-                <div className="font-bold text-cyan-300 flex items-center gap-1.5 text-sm">
+                <div className="font-bold text-[#4cceac] flex items-center gap-1.5 text-sm">
                   <Tag className="w-3.5 h-3.5" /> Subject: {inq.subject}
                 </div>
-                <div className="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 text-slate-300 leading-relaxed">
+                <div className="p-3.5 rounded-xl bg-[#141b2d] border border-slate-700/50 text-slate-300 leading-relaxed">
                   {inq.message}
                 </div>
               </div>

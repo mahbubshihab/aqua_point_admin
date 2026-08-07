@@ -17,6 +17,7 @@ import {
   LayoutGrid,
   List
 } from 'lucide-react';
+import TableFooter from '@/core/components/TableFooter';
 
 interface Customer {
   id: string;
@@ -249,10 +250,10 @@ export default function CustomersView() {
       </div>
 
       {/* Customers Table */}
-      <div className="glass-panel rounded-2xl p-6">
+      <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-900/80 text-slate-400 font-semibold uppercase tracking-wider border-b border-white/10">
+          <table className="w-full text-left text-xs text-slate-200">
+            <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
               <tr>
                 <th className="py-3.5 px-4">Customer Name</th>
                 <th className="py-3.5 px-4">Contact Info</th>
@@ -263,32 +264,32 @@ export default function CustomersView() {
                 <th className="py-3.5 px-4">Joined Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
               {filteredCustomers.map((cust) => (
-                <tr key={cust.id} className="hover:bg-cyan-500/[0.03]">
+                <tr key={cust.id} className="hover:bg-[#2c3754] transition-colors">
                   <td className="py-4 px-4 font-bold text-white flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-slate-950 font-bold text-xs">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#3e4396] to-[#4cceac] flex items-center justify-center text-white font-bold text-xs shadow-md">
                       {cust.name.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div>
                       <div>{cust.name}</div>
-                      <div className="text-[10px] text-cyan-400 font-mono">{cust.id}</div>
+                      <div className="text-[10px] text-[#4cceac] font-mono">{cust.id}</div>
                     </div>
                   </td>
 
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-1.5 text-slate-300">
-                      <Mail className="w-3 h-3 text-cyan-400" /> {cust.email}
+                      <Mail className="w-3 h-3 text-[#4cceac]" /> {cust.email}
                     </div>
                     <div className="flex items-center gap-1.5 text-slate-400 text-[11px] mt-0.5">
-                      <Phone className="w-3 h-3 text-cyan-400" /> {cust.phone}
+                      <Phone className="w-3 h-3 text-[#4cceac]" /> {cust.phone}
                     </div>
                   </td>
 
                   <td className="py-4 px-4">
                     <button
                       onClick={() => copyReferral(cust.referralCode)}
-                      className="px-2.5 py-1 rounded-lg bg-slate-900 border border-cyan-500/30 text-cyan-300 font-mono text-[11px] flex items-center gap-1.5 hover:border-cyan-400 transition-all cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-[#141b2d] border border-slate-700 text-[#4cceac] font-mono text-[11px] flex items-center gap-1.5 hover:border-[#4cceac] transition-all cursor-pointer"
                       title="Click to copy referral code"
                     >
                       {cust.referralCode}
@@ -301,14 +302,14 @@ export default function CustomersView() {
                   </td>
 
                   <td className="py-4 px-4 font-bold text-amber-300">
-                    <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+                    <span className="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300">
                       ⚡ {cust.rewardPoints} pts
                     </span>
                   </td>
 
                   <td className="py-4 px-4 font-medium text-slate-200">
                     <span className="flex items-center gap-1">
-                      <Droplets className="w-3.5 h-3.5 text-cyan-400" /> {cust.activeDevices} Units
+                      <Droplets className="w-3.5 h-3.5 text-[#4cceac]" /> {cust.activeDevices} Units
                     </span>
                   </td>
 
@@ -326,6 +327,7 @@ export default function CustomersView() {
             </tbody>
           </table>
         </div>
+        <TableFooter totalItems={filteredCustomers.length} />
       </div>
     </div>
   );

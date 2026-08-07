@@ -20,6 +20,7 @@ import {
   assignTechnicianInFirestore,
   ServiceRequestDoc 
 } from '@/core/services/firebase';
+import TableFooter from '@/core/components/TableFooter';
 
 export default function ServiceRequestsView() {
   const [items, setItems] = useState<ServiceRequestDoc[]>([]);
@@ -210,16 +211,79 @@ export default function ServiceRequestsView() {
         <div className="glass-panel rounded-2xl p-12 text-center text-slate-400 text-xs">
           No service requests found matching your filters.
         </div>
+      ) : viewMode === 'table' ? (
+        /* Table View */
+        <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-200">
+              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
+                <tr>
+                  <th className="py-3.5 px-4">Request ID</th>
+                  <th className="py-3.5 px-4">Customer</th>
+                  <th className="py-3.5 px-4">Machine Model</th>
+                  <th className="py-3.5 px-4">Appointment</th>
+                  <th className="py-3.5 px-4">Technician</th>
+                  <th className="py-3.5 px-4">Status</th>
+                  <th className="py-3.5 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
+                {filteredItems.map((item) => (
+                  <tr key={item.id} className="hover:bg-[#2c3754] transition-colors">
+                    <td className="py-4 px-4 font-mono font-bold text-[#4cceac]">
+                      {item.id.substring(0, 10)}
+                      {item.priority === 'Urgent' && (
+                        <span className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                          URGENT
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="font-bold text-white">{item.customerName}</div>
+                      <div className="text-[11px] text-slate-400">{item.phone}</div>
+                    </td>
+                    <td className="py-4 px-4 font-medium text-slate-200">{item.machineModel}</td>
+                    <td className="py-4 px-4 text-slate-400">{item.appointmentDate}</td>
+                    <td className="py-4 px-4 text-slate-300">{item.technician || 'Unassigned'}</td>
+                    <td className="py-4 px-4">
+                      <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
+                        item.status === 'Completed'
+                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          : item.status === 'In Progress'
+                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                          : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                      }`}>
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 text-right">
+                      <button
+                        onClick={() => {
+                          setAssigningItem(item);
+                          setTechnicianName(item.technician !== 'Unassigned' ? item.technician : '');
+                        }}
+                        className="px-2.5 py-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-slate-700 cursor-pointer transition-all text-xs font-semibold"
+                      >
+                        Assign
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <TableFooter totalItems={filteredItems.length} />
+        </div>
       ) : (
         <div className="space-y-4">
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className="glass-panel glass-card-hover rounded-2xl p-6 transition-all duration-200"
+              className="bg-[#1f2940] border border-slate-700/50 rounded-2xl p-6 transition-all duration-200"
             >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-700/50">
                 <div className="flex items-center gap-3">
-                  <div className="px-3 py-1.5 rounded-xl bg-slate-900 border border-cyan-500/30 text-cyan-400 font-mono font-bold text-xs">
+                  <div className="px-3 py-1.5 rounded-xl bg-[#141b2d] border border-slate-700 text-[#4cceac] font-mono font-bold text-xs">
                     {item.id.substring(0, 12)}
                   </div>
                   <div>
@@ -233,10 +297,10 @@ export default function ServiceRequestsView() {
                     </h3>
                     <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-0.5">
                       <span className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-cyan-400" /> {item.phone}
+                        <Phone className="w-3 h-3 text-[#4cceac]" /> {item.phone}
                       </span>
                       <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-cyan-400" /> {item.address}
+                        <MapPin className="w-3 h-3 text-[#4cceac]" /> {item.address}
                       </span>
                     </div>
                   </div>
@@ -252,11 +316,11 @@ export default function ServiceRequestsView() {
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         item.status === st
                           ? st === 'Pending'
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
+                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                             : st === 'In Progress'
-                            ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-[0_0_10px_rgba(0,229,255,0.2)]'
-                            : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.2)]'
-                          : 'bg-slate-900/60 text-slate-400 border-white/5 hover:text-white'
+                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                            : 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
+                          : 'bg-[#141b2d] text-slate-400 border-slate-700 hover:text-white'
                       }`}
                     >
                       {st}
@@ -267,25 +331,25 @@ export default function ServiceRequestsView() {
 
               {/* Request Details Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 text-xs">
-                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                <div className="p-3 rounded-xl bg-[#141b2d] border border-slate-700/50">
                   <span className="text-slate-400 font-semibold block mb-1">Machine & Telemetry</span>
-                  <div className="font-bold text-[#00BCE1] text-sm">{item.machineModel}</div>
-                  <div className="text-cyan-400 mt-1">Output TDS: {item.tdsReading || 45} PPM</div>
+                  <div className="font-bold text-[#4cceac] text-sm">{item.machineModel}</div>
+                  <div className="text-[#4cceac] mt-1">Output TDS: {item.tdsReading || 45} PPM</div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                <div className="p-3 rounded-xl bg-[#141b2d] border border-slate-700/50">
                   <span className="text-slate-400 font-semibold block mb-1">Appointment Slot</span>
                   <div className="font-bold text-white flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> {item.appointmentDate}
+                    <Clock className="w-3.5 h-3.5 text-[#4cceac]" /> {item.appointmentDate}
                   </div>
                   <div className="text-slate-300 mt-1">{item.appointmentTime}</div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-between">
+                <div className="p-3 rounded-xl bg-[#141b2d] border border-slate-700/50 flex items-center justify-between">
                   <div>
                     <span className="text-slate-400 font-semibold block mb-1">Assigned Technician</span>
                     <div className="font-bold text-white flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-cyan-400" /> {item.technician || 'Unassigned'}
+                      <User className="w-3.5 h-3.5 text-[#4cceac]" /> {item.technician || 'Unassigned'}
                     </div>
                   </div>
                   <button
@@ -293,7 +357,7 @@ export default function ServiceRequestsView() {
                       setAssigningItem(item);
                       setTechnicianName(item.technician !== 'Unassigned' ? item.technician : '');
                     }}
-                    className="p-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 cursor-pointer flex items-center gap-1 text-[11px]"
+                    className="p-1.5 rounded-lg bg-[#3e4396] hover:bg-[#4cceac] text-white hover:text-slate-950 border border-slate-700 cursor-pointer flex items-center gap-1 text-[11px] font-bold transition-all"
                   >
                     <UserPlus className="w-3.5 h-3.5" /> Assign
                   </button>
@@ -301,8 +365,8 @@ export default function ServiceRequestsView() {
               </div>
 
               {/* Problem Description */}
-              <div className="mt-3 p-3 rounded-xl bg-cyan-500/[0.04] border border-cyan-500/20 text-xs">
-                <span className="font-bold text-cyan-300">Problem Description: </span>
+              <div className="mt-3 p-3 rounded-xl bg-[#141b2d] border border-slate-700/50 text-xs">
+                <span className="font-bold text-[#4cceac]">Problem Description: </span>
                 <span className="text-slate-300">{item.problemDetails}</span>
               </div>
             </div>

@@ -26,6 +26,7 @@ import {
   deleteReviewFromFirestore,
   ReviewDoc
 } from '@/core/services/firebase';
+import TableFooter from '@/core/components/TableFooter';
 
 export default function ReviewsView() {
   const [reviews, setReviews] = useState<ReviewDoc[]>([]);
@@ -468,10 +469,10 @@ export default function ReviewsView() {
         </div>
       ) : (
         /* Table Layout */
-        <div className="glass-panel rounded-2xl p-6">
+        <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-900/80 text-slate-400 font-semibold uppercase tracking-wider border-b border-white/10">
+            <table className="w-full text-left text-xs text-slate-200">
+              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
                 <tr>
                   <th className="py-3.5 px-4">Customer Name</th>
                   <th className="py-3.5 px-4">Location</th>
@@ -481,11 +482,11 @@ export default function ReviewsView() {
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
                 {filteredReviews.map((rev) => (
-                  <tr key={rev.id} className="hover:bg-cyan-500/[0.03]">
+                  <tr key={rev.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-4 px-4 font-bold text-white">{rev.customerName}</td>
-                    <td className="py-4 px-4 text-cyan-400">
+                    <td className="py-4 px-4 text-[#4cceac]">
                       <span className="flex items-center gap-1">
                         <MapPin className="w-3 h-3 shrink-0" /> {rev.location}
                       </span>
@@ -503,9 +504,9 @@ export default function ReviewsView() {
                     <td className="py-4 px-4">
                       <button
                         onClick={() => handleToggleApproved(rev)}
-                        className={`px-2.5 py-1 text-[10px] font-bold rounded-full border transition-all cursor-pointer ${
+                        className={`px-2.5 py-1 text-[10px] font-bold rounded-full border transition-colors ${
                           rev.isApproved
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
+                            ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
                             : 'bg-amber-500/20 text-amber-300 border-amber-400/40'
                         }`}
                       >
@@ -516,14 +517,14 @@ export default function ReviewsView() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openEditModal(rev)}
-                          className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-white/10 cursor-pointer"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-slate-700 cursor-pointer transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setDeletingReview(rev)}
-                          className="p-1.5 rounded-lg bg-slate-900 hover:bg-rose-950 text-rose-400 border border-rose-500/30 cursor-pointer"
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-slate-700 cursor-pointer transition-all"
                           title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -535,6 +536,7 @@ export default function ReviewsView() {
               </tbody>
             </table>
           </div>
+          <TableFooter totalItems={filteredReviews.length} />
         </div>
       )}
 

@@ -27,6 +27,7 @@ import {
   ProductDoc,
   CategoryDoc 
 } from '@/core/services/firebase';
+import TableFooter from '@/core/components/TableFooter';
 
 const CORE_CATEGORIES = [
   'RO Purifiers',
@@ -495,10 +496,10 @@ export default function ProductsView() {
         </div>
       ) : (
         /* Table View */
-        <div className="backdrop-blur-xl bg-slate-900/70 border border-slate-800/80 rounded-2xl p-6 shadow-2xl">
+        <div className="bg-[#1f2940] border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950/80 text-slate-400 font-semibold uppercase tracking-wider border-b border-slate-800">
+            <table className="w-full text-left text-xs text-slate-200">
+              <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-slate-700">
                 <tr>
                   <th className="py-3.5 px-4">Product</th>
                   <th className="py-3.5 px-4">Category</th>
@@ -509,15 +510,15 @@ export default function ProductsView() {
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-700/50 bg-[#1f2940]">
                 {filteredProducts.map((p) => (
-                  <tr key={p.id} className="hover:bg-[#00BCE1]/[0.04] transition-colors">
+                  <tr key={p.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
                         <img
                           src={p.imageUrl}
                           alt={p.name}
-                          className="w-11 h-11 rounded-xl object-cover border border-slate-800 shrink-0"
+                          className="w-11 h-11 rounded-xl object-cover border border-slate-700 shrink-0"
                         />
                         <div>
                           <div className="font-bold text-white flex items-center gap-1.5">
@@ -526,19 +527,19 @@ export default function ProductsView() {
                               <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />
                             )}
                           </div>
-                          <div className="text-[11px] text-[#00BCE1] font-mono">{p.model || 'AP-STANDARD'}</div>
+                          <div className="text-[11px] text-[#4cceac] font-mono">{p.model || 'AP-STANDARD'}</div>
                         </div>
                       </div>
                     </td>
                     <td className="py-4 px-4 font-medium text-slate-200">
-                      <span className="px-2.5 py-1 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                      <span className="px-2.5 py-1 rounded-lg bg-[#141b2d] border border-slate-700">
                         {p.category}
                       </span>
                     </td>
                     <td className="py-4 px-4">
                       <div className="font-bold text-white">৳{p.price.toLocaleString()}</div>
                       {p.originalPrice && p.originalPrice > p.price && (
-                        <div className="text-[10px] text-slate-500 line-through">৳{p.originalPrice.toLocaleString()}</div>
+                        <div className="text-[10px] text-slate-400 line-through">৳{p.originalPrice.toLocaleString()}</div>
                       )}
                     </td>
                     <td className="py-4 px-4 text-slate-300">{p.application || 'Household'}</td>
@@ -546,12 +547,12 @@ export default function ProductsView() {
                     <td className="py-4 px-4">
                       <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
                         p.stockStatus === 'In Stock'
-                          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                          ? 'bg-[#4cceac]/20 text-[#4cceac] border-[#4cceac]/40'
                           : p.stockStatus === 'Low Stock'
-                          ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                           : p.stockStatus === 'Out of Stock'
-                          ? 'bg-rose-500/15 text-rose-300 border-rose-500/30'
-                          : 'bg-blue-500/15 text-blue-300 border-blue-500/30'
+                          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                          : 'bg-blue-500/20 text-blue-300 border-blue-500/40'
                       }`}>
                         {p.stockStatus}
                       </span>
@@ -560,14 +561,14 @@ export default function ProductsView() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => openEditModal(p)}
-                          className="p-2 rounded-lg bg-slate-950/80 hover:bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/30 cursor-pointer transition-all"
+                          className="p-2 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#4cceac] hover:text-white border border-slate-700 cursor-pointer transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setDeletingProduct(p)}
-                          className="p-2 rounded-lg bg-slate-950/80 hover:bg-rose-950/50 text-rose-400 border border-rose-500/30 cursor-pointer transition-all"
+                          className="p-2 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-slate-700 cursor-pointer transition-all"
                           title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -579,6 +580,7 @@ export default function ProductsView() {
               </tbody>
             </table>
           </div>
+          <TableFooter totalItems={filteredProducts.length} />
         </div>
       )}
 

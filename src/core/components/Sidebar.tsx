@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Image from 'next/image';
 import { 
   LayoutDashboard, 
   Droplets, 
@@ -16,9 +15,8 @@ import {
   MessageSquareQuote,
   Users, 
   Settings, 
-  ShieldCheck,
-  ChevronRight,
-  Sparkles
+  Menu,
+  ChevronRight
 } from 'lucide-react';
 import { 
   subscribeToServiceRequests, 
@@ -32,18 +30,38 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-const navItems: NavItem[] = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Products', href: '/products', icon: Droplets },
-  { name: 'Categories', href: '/categories', icon: Layers },
-  { name: 'Banners', href: '/banners', icon: ImageIcon },
-  { name: 'Clients', href: '/clients', icon: Building2 },
-  { name: 'Service Requests', href: '/requests', icon: Wrench },
-  { name: 'Orders', href: '/orders', icon: ShoppingBag },
-  { name: 'Inquiries', href: '/inquiries', icon: MessageSquare },
-  { name: 'Reviews', href: '/reviews', icon: MessageSquareQuote },
-  { name: 'Customers', href: '/customers', icon: Users },
-  { name: 'Settings', href: '/settings', icon: Settings },
+interface NavGroup {
+  groupTitle: string;
+  items: NavItem[];
+}
+
+const navGroups: NavGroup[] = [
+  {
+    groupTitle: 'Dashboard',
+    items: [
+      { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+    ],
+  },
+  {
+    groupTitle: 'Data',
+    items: [
+      { name: 'Products', href: '/products', icon: Droplets },
+      { name: 'Categories', href: '/categories', icon: Layers },
+      { name: 'Banners', href: '/banners', icon: ImageIcon },
+      { name: 'Clients', href: '/clients', icon: Building2 },
+      { name: 'Service Requests', href: '/requests', icon: Wrench },
+      { name: 'Orders', href: '/orders', icon: ShoppingBag },
+      { name: 'Inquiries', href: '/inquiries', icon: MessageSquare },
+      { name: 'Reviews', href: '/reviews', icon: MessageSquareQuote },
+      { name: 'Customers', href: '/customers', icon: Users },
+    ],
+  },
+  {
+    groupTitle: 'Settings',
+    items: [
+      { name: 'Settings', href: '/settings', icon: Settings },
+    ],
+  },
 ];
 
 export default function Sidebar() {
@@ -51,6 +69,7 @@ export default function Sidebar() {
   const [servicesCount, setServicesCount] = useState<number>(0);
   const [ordersCount, setOrdersCount] = useState<number>(0);
   const [inquiriesCount, setInquiriesCount] = useState<number>(0);
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     const unsubServices = subscribeToServiceRequests((data) => {
@@ -78,77 +97,91 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 fixed left-0 top-0 bottom-0 z-40 backdrop-blur-xl bg-slate-950/85 border-r border-slate-800/80 flex flex-col justify-between p-4 shadow-2xl shadow-cyan-950/20">
-      <div>
-        {/* Brand Header */}
-        <div className="flex flex-col gap-1 px-3 py-4 mb-6 border-b border-slate-800/80">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/app_logo.png"
-              alt="Aqua Point Logo"
-              width={160}
-              height={48}
-              className="h-10 w-auto object-contain"
-              priority
-            />
-          </div>
-          <p className="text-[10px] text-[#00BCE1] font-bold tracking-widest uppercase flex items-center gap-1 mt-1 pl-0.5">
-            <Sparkles className="w-3 h-3 text-[#00BCE1]" /> ADMIN SYSTEM
-          </p>
-        </div>
-
-        {/* Navigation Items */}
-        <nav className="space-y-1.5">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-            const badgeCount = getBadgeCount(item.href);
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`group flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  isActive
-                    ? 'bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/30 shadow-[0_0_15px_rgba(0,188,225,0.15)] font-bold'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-900/60 border border-transparent hover:border-slate-800'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon className={`w-5 h-5 transition-colors ${
-                    isActive ? 'text-[#00BCE1]' : 'text-slate-400 group-hover:text-[#00BCE1]'
-                  }`} />
-                  <span>{item.name}</span>
-                </div>
-                {badgeCount > 0 ? (
-                  <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/30">
-                    {badgeCount}
-                  </span>
-                ) : isActive ? (
-                  <ChevronRight className="w-4 h-4 text-[#00BCE1]" />
-                ) : null}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-
-      {/* Admin Profile Badge */}
-      <div className="pt-4 border-t border-slate-800/80">
-        <div className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-md flex items-center gap-3 shadow-lg">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#00BCE1] to-blue-600 flex items-center justify-center text-slate-950 font-extrabold text-xs shadow-[0_0_12px_rgba(0,188,225,0.4)]">
-              MS
+    <aside className={`fixed left-0 top-0 bottom-0 z-40 bg-[#1f2940] border-r border-[#141b2d] flex flex-col justify-between p-4 shadow-2xl transition-all duration-300 ${collapsed ? 'w-20' : 'w-64'}`}>
+      <div className="overflow-y-auto scrollbar-none pr-1">
+        {/* Top Bar: Brand AQUA POINT with collapse menu icon ≡ */}
+        <div className="flex items-center justify-between px-2 py-3 mb-4 border-b border-[#141b2d]">
+          {!collapsed && (
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-black tracking-wider text-white uppercase">
+                AQUA<span className="text-[#4cceac]"> POINT</span>
+              </span>
             </div>
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 rounded-full border-2 border-slate-950" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-white truncate flex items-center gap-1">
-              Mahbub Shihab <ShieldCheck className="w-3.5 h-3.5 text-[#00BCE1] inline" />
-            </p>
-            <p className="text-[11px] text-[#00BCE1]/80 truncate font-medium">Super Admin</p>
-          </div>
+          )}
+          <button 
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-1.5 rounded-lg text-[#A0AEC0] hover:text-white hover:bg-[#141b2d] cursor-pointer transition-colors"
+            title="Toggle Menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
         </div>
+
+        {/* Profile Card Section */}
+        {!collapsed && (
+          <div className="flex flex-col items-center text-center p-4 mb-6 rounded-2xl bg-[#141b2d]/70 border border-slate-700/40">
+            <div className="relative mb-3">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#3e4396] to-[#4cceac] flex items-center justify-center text-white font-extrabold text-xl shadow-lg border-2 border-[#4cceac]">
+                MS
+              </div>
+              <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#4cceac] rounded-full border-2 border-[#141b2d]" />
+            </div>
+            <h3 className="text-base font-bold text-white leading-tight">
+              Mahbub Shihab
+            </h3>
+            <p className="text-xs font-semibold text-[#4cceac] mt-1">
+              Super Admin
+            </p>
+          </div>
+        )}
+
+        {/* Grouped Menu Section Headers */}
+        <nav className="space-y-6">
+          {navGroups.map((group) => (
+            <div key={group.groupTitle} className="space-y-1">
+              {!collapsed && (
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#A0AEC0] px-3 mb-2">
+                  {group.groupTitle}
+                </h4>
+              )}
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                const badgeCount = getBadgeCount(item.href);
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`group flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                      isActive
+                        ? 'bg-[#3e4396] text-white shadow-lg shadow-[#3e4396]/40 font-bold border-l-4 border-[#4cceac]'
+                        : 'text-[#A0AEC0] hover:text-white hover:bg-[#141b2d]/60'
+                    }`}
+                    title={collapsed ? item.name : undefined}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className={`w-5 h-5 transition-colors ${
+                        isActive ? 'text-[#4cceac]' : 'text-[#A0AEC0] group-hover:text-white'
+                      }`} />
+                      {!collapsed && <span>{item.name}</span>}
+                    </div>
+
+                    {!collapsed && (
+                      badgeCount > 0 ? (
+                        <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#4cceac]/20 text-[#4cceac] border border-[#4cceac]/40">
+                          {badgeCount}
+                        </span>
+                      ) : isActive ? (
+                        <ChevronRight className="w-4 h-4 text-[#4cceac]" />
+                      ) : null
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
       </div>
     </aside>
   );
