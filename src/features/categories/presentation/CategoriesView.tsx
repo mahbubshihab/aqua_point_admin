@@ -192,25 +192,14 @@ export default function CategoriesView() {
         </div>
       )}
 
-      {/* Header Title */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            Categories
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Manage product categories.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={openAddModal}
-            className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
-          >
-            <Plus className="w-4 h-4 stroke-[3]" /> Add Category
-          </button>
-        </div>
+      {/* Top Action Bar */}
+      <div className="flex items-center justify-end">
+        <button
+          onClick={openAddModal}
+          className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
+        >
+          <Plus className="w-4 h-4 stroke-[3]" /> Add Category
+        </button>
       </div>
 
       {/* Search & View Mode Bar */}

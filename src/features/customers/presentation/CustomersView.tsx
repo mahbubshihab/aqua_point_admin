@@ -105,18 +105,9 @@ export default function CustomersView() {
 
   return (
     <div className="space-y-8">
-      {/* Title Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            Customer Directory
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            View customer accounts and loyalty.
-          </p>
-        </div>
-
-        <button className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer">
+      {/* Top Action Bar */}
+      <div className="flex items-center justify-end">
+        <button className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold">
           <UserPlus className="w-4 h-4 stroke-[2.5]" /> Register Customer
         </button>
       </div>

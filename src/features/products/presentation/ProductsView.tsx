@@ -239,20 +239,8 @@ export default function ProductsView() {
         </div>
       )}
 
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#00BCE1]/10 text-[#00BCE1] border border-[#00BCE1]/30 shadow-[0_0_15px_rgba(0,188,225,0.2)] mb-2 backdrop-blur-md">
-            <span>🏷️</span> PURIFICATION CATALOG
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white bg-gradient-to-r from-white via-slate-100 to-[#00BCE1] bg-clip-text text-transparent">
-            Products
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Manage and monitor your purification inventory.
-          </p>
-        </div>
-
+      {/* Top Control Bar */}
+      <div className="flex items-center justify-end">
         <button
           onClick={openAddModal}
           className="px-5 py-3 text-xs font-bold rounded-2xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-lg shadow-cyan-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2 cursor-pointer"

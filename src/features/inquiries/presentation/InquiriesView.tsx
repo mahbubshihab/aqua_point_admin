@@ -82,22 +82,11 @@ export default function InquiriesView() {
         </div>
       )}
 
-      {/* Header Title */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            Customer Inquiries
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Real-time messages submitted by visitors via website contact form.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-cyan-400" />
-            <span>{inquiries.length} Total Messages</span>
-          </div>
+      {/* Total Messages Badge */}
+      <div className="flex items-center justify-end">
+        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center gap-2">
+          <MessageSquare className="w-4 h-4 text-cyan-400" />
+          <span>{inquiries.length} Total Messages</span>
         </div>
       </div>
 

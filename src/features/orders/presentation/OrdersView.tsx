@@ -67,27 +67,15 @@ export default function OrdersView() {
         </div>
       )}
 
-      {/* Header Title */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            Orders Management
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Real-time ecommerce orders, payment status, and fulfillment tracking.
-          </p>
+      {/* Quick Summary Badges */}
+      <div className="flex items-center justify-end gap-3">
+        <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center gap-2">
+          <Clock className="w-4 h-4 text-amber-400" />
+          <span>{orders.filter(o => o.status === 'Pending').length} Pending</span>
         </div>
-
-        {/* Quick Summary Badges */}
-        <div className="flex items-center gap-3">
-          <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center gap-2">
-            <Clock className="w-4 h-4 text-amber-400" />
-            <span>{orders.filter(o => o.status === 'Pending').length} Pending</span>
-          </div>
-          <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center gap-2">
-            <PackageCheck className="w-4 h-4 text-cyan-400" />
-            <span>{orders.filter(o => o.status === 'Processing').length} Processing</span>
-          </div>
+        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center gap-2">
+          <PackageCheck className="w-4 h-4 text-cyan-400" />
+          <span>{orders.filter(o => o.status === 'Processing').length} Processing</span>
         </div>
       </div>
 

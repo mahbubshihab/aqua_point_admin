@@ -88,27 +88,15 @@ export default function ServiceRequestsView() {
         </div>
       )}
 
-      {/* Title Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            Service Request Queue
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Real-time customer service dispatch queue and technician dispatch management.
-          </p>
+      {/* Quick Queue Summary Badges */}
+      <div className="flex items-center justify-end gap-3">
+        <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center gap-2">
+          <Clock className="w-4 h-4 text-amber-400" />
+          <span>{items.filter(i => i.status === 'Pending').length} Pending</span>
         </div>
-
-        {/* Quick Queue Summary Badges */}
-        <div className="flex items-center gap-3">
-          <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center gap-2">
-            <Clock className="w-4 h-4 text-amber-400" />
-            <span>{items.filter(i => i.status === 'Pending').length} Pending</span>
-          </div>
-          <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center gap-2">
-            <Wrench className="w-4 h-4 text-cyan-400" />
-            <span>{items.filter(i => i.status === 'In Progress').length} In Progress</span>
-          </div>
+        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center gap-2">
+          <Wrench className="w-4 h-4 text-cyan-400" />
+          <span>{items.filter(i => i.status === 'In Progress').length} In Progress</span>
         </div>
       </div>
 

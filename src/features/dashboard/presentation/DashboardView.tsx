@@ -258,27 +258,14 @@ export default function DashboardView() {
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Page Title Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#00BCE1]/10 text-[#00BCE1] border border-[#00BCE1]/30 shadow-[0_0_15px_rgba(0,188,225,0.2)] mb-2 backdrop-blur-md">
-            <Zap className="w-3.5 h-3.5 text-[#00BCE1]" /> REAL-TIME METRICS
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white bg-gradient-to-r from-white via-slate-100 to-[#00BCE1] bg-clip-text text-transparent">
-            Dashboard
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            System overview and operations.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/requests"
-            className="px-4.5 py-2.5 text-xs font-bold rounded-2xl bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_20px_rgba(0,188,225,0.15)] hover:bg-[#00BCE1]/25 hover:border-[#00BCE1]/70 hover:scale-[1.02] transition-all duration-300 flex items-center gap-2"
-          >
-            <Wrench className="w-4 h-4 text-[#00BCE1]" /> View Queue ({loading.requests ? '...' : activeRequestsCount})
-          </Link>
-        </div>
+      {/* Top Action Bar */}
+      <div className="flex items-center justify-end">
+        <Link
+          href="/requests"
+          className="px-4.5 py-2.5 text-xs font-bold rounded-2xl bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/40 shadow-[0_0_20px_rgba(0,188,225,0.15)] hover:bg-[#00BCE1]/25 hover:border-[#00BCE1]/70 hover:scale-[1.02] transition-all duration-300 flex items-center gap-2"
+        >
+          <Wrench className="w-4 h-4 text-[#00BCE1]" /> View Queue ({loading.requests ? '...' : activeRequestsCount})
+        </Link>
       </div>
 
       {/* Key Metrics Cards */}

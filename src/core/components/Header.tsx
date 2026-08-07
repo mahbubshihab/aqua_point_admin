@@ -2,10 +2,28 @@
 
 import { Search, Bell, Activity, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
-import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+
+const getPageTitle = (path: string): string => {
+  if (path === '/') return 'Dashboard';
+  if (path.startsWith('/products')) return 'Products';
+  if (path.startsWith('/categories')) return 'Categories';
+  if (path.startsWith('/banners')) return 'Banners';
+  if (path.startsWith('/clients')) return 'Clients';
+  if (path.startsWith('/requests')) return 'Service Requests';
+  if (path.startsWith('/orders')) return 'Orders';
+  if (path.startsWith('/inquiries')) return 'Inquiries';
+  if (path.startsWith('/reviews')) return 'Reviews';
+  if (path.startsWith('/customers')) return 'Customers';
+  if (path.startsWith('/settings')) return 'Settings';
+  return 'Dashboard';
+};
 
 export default function Header() {
+  const pathname = usePathname();
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const pageTitle = getPageTitle(pathname);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -15,20 +33,13 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-30 h-16 backdrop-blur-xl bg-slate-950/80 border-b border-slate-800/80 px-8 flex items-center justify-between shadow-xl shadow-cyan-950/10">
       <div className="flex items-center gap-6">
-        {/* Brand Logo in Header */}
-        <div className="flex items-center gap-2">
-          <Image
-            src="/app_logo.png"
-            alt="Aqua Point Logo"
-            width={140}
-            height={40}
-            className="h-8 w-auto object-contain"
-            priority
-          />
-        </div>
+        {/* Dynamic Page Title in Header */}
+        <h1 className="text-lg md:text-xl font-bold text-white tracking-tight shrink-0">
+          {pageTitle}
+        </h1>
 
         {/* Search Input */}
-        <div className="relative w-80">
+        <div className="relative w-72 md:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"

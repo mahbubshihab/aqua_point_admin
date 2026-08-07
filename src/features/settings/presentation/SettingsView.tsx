@@ -115,21 +115,12 @@ export default function SettingsView() {
         </div>
       )}
 
-      {/* Title Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            Settings
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            System and company contact configuration.
-          </p>
-        </div>
-
+      {/* Top Action Bar */}
+      <div className="flex items-center justify-end">
         <button
           onClick={handleSave}
           disabled={saving || loading}
-          className="px-5 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.4)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          className="px-5 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.4)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 font-bold"
         >
           {saving ? (
             <Loader2 className="w-4 h-4 animate-spin text-slate-950" />

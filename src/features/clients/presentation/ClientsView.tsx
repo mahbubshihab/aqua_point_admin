@@ -226,35 +226,24 @@ export default function ClientsView() {
         </div>
       )}
 
-      {/* Header Title */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Building2 className="w-7 h-7 text-[#00BCE1]" /> Corporate Clients
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Manage corporate partners, institutions, and brand logos featured on the website showcase.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {clients.length === 0 && (
-            <button
-              onClick={handleSeedDefaultClients}
-              disabled={isSeeding}
-              className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 transition-all flex items-center gap-2 cursor-pointer"
-            >
-              {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-cyan-400" />}
-              Seed Default Clients
-            </button>
-          )}
+      {/* Top Action Bar */}
+      <div className="flex items-center justify-end gap-3">
+        {clients.length === 0 && (
           <button
-            onClick={openAddModal}
-            className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
+            onClick={handleSeedDefaultClients}
+            disabled={isSeeding}
+            className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 transition-all flex items-center gap-2 cursor-pointer"
           >
-            <Plus className="w-4 h-4 stroke-[3]" /> Add Corporate Client
+            {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-cyan-400" />}
+            Seed Default Clients
           </button>
-        </div>
+        )}
+        <button
+          onClick={openAddModal}
+          className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,229,255,0.3)] transition-all flex items-center gap-2 cursor-pointer font-bold"
+        >
+          <Plus className="w-4 h-4 stroke-[3]" /> Add Corporate Client
+        </button>
       </div>
 
       {/* Overview Stats Cards */}
