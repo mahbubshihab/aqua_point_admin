@@ -511,8 +511,7 @@ export default function OrdersView() {
                   <ShoppingBag className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white">Create New Order</h2>
-                  <p className="text-xs text-[#A0AEC0]">Enter customer details, search products, set quantities, and save to Cloud Firestore</p>
+                  <h2 className="text-lg font-bold text-white">New Order</h2>
                 </div>
               </div>
               <button
@@ -528,34 +527,34 @@ export default function OrdersView() {
               {/* Customer Details Section */}
               <div className="space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#00BCE1] flex items-center gap-2">
-                  <User className="w-4 h-4" /> Customer Details
+                  <User className="w-4 h-4" /> Customer
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Customer Name *</label>
+                    <label className="block text-slate-300 font-semibold mb-1">Name *</label>
                     <input
                       type="text"
-                      placeholder="e.g. Tanvir Ahmed"
+                      placeholder="Customer name"
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#00BCE1] transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Customer Phone *</label>
+                    <label className="block text-slate-300 font-semibold mb-1">Phone *</label>
                     <input
                       type="text"
-                      placeholder="e.g. +8801712345678"
+                      placeholder="+880..."
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#00BCE1] transition-all"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-slate-300 font-semibold mb-1">Delivery Address *</label>
+                    <label className="block text-slate-300 font-semibold mb-1">Address *</label>
                     <textarea
                       rows={2}
-                      placeholder="e.g. House 12, Road 5, Block B, Dhanmondi, Dhaka"
+                      placeholder="Delivery address"
                       value={deliveryAddress}
                       onChange={(e) => setDeliveryAddress(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#00BCE1] transition-all"
@@ -567,19 +566,19 @@ export default function OrdersView() {
               {/* Interactive Product Search & Item Selector */}
               <div className="space-y-3 pt-4 border-t border-[#2c3754]">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#00BCE1] flex items-center gap-2">
-                  <Package className="w-4 h-4" /> Add Products to Order
+                  <Package className="w-4 h-4" /> Products
                 </h3>
                 
                 <div className="p-4 rounded-2xl bg-[#141b2d] border border-[#2c3754] space-y-4">
                   <div className="flex flex-col md:flex-row items-stretch md:items-end gap-3">
                     {/* Product Search Input with dropdown */}
                     <div className="relative flex-1">
-                      <label className="block text-slate-300 font-semibold mb-1">Search & Select Product</label>
+                      <label className="block text-slate-300 font-semibold mb-1">Product</label>
                       <div className="relative">
                         <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
                         <input
                           type="text"
-                          placeholder="Search product by name, model, or category..."
+                          placeholder="Search product..."
                           value={productSearchQuery}
                           onChange={(e) => {
                             setProductSearchQuery(e.target.value);
@@ -693,11 +692,11 @@ export default function OrdersView() {
                 {/* Selected Items Table */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-300">Selected Items ({selectedItems.length})</span>
+                    <span className="font-semibold text-slate-300">Items ({selectedItems.length})</span>
                   </div>
                   {selectedItems.length === 0 ? (
                     <div className="p-6 rounded-xl bg-[#141b2d] border border-dashed border-[#2c3754] text-center text-slate-400">
-                      No items added yet. Search and select products above.
+                      No items added yet.
                     </div>
                   ) : (
                     <div className="rounded-xl border border-[#2c3754] overflow-hidden bg-[#141b2d]">
@@ -769,7 +768,7 @@ export default function OrdersView() {
               {/* Payment & Order Status Section */}
               <div className="space-y-4 pt-4 border-t border-[#2c3754]">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#00BCE1] flex items-center gap-2">
-                  <CreditCard className="w-4 h-4" /> Payment & Order Status
+                  <CreditCard className="w-4 h-4" /> Payment
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
