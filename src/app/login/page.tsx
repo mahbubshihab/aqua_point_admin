@@ -115,29 +115,32 @@ export default function LoginPage() {
       const user = result.user;
       const userEmail = (user.email || '').toLowerCase().trim();
 
+      console.log('Google Sign-In success:', userEmail);
+
       if (ALLOWED_ADMIN_EMAILS.includes(userEmail)) {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('admin_auth', 'true');
-        }
-        router.push('/');
+        localStorage.setItem('admin_auth', 'true');
+        localStorage.setItem('admin_email', userEmail);
+        // Use window.location for static export compatibility
+        window.location.href = '/';
       } else {
         await signOut(auth);
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('admin_auth');
-        }
+        localStorage.removeItem('admin_auth');
+        localStorage.removeItem('admin_email');
         setError('Access Denied. Unauthorized account.');
       }
     } catch (err: any) {
-      if (err.code === 'auth/popup-closed-by-user') {
+      console.error('Google Sign-In Error:', err?.code, err?.message);
+      if (err?.code === 'auth/popup-closed-by-user') {
         setError('Sign-in cancelled.');
-      } else if (err.code === 'auth/popup-blocked') {
+      } else if (err?.code === 'auth/popup-blocked') {
         setError('Popup blocked. Please allow popups.');
       } else {
-        setError('Authentication failed. Try again.');
+        setError(err?.message || 'Authentication failed. Try again.');
       }
     } finally {
       setLoading(false);
     }
+
   };
 
   return (
