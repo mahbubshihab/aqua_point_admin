@@ -99,5 +99,60 @@ html, body {
   background: #3e4396;
 }
 
+/* Water & Liquid Animation Keyframes */
+@keyframes floating-bubbles {
+  0% {
+    transform: translateY(100vh) scale(0.6) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.6;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-20vh) scale(1.4) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes liquid-pulse {
+  0%, 100% {
+    transform: scale(1) translate(0px, 0px);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.2) translate(-15px, 20px);
+    opacity: 0.75;
+  }
+}
+
+@keyframes caustic-wave {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.animate-floating-bubble {
+  animation: floating-bubbles linear infinite;
+}
+
+.animate-liquid-glow {
+  animation: liquid-pulse 7s ease-in-out infinite;
+}
+
+.animate-caustic {
+  background-size: 200% 200%;
+  animation: caustic-wave 12s ease infinite;
+}
+
+
 
 
