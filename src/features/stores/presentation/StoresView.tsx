@@ -8,11 +8,9 @@ import {
   Clock,
   ExternalLink,
   Plus,
-  Search,
   Edit2,
   Trash2,
   CheckCircle2,
-  XCircle,
   LayoutGrid,
   List,
   Loader2,
@@ -35,7 +33,6 @@ export default function StoresView() {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const { searchTerm } = useSearch();
   const [visibleCount, setVisibleCount] = useState(10);
-  const [activeTab, setActiveTab] = useState<'all' | 'active' | 'inactive'>('all');
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,7 +50,6 @@ export default function StoresView() {
     phone: '',
     openingHours: '09:00 AM - 08:00 PM',
     googleMapUrl: '',
-    isActive: true,
   });
 
   useEffect(() => {
@@ -73,7 +69,6 @@ export default function StoresView() {
       phone: '',
       openingHours: '09:00 AM - 08:00 PM',
       googleMapUrl: '',
-      isActive: true,
     });
     setFormError('');
     setIsModalOpen(true);
@@ -87,7 +82,6 @@ export default function StoresView() {
       phone: store.phone || '',
       openingHours: store.openingHours || '09:00 AM - 08:00 PM',
       googleMapUrl: store.googleMapUrl || '',
-      isActive: store.isActive !== false,
     });
     setFormError('');
     setIsModalOpen(true);
@@ -106,15 +100,15 @@ export default function StoresView() {
     try {
       if (editingStore) {
         await updateStoreInFirestore(editingStore.id, formData);
-        setSuccessMessage('Store outlet updated successfully!');
+        setSuccessMessage('Store updated successfully!');
       } else {
         await addStoreToFirestore(formData);
-        setSuccessMessage('New store outlet added successfully!');
+        setSuccessMessage('New store added successfully!');
       }
       setIsModalOpen(false);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err: any) {
-      setFormError(err.message || 'Failed to save store outlet.');
+      setFormError(err.message || 'Failed to save store.');
     } finally {
       setIsSaving(false);
     }
@@ -135,28 +129,12 @@ export default function StoresView() {
     }
   };
 
-  const handleToggleActive = async (store: StoreDoc) => {
-    try {
-      await updateStoreInFirestore(store.id, { isActive: !store.isActive });
-    } catch (err: any) {
-      console.error('Error toggling store status:', err);
-    }
-  };
-
   // Filtered Stores
-  const filteredStores = stores.filter((s) => {
-    const matchesSearch =
-      s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.phone.toLowerCase().includes(searchTerm.toLowerCase());
-
-    if (activeTab === 'active') return matchesSearch && s.isActive;
-    if (activeTab === 'inactive') return matchesSearch && !s.isActive;
-    return matchesSearch;
-  });
-
-  const activeCount = stores.filter((s) => s.isActive).length;
-  const inactiveCount = stores.filter((s) => !s.isActive).length;
+  const filteredStores = stores.filter((s) =>
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.phone.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-6 pb-12">
@@ -188,59 +166,13 @@ export default function StoresView() {
         </div>
       )}
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Outlets</span>
-            <span className="text-2xl font-black text-white mt-1 block">{stores.length}</span>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-[#141b2d] border border-[#2c3754] flex items-center justify-center text-[#00BCE1]">
-            <Store className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Active Outlets</span>
-            <span className="text-2xl font-black text-emerald-400 mt-1 block">{activeCount}</span>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Inactive Outlets</span>
-            <span className="text-2xl font-black text-amber-400 mt-1 block">{inactiveCount}</span>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-            <XCircle className="w-5 h-5" />
-          </div>
-        </div>
-      </div>
-
-      {/* Control Bar: Tabs & View Switcher */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-[#1f2940] border border-[#2c3754] w-full sm:w-auto">
-          {(['all', 'active', 'inactive'] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => {
-                setActiveTab(tab);
-                setVisibleCount(10);
-              }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer ${
-                activeTab === tab
-                  ? 'bg-gradient-to-r from-[#00BCE1] to-blue-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white hover:bg-[#141b2d]'
-              }`}
-            >
-              {tab} ({tab === 'all' ? stores.length : tab === 'active' ? activeCount : inactiveCount})
-            </button>
-          ))}
+      {/* Control Bar: View Switcher */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-slate-300">Total Stores:</span>
+          <span className="px-3 py-1 rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 text-xs font-bold font-mono">
+            {stores.length}
+          </span>
         </div>
 
         {/* View Mode Toggle */}
@@ -270,14 +202,14 @@ export default function StoresView() {
       {loading ? (
         <div className="p-16 rounded-3xl bg-[#1f2940] border border-[#2c3754] text-center space-y-3">
           <Loader2 className="w-8 h-8 text-[#00BCE1] animate-spin mx-auto" />
-          <p className="text-xs text-slate-400">Loading store outlets from Cloud Firestore...</p>
+          <p className="text-xs text-slate-400">Loading stores from Cloud Firestore...</p>
         </div>
       ) : filteredStores.length === 0 ? (
         <div className="p-16 rounded-3xl bg-[#1f2940] border border-[#2c3754] text-center space-y-4">
           <Building2 className="w-12 h-12 text-slate-600 mx-auto opacity-50" />
-          <h3 className="text-sm font-bold text-white">No Store Outlets Found</h3>
+          <h3 className="text-sm font-bold text-white">No Stores Found</h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            {searchTerm ? `No stores match "${searchTerm}"` : 'Click "Add New Store" to register your first outlet.'}
+            {searchTerm ? `No stores match "${searchTerm}"` : 'Click "Add New Store" to register your first store.'}
           </p>
         </div>
       ) : viewMode === 'grid' ? (
@@ -289,24 +221,11 @@ export default function StoresView() {
                 className="bg-[#1f2940] border border-[#2c3754] hover:border-[#00BCE1]/50 rounded-2xl p-5 flex flex-col justify-between space-y-4 transition-all group shadow-lg"
               >
                 <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/30 flex items-center justify-center shrink-0">
-                        <Store className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-bold text-white leading-snug">{store.name}</h3>
-                        <span
-                          className={`inline-block mt-1 px-2 py-0.5 text-[10px] font-bold rounded-full border ${
-                            store.isActive
-                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                              : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                          }`}
-                        >
-                          {store.isActive ? 'Active Outlet' : 'Inactive'}
-                        </span>
-                      </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/30 flex items-center justify-center shrink-0">
+                      <Store className="w-5 h-5" />
                     </div>
+                    <h3 className="text-sm font-bold text-white leading-snug">{store.name}</h3>
                   </div>
 
                   <div className="space-y-2 pt-2 border-t border-[#2c3754]/60 text-xs">
@@ -329,44 +248,31 @@ export default function StoresView() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-[#2c3754] flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    {store.googleMapUrl && (
-                      <a
-                        href={store.googleMapUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-[#00BCE1] border border-[#2c3754] transition-all cursor-pointer"
-                        title="Open in Google Maps"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    )}
-                    <button
-                      onClick={() => openEditModal(store)}
-                      className="p-2 rounded-xl bg-[#141b2d] hover:bg-blue-900/40 text-blue-400 border border-[#2c3754] transition-all cursor-pointer"
-                      title="Edit Store"
+                <div className="pt-3 border-t border-[#2c3754] flex items-center justify-end gap-2">
+                  {store.googleMapUrl && (
+                    <a
+                      href={store.googleMapUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-[#00BCE1] border border-[#2c3754] transition-all cursor-pointer"
+                      title="Open in Google Maps"
                     >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setDeletingStore(store)}
-                      className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
-                      title="Delete Store"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
                   <button
-                    onClick={() => handleToggleActive(store)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                      store.isActive
-                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
-                        : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
-                    }`}
+                    onClick={() => openEditModal(store)}
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-blue-900/40 text-blue-400 border border-[#2c3754] transition-all cursor-pointer"
+                    title="Edit Store"
                   >
-                    {store.isActive ? 'Deactivate' : 'Activate'}
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setDeletingStore(store)}
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
+                    title="Delete Store"
+                  >
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -391,7 +297,6 @@ export default function StoresView() {
                   <th className="py-3.5 px-4">Address</th>
                   <th className="py-3.5 px-4">Phone</th>
                   <th className="py-3.5 px-4">Hours</th>
-                  <th className="py-3.5 px-4">Status</th>
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -402,17 +307,6 @@ export default function StoresView() {
                     <td className="py-4 px-4 text-slate-300 max-w-xs truncate">{store.address}</td>
                     <td className="py-4 px-4 text-[#00BCE1] font-medium">{store.phone || 'N/A'}</td>
                     <td className="py-4 px-4 text-slate-300">{store.openingHours || 'N/A'}</td>
-                    <td className="py-4 px-4">
-                      <span
-                        className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
-                          store.isActive
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                            : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                        }`}
-                      >
-                        {store.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
                     <td className="py-4 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
@@ -451,7 +345,7 @@ export default function StoresView() {
             <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Store className="w-5 h-5 text-[#00BCE1]" />
-                {editingStore ? 'Edit Store Outlet' : 'Add New Store Outlet'}
+                {editingStore ? 'Edit Store' : 'Add New Store'}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -528,19 +422,6 @@ export default function StoresView() {
                 />
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="isActive"
-                  checked={formData.isActive}
-                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-4 h-4 rounded accent-[#00BCE1] cursor-pointer"
-                />
-                <label htmlFor="isActive" className="text-slate-300 font-medium cursor-pointer">
-                  Outlet is Active and visible to customers
-                </label>
-              </div>
-
               <div className="pt-4 flex items-center justify-end gap-3 border-t border-[#2c3754]">
                 <button
                   type="button"
@@ -570,7 +451,7 @@ export default function StoresView() {
             <div className="w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center mx-auto border border-rose-500/40">
               <Trash2 className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-bold text-white">Delete Store Outlet?</h3>
+            <h3 className="text-base font-bold text-white">Delete Store?</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
               Are you sure you want to delete <span className="font-bold text-white">"{deletingStore.name}"</span>? This action cannot be undone.
             </p>
