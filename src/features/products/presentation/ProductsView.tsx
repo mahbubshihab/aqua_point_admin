@@ -713,10 +713,10 @@ export default function ProductsView() {
                 </div>
               </div>
 
-              {/* Row 3: Price (৳) & Regular Price (৳) */}
+              {/* Row 3: Price & Regular Price */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Price (৳)</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Price</label>
                   <input
                     type="number"
                     step="1"
@@ -728,7 +728,7 @@ export default function ProductsView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Regular Price (৳)</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Regular Price</label>
                   <input
                     type="number"
                     step="1"

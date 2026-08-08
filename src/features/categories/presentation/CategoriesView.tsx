@@ -437,16 +437,16 @@ export default function CategoriesView() {
 
       {/* Add / Edit Category Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/80 backdrop-blur-md">
-          <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                {editingCategoryId ? <Edit2 className="w-5 h-5 text-[#00BCE1]" /> : <Plus className="w-5 h-5 text-[#00BCE1]" />}
-                {editingCategoryId ? 'Edit Category' : 'Create New Category'}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/85 backdrop-blur-xl">
+          <div className="bg-[#1F293D]/95 backdrop-blur-xl border border-slate-700/60 w-full max-w-md rounded-2xl p-6 relative space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-700/60">
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                {editingCategoryId ? <Edit2 className="w-4 h-4 text-[#00BCE1]" /> : <Plus className="w-4 h-4 text-[#00BCE1]" />}
+                {editingCategoryId ? 'Edit Category' : 'Create Category'}
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-xl text-[#A0AEC0] hover:text-white hover:bg-[#141b2d] cursor-pointer"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-[#131B2E] cursor-pointer transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -460,64 +460,36 @@ export default function CategoriesView() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Category Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => handleNameChange(e.target.value)}
-                    placeholder="e.g. RO Purifiers"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">URL Slug</label>
-                  <input
-                    type="text"
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
-                    placeholder="e.g. ro-purifiers"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono focus:outline-none focus:border-[#00BCE1]"
-                  />
-                </div>
-              </div>
-
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Category Description</label>
-                <textarea
-                  rows={3}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Summary of products under this category..."
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Category Name</label>
+                <input
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => handleNameChange(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                 />
               </div>
 
-              {/* Cloudinary Image Upload */}
+              {/* Image Upload */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Category Banner Image (Cloudinary Folder: <span className="text-[#00BCE1]">categories/</span>)
-                </label>
-                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#00BCE1] transition-colors bg-[#141b2d]">
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Image</label>
+                <div className="border-2 border-dashed border-slate-700/60 hover:border-[#00BCE1] rounded-xl p-4 text-center transition-colors bg-[#131B2E]">
                   {previewUrl || existingImageUrl ? (
-                    <div className="relative w-32 h-32 mx-auto rounded-xl overflow-hidden border border-[#2c3754]">
+                    <div className="relative w-32 h-32 mx-auto rounded-xl overflow-hidden border border-slate-700/50 shadow-md">
                       <img src={previewUrl || existingImageUrl} alt="Preview" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => { setSelectedFile(null); setPreviewUrl(''); setExistingImageUrl(''); }}
-                        className="absolute top-1.5 right-1.5 p-1 bg-[#141b2d] rounded-full text-white cursor-pointer hover:bg-rose-600"
+                        className="absolute top-1.5 right-1.5 p-1.5 bg-[#131B2E] rounded-full text-white cursor-pointer hover:bg-rose-600 transition-colors"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (
-                    <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-2">
-                      <Upload className="w-7 h-7 text-[#00BCE1] animate-bounce" />
-                      <span className="text-xs text-slate-300">Click to upload category cover photo</span>
-                      <span className="text-[10px] text-[#A0AEC0] font-mono">Preset: aqua_point | Folder: categories</span>
+                    <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-3">
+                      <Upload className="w-6 h-6 text-[#00BCE1]" />
+                      <span className="text-xs text-slate-300 font-medium">Upload Image</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -529,26 +501,26 @@ export default function CategoriesView() {
                 </div>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#2c3754]">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-700/60">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-slate-300 border border-[#2c3754] cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#131B2E] hover:bg-slate-800 text-slate-300 border border-slate-700/50 cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                  className="bg-[#00BCE1] hover:bg-cyan-400 text-[#131B2E] text-xs font-bold shadow-[0_0_20px_rgba(0,188,225,0.4)] rounded-xl px-6 py-2 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   {isSaving ? (
                     <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>{selectedFile ? 'Uploading Image...' : 'Saving to Firestore...'}</span>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[#131B2E]" />
+                      <span>{selectedFile ? 'Uploading...' : 'Saving...'}</span>
                     </>
                   ) : (
-                    <span>{editingCategoryId ? 'Update Category' : 'Create Category'}</span>
+                    <span>{editingCategoryId ? 'Update Category' : 'Save Category'}</span>
                   )}
                 </button>
               </div>
