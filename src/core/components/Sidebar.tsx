@@ -46,14 +46,14 @@ const navGroups: NavGroup[] = [
   {
     groupTitle: 'Data',
     items: [
+      { name: 'Orders', href: '/orders', icon: ShoppingBag },
+      { name: 'Service Requests', href: '/service-requests', icon: Wrench },
+      { name: 'Inbox', href: '/messages', icon: Inbox },
       { name: 'Products', href: '/products', icon: Droplets },
+      { name: 'Customers', href: '/customers', icon: Users },
       { name: 'Categories', href: '/categories', icon: Layers },
       { name: 'Banners', href: '/banners', icon: ImageIcon },
-      { name: 'Service Requests', href: '/requests', icon: Wrench },
-      { name: 'Orders', href: '/orders', icon: ShoppingBag },
-      { name: 'Inbox', href: '/messages', icon: Inbox },
       { name: 'Reviews', href: '/reviews', icon: MessageSquareQuote },
-      { name: 'Customers', href: '/customers', icon: Users },
     ],
   },
   {
@@ -92,7 +92,7 @@ export default function Sidebar() {
   }, []);
 
   const getBadgeCount = (href: string): number => {
-    if (href === '/requests') return servicesCount;
+    if (href === '/requests' || href === '/service-requests') return servicesCount;
     if (href === '/orders') return ordersCount;
     if (href === '/messages') return unreadMessagesCount;
     return 0;
