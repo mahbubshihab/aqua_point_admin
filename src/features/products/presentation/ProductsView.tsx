@@ -704,8 +704,8 @@ export default function ProductsView() {
 
       {/* Add / Edit Product Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-12 bg-[#141b2d]/85 backdrop-blur-xl overflow-y-auto">
-          <div className="bg-[#1F293D]/95 backdrop-blur-xl border border-slate-700/60 w-full max-w-lg rounded-2xl p-5 relative space-y-4 mb-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/85 backdrop-blur-xl">
+          <div className="bg-[#1F293D]/95 backdrop-blur-xl border border-slate-700/60 w-full max-w-2xl rounded-2xl p-5 relative space-y-3 shadow-2xl animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-slate-700/60">
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 {editingProductId ? <Edit2 className="w-4 h-4 text-[#00BCE1]" /> : <Plus className="w-4 h-4 text-[#00BCE1]" />}
