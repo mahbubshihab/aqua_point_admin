@@ -72,7 +72,7 @@ export interface StoreDoc {
   phone: string;
   openingHours: string;
   googleMapUrl?: string;
-  isActive: boolean;
+  isActive?: boolean;
   createdAt?: any;
 }
 
