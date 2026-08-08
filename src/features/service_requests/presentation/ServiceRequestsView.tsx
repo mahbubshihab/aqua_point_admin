@@ -18,6 +18,7 @@ import {
 import { 
   subscribeToServiceRequests, 
   updateServiceRequestStatusInFirestore, 
+  assignTechnicianInFirestore,
   ServiceRequestDoc 
 } from '@/core/services/firebase';
 import TableFooter from '@/core/components/TableFooter';
@@ -27,13 +28,16 @@ export default function ServiceRequestsView() {
   const [loading, setLoading] = useState(true);
   const [activeStatus, setActiveStatus] = useState<string>('All');
   
-  // Action Modal State
-  const [selectedItem, setSelectedItem] = useState<ServiceRequestDoc | null>(null);
+  // Action (Status) Modal State
+  const [actionItem, setActionItem] = useState<ServiceRequestDoc | null>(null);
   const [modalStatus, setModalStatus] = useState<ServiceRequestDoc['status']>('Pending');
+  
+  // Assign Technician Modal State
+  const [assigningItem, setAssigningItem] = useState<ServiceRequestDoc | null>(null);
   const [technicianName, setTechnicianName] = useState('');
+
   const [isUpdating, setIsUpdating] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
   useEffect(() => {
@@ -45,37 +49,60 @@ export default function ServiceRequestsView() {
     return () => unsubscribe();
   }, [activeStatus]);
 
+  // Handle opening Action (Status Change) Modal
   const handleOpenActionModal = (item: ServiceRequestDoc) => {
-    setSelectedItem(item);
+    setActionItem(item);
     setModalStatus(item.status);
-    setTechnicianName(item.technician !== 'Unassigned' ? item.technician : '');
   };
 
+  // Handle saving Action (Status Change) Modal
   const handleSaveActionModal = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedItem) return;
+    if (!actionItem) return;
 
     setIsUpdating(true);
     try {
-      await updateServiceRequestStatusInFirestore(
-        selectedItem.id, 
-        modalStatus, 
-        technicianName.trim() || 'Unassigned'
-      );
-      setSuccessMessage(`Updated #${selectedItem.id} status to ${modalStatus}`);
-      setSelectedItem(null);
+      await updateServiceRequestStatusInFirestore(actionItem.id, modalStatus);
+      setSuccessMessage(`Updated ${formatId(actionItem.id)} status to ${modalStatus}`);
+      setActionItem(null);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err: any) {
-      alert(`Failed to update service request: ${err.message}`);
+      alert(`Failed to update status: ${err.message}`);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // Handle opening Assign Technician Modal
+  const handleOpenAssignModal = (item: ServiceRequestDoc) => {
+    setAssigningItem(item);
+    setTechnicianName(item.technician !== 'Unassigned' ? item.technician : '');
+  };
+
+  // Handle saving Assign Technician Modal
+  const handleSaveAssignModal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assigningItem) return;
+
+    setIsUpdating(true);
+    try {
+      await assignTechnicianInFirestore(assigningItem.id, technicianName.trim() || 'Unassigned');
+      setSuccessMessage(`Assigned technician to ${formatId(assigningItem.id)}`);
+      setAssigningItem(null);
+      setTechnicianName('');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err: any) {
+      alert(`Failed to assign technician: ${err.message}`);
     } finally {
       setIsUpdating(false);
     }
   };
 
   const formatId = (id: string) => {
-    if (!id) return '#000';
+    if (!id) return '#001';
     if (id.startsWith('#')) return id;
-    return id.length <= 6 ? `#${id}` : `#${id.substring(0, 8)}`;
+    if (/^\d+$/.test(id)) return `#${id}`;
+    return id.length <= 6 ? `#${id}` : `#${id.substring(0, 6)}`;
   };
 
   return (
@@ -170,7 +197,7 @@ export default function ServiceRequestsView() {
                   <th className="py-3.5 px-4">Appointment</th>
                   <th className="py-3.5 px-4">Technician</th>
                   <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4 text-right">Action</th>
+                  <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
@@ -203,12 +230,20 @@ export default function ServiceRequestsView() {
                       </span>
                     </td>
                     <td className="py-4 px-4 text-right">
-                      <button
-                        onClick={() => handleOpenActionModal(item)}
-                        className="px-3 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#00BCE1] text-[#00BCE1] hover:text-[#0F172A] border border-[#2c3754] cursor-pointer transition-all text-xs font-bold"
-                      >
-                        Action
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleOpenAssignModal(item)}
+                          className="px-2.5 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-white border border-[#2c3754] cursor-pointer transition-all text-xs font-semibold flex items-center gap-1"
+                        >
+                          <UserPlus className="w-3.5 h-3.5 text-[#00BCE1]" /> Assign
+                        </button>
+                        <button
+                          onClick={() => handleOpenActionModal(item)}
+                          className="px-3 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#00BCE1] text-[#00BCE1] hover:text-[#0F172A] border border-[#2c3754] cursor-pointer transition-all text-xs font-bold flex items-center gap-1"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" /> Action
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -226,7 +261,7 @@ export default function ServiceRequestsView() {
               className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-5 hover:border-[#00BCE1]/50 transition-all duration-200 shadow-lg space-y-4 flex flex-col justify-between"
             >
               <div>
-                {/* Card Header: ID, Status, Action */}
+                {/* Card Header: ID, Status, Buttons */}
                 <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#2c3754]">
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-1 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono font-bold text-xs">
@@ -245,12 +280,20 @@ export default function ServiceRequestsView() {
                     </span>
                   </div>
 
-                  <button
-                    onClick={() => handleOpenActionModal(item)}
-                    className="px-3 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#00BCE1] text-[#00BCE1] hover:text-[#0F172A] border border-[#2c3754] cursor-pointer transition-all text-xs font-bold flex items-center gap-1.5"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" /> Action
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleOpenAssignModal(item)}
+                      className="px-2.5 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-white border border-[#2c3754] cursor-pointer transition-all text-xs font-semibold flex items-center gap-1"
+                    >
+                      <UserPlus className="w-3.5 h-3.5 text-[#00BCE1]" /> Assign
+                    </button>
+                    <button
+                      onClick={() => handleOpenActionModal(item)}
+                      className="px-3 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#00BCE1] text-[#00BCE1] hover:text-[#0F172A] border border-[#2c3754] cursor-pointer transition-all text-xs font-bold flex items-center gap-1"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" /> Action
+                    </button>
+                  </div>
                 </div>
 
                 {/* Customer Details */}
@@ -278,10 +321,12 @@ export default function ServiceRequestsView() {
                     <div className="text-slate-400 text-[11px] mt-0.5">{item.appointmentTime}</div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754]/80">
-                    <span className="text-[#A0AEC0] font-medium block mb-1">Technician</span>
-                    <div className="font-bold text-white flex items-center gap-1">
-                      <User className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.technician || 'Unassigned'}
+                  <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754]/80 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[#A0AEC0] font-medium block mb-1">Technician</span>
+                      <div className="font-bold text-white flex items-center gap-1">
+                        <User className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.technician || 'Unassigned'}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -299,21 +344,21 @@ export default function ServiceRequestsView() {
         </div>
       )}
 
-      {/* Action / Manage Modal */}
-      {selectedItem && (
+      {/* 1. Action (Status Change) Modal */}
+      {actionItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/85 backdrop-blur-xl">
           <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-md rounded-2xl p-6 relative space-y-5 shadow-2xl animate-in fade-in duration-200">
             <div className="flex items-center justify-between border-b border-[#2c3754] pb-3">
               <div>
                 <h2 className="text-base font-bold text-white flex items-center gap-2">
-                  <Wrench className="w-4 h-4 text-[#00BCE1]" /> Update Service Request
+                  <Edit2 className="w-4 h-4 text-[#00BCE1]" /> Change Request Status
                 </h2>
                 <p className="text-xs text-[#A0AEC0]">
-                  Request ID: <span className="font-mono text-[#00BCE1] font-bold">{formatId(selectedItem.id)}</span>
+                  ID: <span className="font-mono text-[#00BCE1] font-bold">{formatId(actionItem.id)}</span> ({actionItem.customerName})
                 </p>
               </div>
               <button
-                onClick={() => setSelectedItem(null)}
+                onClick={() => setActionItem(null)}
                 className="p-2 rounded-xl bg-[#141b2d] text-slate-400 hover:text-white"
               >
                 <X className="w-4 h-4" />
@@ -321,22 +366,16 @@ export default function ServiceRequestsView() {
             </div>
 
             <form onSubmit={handleSaveActionModal} className="space-y-4">
-              {/* Customer Info Summary */}
-              <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754] text-xs space-y-1">
-                <div className="font-bold text-white">{selectedItem.customerName}</div>
-                <div className="text-[#A0AEC0]">{selectedItem.phone} • {selectedItem.address}</div>
-              </div>
-
               {/* Status Selector */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-2">Status</label>
-                <div className="grid grid-cols-2 gap-2">
+                <label className="block text-xs font-semibold text-slate-300 mb-2">Select Status</label>
+                <div className="grid grid-cols-2 gap-2.5">
                   {(['Pending', 'In Progress', 'Completed', 'Cancelled'] as const).map((st) => (
                     <button
                       key={st}
                       type="button"
                       onClick={() => setModalStatus(st)}
-                      className={`p-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer text-center ${
+                      className={`p-3 rounded-xl text-xs font-bold border transition-all cursor-pointer text-center ${
                         modalStatus === st
                           ? st === 'Pending'
                             ? 'bg-amber-500/20 text-amber-300 border-amber-500'
@@ -354,23 +393,11 @@ export default function ServiceRequestsView() {
                 </div>
               </div>
 
-              {/* Assign Technician Input */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Technician</label>
-                <input
-                  type="text"
-                  value={technicianName}
-                  onChange={(e) => setTechnicianName(e.target.value)}
-                  placeholder="Technician name (optional)"
-                  className="w-full px-3 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-all"
-                />
-              </div>
-
               {/* Modal Actions */}
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2c3754]">
                 <button
                   type="button"
-                  onClick={() => setSelectedItem(null)}
+                  onClick={() => setActionItem(null)}
                   className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] text-slate-300 border border-[#2c3754] hover:bg-[#2c3754] transition-all cursor-pointer"
                 >
                   Cancel
@@ -380,7 +407,63 @@ export default function ServiceRequestsView() {
                   disabled={isUpdating}
                   className="bg-[#00BCE1] hover:bg-cyan-400 text-[#0F172A] text-xs font-bold rounded-xl px-5 py-2 transition-all disabled:opacity-50 cursor-pointer"
                 >
-                  {isUpdating ? 'Saving...' : 'Save Changes'}
+                  {isUpdating ? 'Saving...' : 'Update Status'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Assign Technician Modal */}
+      {assigningItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/85 backdrop-blur-xl">
+          <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-md rounded-2xl p-6 relative space-y-5 shadow-2xl animate-in fade-in duration-200">
+            <div className="flex items-center justify-between border-b border-[#2c3754] pb-3">
+              <div>
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <UserPlus className="w-4 h-4 text-[#00BCE1]" /> Assign Technician
+                </h2>
+                <p className="text-xs text-[#A0AEC0]">
+                  ID: <span className="font-mono text-[#00BCE1] font-bold">{formatId(assigningItem.id)}</span> ({assigningItem.customerName})
+                </p>
+              </div>
+              <button
+                onClick={() => setAssigningItem(null)}
+                className="p-2 rounded-xl bg-[#141b2d] text-slate-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveAssignModal} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Technician Name</label>
+                <input
+                  type="text"
+                  required
+                  value={technicianName}
+                  onChange={(e) => setTechnicianName(e.target.value)}
+                  placeholder="e.g. Alex Rivera"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-all"
+                />
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2c3754]">
+                <button
+                  type="button"
+                  onClick={() => setAssigningItem(null)}
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] text-slate-300 border border-[#2c3754] hover:bg-[#2c3754] transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="bg-[#00BCE1] hover:bg-cyan-400 text-[#0F172A] text-xs font-bold rounded-xl px-5 py-2 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  {isUpdating ? 'Saving...' : 'Save Assignment'}
                 </button>
               </div>
             </form>
