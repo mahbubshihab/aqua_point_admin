@@ -15,7 +15,8 @@ import {
   Trash2,
   Loader2,
   CheckCircle2,
-  Star
+  Star,
+  Images
 } from 'lucide-react';
 import { uploadToCloudinary } from '@/core/services/cloudinary';
 import { 
@@ -28,6 +29,12 @@ import {
   ProductType,
   CategoryDoc 
 } from '@/core/services/firebase';
+
+interface ImageItem {
+  id: string;
+  url: string;
+  file?: File;
+}
 
 const PRODUCT_TYPE_LABELS: Record<ProductType, string> = {
   open_type: 'Open Type',
@@ -50,7 +57,7 @@ const getProductTypeLabel = (type?: string) => {
 
 const getProductTypeBadgeStyle = (type?: string) => {
   if (!type) return 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40';
-  return PRODUCT_TYPE_BADGE_STYLES[type as ProductType] || 'bg-slate-500/20 text-slate-300 border-slate-400/40';
+  return PRODUCT_TYPE_BADGE_STYLES[type as ProductType] || 'bg-slate-500/20 text-slate-300 border-slate-700/40';
 };
 import TableFooter from '@/core/components/TableFooter';
 import { useSearch } from '@/core/context/SearchContext';
@@ -88,9 +95,9 @@ export default function ProductsView() {
   const [type, setType] = useState<ProductType>('open_type');
   const [featured, setFeatured] = useState(false);
   
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>('');
-  const [existingImageUrl, setExistingImageUrl] = useState<string>('');
+  // Multi-Image & Cover State
+  const [imageItems, setImageItems] = useState<ImageItem[]>([]);
+  const [coverImageId, setCoverImageId] = useState<string | null>(null);
   
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string>('');
@@ -114,12 +121,38 @@ export default function ProductsView() {
   }, [selectedCategoryFilter]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      const newItems: ImageItem[] = files.map((file, idx) => ({
+        id: `new-${Date.now()}-${idx}-${Math.random().toString(36).substring(2, 7)}`,
+        url: URL.createObjectURL(file),
+        file,
+      }));
+
+      setImageItems((prev) => {
+        const updated = [...prev, ...newItems];
+        if (!coverImageId && updated.length > 0) {
+          setCoverImageId(updated[0].id);
+        }
+        return updated;
+      });
       setFormError('');
+      e.target.value = '';
     }
+  };
+
+  const handleSetCover = (id: string) => {
+    setCoverImageId(id);
+  };
+
+  const handleRemoveImage = (id: string) => {
+    setImageItems((prev) => {
+      const updated = prev.filter((item) => item.id !== id);
+      if (coverImageId === id) {
+        setCoverImageId(updated.length > 0 ? updated[0].id : null);
+      }
+      return updated;
+    });
   };
 
   const openAddModal = () => {
@@ -135,9 +168,8 @@ export default function ProductsView() {
     setStockStatus('In Stock');
     setType('open_type');
     setFeatured(false);
-    setSelectedFile(null);
-    setPreviewUrl('');
-    setExistingImageUrl('');
+    setImageItems([]);
+    setCoverImageId(null);
     setFormError('');
     setIsModalOpen(true);
   };
@@ -155,9 +187,27 @@ export default function ProductsView() {
     setStockStatus(product.stockStatus || 'In Stock');
     setType((product.type as ProductType) || 'open_type');
     setFeatured(Boolean(product.featured));
-    setSelectedFile(null);
-    setPreviewUrl('');
-    setExistingImageUrl(product.imageUrl || '');
+
+    const existingImages = Array.isArray(product.images) && product.images.length > 0
+      ? product.images
+      : (product.imageUrl ? [product.imageUrl] : []);
+
+    const initialItems: ImageItem[] = existingImages.map((url, idx) => ({
+      id: `existing-${idx}-${Math.random().toString(36).substring(2, 7)}`,
+      url,
+    }));
+
+    setImageItems(initialItems);
+
+    const coverIdx = initialItems.findIndex((item) => item.url === product.imageUrl);
+    if (coverIdx !== -1) {
+      setCoverImageId(initialItems[coverIdx].id);
+    } else if (initialItems.length > 0) {
+      setCoverImageId(initialItems[0].id);
+    } else {
+      setCoverImageId(null);
+    }
+
     setFormError('');
     setIsModalOpen(true);
   };
@@ -172,16 +222,39 @@ export default function ProductsView() {
       setFormError('Please enter a valid positive price.');
       return;
     }
+    if (imageItems.length === 0) {
+      setFormError('Please add at least one product image.');
+      return;
+    }
 
     setIsSaving(true);
     setFormError('');
 
     try {
-      let finalImageUrl = existingImageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop';
-      
-      if (selectedFile) {
-        finalImageUrl = await uploadToCloudinary(selectedFile, 'products');
+      // Upload all new file items to Cloudinary 'products' folder
+      const uploadedUrls: string[] = [];
+
+      for (const item of imageItems) {
+        if (item.file) {
+          const url = await uploadToCloudinary(item.file, 'products');
+          uploadedUrls.push(url);
+        } else {
+          uploadedUrls.push(item.url);
+        }
       }
+
+      const defaultFallbackUrl = 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop';
+
+      // Identify cover photo URL
+      let coverPhotoUrl = defaultFallbackUrl;
+      const coverIdx = imageItems.findIndex((item) => item.id === coverImageId);
+      if (coverIdx !== -1 && uploadedUrls[coverIdx]) {
+        coverPhotoUrl = uploadedUrls[coverIdx];
+      } else if (uploadedUrls.length > 0) {
+        coverPhotoUrl = uploadedUrls[0];
+      }
+
+      const finalImages = uploadedUrls.length > 0 ? uploadedUrls : [coverPhotoUrl];
 
       const productPayload: Omit<ProductDoc, 'id'> = {
         name: name.trim(),
@@ -197,7 +270,8 @@ export default function ProductsView() {
         stockStatus,
         featured,
         filterHealth: 100,
-        imageUrl: finalImageUrl,
+        imageUrl: coverPhotoUrl,
+        images: finalImages,
       };
 
       if (editingProductId) {
@@ -449,7 +523,7 @@ export default function ProductsView() {
                     </span>
                   </div>
 
-                  <div className="absolute top-3 right-3 z-10">
+                  <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1.5">
                     <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
                       p.stockStatus === 'In Stock'
                         ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
@@ -461,6 +535,11 @@ export default function ProductsView() {
                     }`}>
                       {p.stockStatus}
                     </span>
+                    {p.images && p.images.length > 1 && (
+                      <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-slate-900/80 text-slate-300 border border-slate-700 backdrop-blur-md flex items-center gap-1">
+                        <Images className="w-3 h-3 text-[#00BCE1]" /> {p.images.length} photos
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -793,36 +872,109 @@ export default function ProductsView() {
                 </div>
               </div>
 
-              {/* Upload Zone */}
+              {/* Multi-Image Upload & Thumbnail Preview Grid */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Photo
-                </label>
-                <div className="border-2 border-dashed border-slate-700/60 hover:border-[#00BCE1] rounded-xl p-4 text-center transition-colors bg-[#131B2E]">
-                  {previewUrl || existingImageUrl ? (
-                    <div className="relative w-32 h-32 mx-auto rounded-xl overflow-hidden border border-slate-700/50 shadow-md">
-                      <img src={previewUrl || existingImageUrl} alt="Preview" className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => { setSelectedFile(null); setPreviewUrl(''); setExistingImageUrl(''); }}
-                        className="absolute top-1.5 right-1.5 p-1.5 bg-[#131B2E] rounded-full text-white cursor-pointer hover:bg-rose-600 transition-colors"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-3">
-                      <Upload className="w-6 h-6 text-[#00BCE1]" />
-                      <span className="text-xs text-slate-300 font-medium">Upload Photo</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-semibold text-slate-300">
+                    Product Images {imageItems.length > 0 && <span className="text-[#00BCE1] font-mono">({imageItems.length})</span>}
+                  </label>
+                  <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                    Click <Star className="w-3 h-3 text-amber-400 fill-amber-400" /> to set Cover
+                  </span>
+                </div>
+
+                {/* Thumbnail Preview Grid */}
+                {imageItems.length > 0 && (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-3 max-h-56 overflow-y-auto p-1 scrollbar-thin scrollbar-thumb-slate-700">
+                    {imageItems.map((item) => {
+                      const isCover = item.id === coverImageId;
+                      return (
+                        <div
+                          key={item.id}
+                          className={`relative group rounded-xl overflow-hidden bg-[#141b2d] aspect-square transition-all duration-200 ${
+                            isCover
+                              ? 'ring-2 ring-[#00BCE1] shadow-[0_0_12px_rgba(0,188,225,0.4)]'
+                              : 'border border-slate-700/60 hover:border-slate-500'
+                          }`}
+                        >
+                          <img
+                            src={item.url}
+                            alt="Product thumbnail"
+                            className="w-full h-full object-cover"
+                          />
+
+                          {/* Cyan "Cover" Badge */}
+                          {isCover && (
+                            <div className="absolute top-1.5 left-1.5 z-10">
+                              <span className="px-1.5 py-0.5 text-[9px] font-bold tracking-wider rounded-md bg-[#00BCE1] text-[#141b2d] shadow-md flex items-center gap-1">
+                                <Star className="w-2.5 h-2.5 fill-[#141b2d]" /> Cover
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Overlay Action Buttons */}
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleSetCover(item.id)}
+                              className={`p-1.5 rounded-lg backdrop-blur-md transition-all cursor-pointer ${
+                                isCover
+                                  ? 'bg-amber-500 text-white shadow-lg'
+                                  : 'bg-[#141b2d]/90 text-slate-300 hover:text-amber-400 hover:bg-[#141b2d]'
+                              }`}
+                              title={isCover ? 'Cover Photo' : 'Set as Cover Photo'}
+                            >
+                              <Star className={`w-4 h-4 ${isCover ? 'fill-white' : ''}`} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(item.id)}
+                              className="p-1.5 rounded-lg bg-[#141b2d]/90 text-slate-300 hover:text-rose-400 hover:bg-rose-950/80 backdrop-blur-md transition-all cursor-pointer"
+                              title="Delete Image"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Add More Images Tile */}
+                    <label className="border-2 border-dashed border-slate-700/60 hover:border-[#00BCE1] rounded-xl flex flex-col items-center justify-center p-2 text-slate-400 hover:text-[#00BCE1] transition-all bg-[#141b2d]/40 hover:bg-[#141b2d] cursor-pointer aspect-square">
+                      <Plus className="w-5 h-5 mb-1" />
+                      <span className="text-[10px] font-semibold text-center">Add More</span>
                       <input
                         type="file"
                         accept="image/*"
+                        multiple
                         onChange={handleFileChange}
                         className="hidden"
                       />
                     </label>
-                  )}
-                </div>
+                  </div>
+                )}
+
+                {/* Empty State Upload Drop Zone */}
+                {imageItems.length === 0 && (
+                  <div className="border-2 border-dashed border-slate-700/60 hover:border-[#00BCE1] rounded-xl p-6 text-center transition-colors bg-[#131B2E]">
+                    <label className="cursor-pointer flex flex-col items-center justify-center space-y-2">
+                      <div className="p-3 rounded-full bg-[#00BCE1]/10 text-[#00BCE1]">
+                        <Upload className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-semibold text-slate-200">Upload Product Images</span>
+                        <p className="text-[11px] text-slate-400 mt-0.5">Select single or multiple image files</p>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -842,7 +994,7 @@ export default function ProductsView() {
                   {isSaving ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 animate-spin text-[#131B2E]" />
-                      <span>{selectedFile ? 'Uploading...' : 'Saving...'}</span>
+                      <span>{imageItems.some(i => i.file) ? 'Uploading Images...' : 'Saving...'}</span>
                     </>
                   ) : (
                     <span>{editingProductId ? 'Update Product' : 'Save Product'}</span>
