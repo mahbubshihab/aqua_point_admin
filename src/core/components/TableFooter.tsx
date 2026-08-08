@@ -6,6 +6,7 @@ interface TableFooterProps {
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
+  showEntriesInfo?: boolean;
 }
 
 export default function TableFooter({
@@ -14,11 +15,14 @@ export default function TableFooter({
   currentPage = 1,
   totalPages = 1,
   onPageChange,
+  showEntriesInfo = true,
 }: TableFooterProps) {
   return (
     <div className="bg-[#3e4396] text-white px-6 py-3.5 rounded-b-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold shadow-inner mt-0">
       <div className="flex items-center gap-3 text-slate-200">
-        <span>Showing {totalItems > 0 ? 1 : 0} to {totalItems} of {totalItems} entries</span>
+        {showEntriesInfo && (
+          <span>Showing {totalItems > 0 ? 1 : 0} to {totalItems} of {totalItems} entries</span>
+        )}
         {selectedCount > 0 && (
           <span className="px-2.5 py-0.5 rounded-full bg-[#00BCE1]/20 text-[#00BCE1] text-[10px] font-bold border border-[#00BCE1]/40">
             {selectedCount} selected

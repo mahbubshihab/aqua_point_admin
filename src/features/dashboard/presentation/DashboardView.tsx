@@ -248,22 +248,11 @@ export default function DashboardView() {
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Executive Page Header Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
-            Executive Overview
-          </h1>
-          <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754] flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00BCE1] animate-pulse" /> Live Sync
-          </span>
-        </div>
-        <Link
-          href="/requests"
-          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer shrink-0"
-        >
-          <Wrench className="w-4 h-4 stroke-[2.5]" /> View Service Queue ({loading.requests ? '...' : activeRequestsCount})
-        </Link>
+      {/* Header Row */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+          Dashboard
+        </h1>
       </div>
 
       {/* Top Row: 4 Sleek KPI Metric Cards */}
@@ -287,9 +276,6 @@ export default function DashboardView() {
                 {customersCount.toLocaleString()}
               </h3>
             )}
-            <span className="text-[11px] text-[#00BCE1] font-semibold mt-1 inline-block">
-              {customersCount === 0 ? '0 registered customers' : '↑ Live from Firestore'}
-            </span>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
         </div>
@@ -313,9 +299,6 @@ export default function DashboardView() {
                 {activeRequestsCount.toLocaleString()}
               </h3>
             )}
-            <span className="text-[11px] text-[#00BCE1] font-semibold mt-1 inline-block">
-              {urgentRequestsCount > 0 ? `${urgentRequestsCount} Urgent Priority` : '0 Urgent Priority'}
-            </span>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
         </div>
@@ -339,9 +322,6 @@ export default function DashboardView() {
                 {productsCount.toLocaleString()}
               </h3>
             )}
-            <span className="text-[11px] text-[#00BCE1] font-semibold mt-1 inline-block">
-              {loading.categories ? '...' : `${categoriesCount} Categories Live`}
-            </span>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
         </div>
@@ -365,20 +345,17 @@ export default function DashboardView() {
                 ৳{totalRevenue.toLocaleString()}
               </h3>
             )}
-            <span className="text-[11px] text-[#00BCE1] font-semibold mt-1 inline-block">
-              Completed orders total
-            </span>
           </div>
           <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
         </div>
       </div>
 
-      {/* Bottom Row: Recent Activity / Service Queue Minimal Table */}
+      {/* Bottom Row: Service Requests Table */}
       <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-xl">
         <div className="p-6 border-b border-[#2c3754] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Wrench className="w-4 h-4 text-[#00BCE1]" /> Recent Activity / Service Queue
+              <Wrench className="w-4 h-4 text-[#00BCE1]" /> Service Requests
             </h2>
           </div>
 
@@ -446,14 +423,14 @@ export default function DashboardView() {
                           req.status === 'Pending'
                             ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                             : req.status === 'In Progress'
-                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                            : 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
+                            ? 'bg-blue-500/20 text-[#00BCE1] border-[#00BCE1]/40'
+                            : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                         }`}
                         title="Click to toggle status"
                       >
                         {req.status === 'Pending' && <Clock className="w-3 h-3 text-amber-400" />}
                         {req.status === 'In Progress' && <Activity className="w-3 h-3 text-blue-400 animate-spin" />}
-                        {req.status === 'Completed' && <CheckCircle2 className="w-3 h-3 text-[#00BCE1]" />}
+                        {req.status === 'Completed' && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
                         {req.status}
                       </button>
                     </td>
@@ -471,7 +448,7 @@ export default function DashboardView() {
             </tbody>
           </table>
         </div>
-        <TableFooter totalItems={filteredRequests.length} />
+        <TableFooter totalItems={filteredRequests.length} showEntriesInfo={false} />
       </div>
     </div>
   );
