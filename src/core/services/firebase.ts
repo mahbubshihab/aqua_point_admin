@@ -461,7 +461,7 @@ export function subscribeToServiceRequests(
         }
 
         return {
-          id: docSnap.id,
+          id: data.serviceId || data.requestId || docSnap.id,
           customerName: data.customerName || data.name || 'Anonymous Customer',
           phone: data.phone || 'N/A',
           address: data.address || 'N/A',
@@ -495,7 +495,7 @@ export function subscribeToServiceRequests(
           }
 
           return {
-            id: docSnap.id,
+            id: data.serviceId || data.requestId || docSnap.id,
             customerName: data.customerName || data.name || 'Anonymous Customer',
             phone: data.phone || 'N/A',
             address: data.address || 'N/A',
