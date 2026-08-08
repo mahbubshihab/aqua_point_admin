@@ -29,6 +29,9 @@ export default function Header() {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.clear();
+      }
       router.push('/login');
     }
   };

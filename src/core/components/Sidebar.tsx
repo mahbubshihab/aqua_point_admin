@@ -115,6 +115,9 @@ export default function Sidebar() {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.clear();
+      }
       router.push('/login');
     }
   };

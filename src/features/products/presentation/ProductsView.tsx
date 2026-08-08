@@ -626,15 +626,15 @@ export default function ProductsView() {
       {/* Add / Edit Product Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/85 backdrop-blur-xl overflow-y-auto">
-          <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-2xl rounded-3xl p-6 relative space-y-5 my-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                {editingProductId ? <Edit2 className="w-5 h-5 text-[#00BCE1]" /> : <Plus className="w-5 h-5 text-[#00BCE1]" />}
-                {editingProductId ? 'Edit Product Details' : 'Add New Product'}
+          <div className="bg-[#1F293D]/95 backdrop-blur-xl border border-slate-700/60 w-full max-w-xl rounded-2xl p-6 relative space-y-5 my-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-700/60">
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                {editingProductId ? <Edit2 className="w-4 h-4 text-[#00BCE1]" /> : <Plus className="w-4 h-4 text-[#00BCE1]" />}
+                {editingProductId ? 'Edit Product' : 'Add Product'}
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-xl text-[#A0AEC0] hover:text-white hover:bg-[#141b2d] cursor-pointer transition-colors"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-[#131B2E] cursor-pointer transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -642,47 +642,47 @@ export default function ProductsView() {
 
             <form onSubmit={handleSaveProduct} className="space-y-4">
               {formError && (
-                <div className="p-3.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{formError}</span>
                 </div>
               )}
 
+              {/* Row 1: Name & Model */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Product Name *</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Name</label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. AquaPurify Pro 7-Stage RO"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Model Code</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Model</label>
                   <input
                     type="text"
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
-                    placeholder="e.g. AP-900-ROUV"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
               </div>
 
+              {/* Row 2: Category & Type */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Category *</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Category</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
                   >
                     {categories.length === 0 && !category ? (
-                      <option value="">No categories found - Add Category first</option>
+                      <option value="">No categories</option>
                     ) : (
                       Array.from(
                         new Set([
@@ -699,11 +699,11 @@ export default function ProductsView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Product Type *</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Type</label>
                   <select
                     value={type}
                     onChange={(e) => setType(e.target.value as ProductType)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
                   >
                     <option value="open_type">Open Type</option>
                     <option value="box_type">Box Type</option>
@@ -713,66 +713,50 @@ export default function ProductsView() {
                 </div>
               </div>
 
+              {/* Row 3: Price (৳) & Regular Price (৳) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Selling Price (৳) *</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Price (৳)</label>
                   <input
                     type="number"
                     step="1"
                     required
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    placeholder="e.g. 18500"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Original Price (৳)</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Regular Price (৳)</label>
                   <input
                     type="number"
                     step="1"
                     value={originalPrice}
                     onChange={(e) => setOriginalPrice(e.target.value)}
-                    placeholder="e.g. 22000"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Row 4: Warranty & Stock */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Application</label>
-                  <select
-                    value={application}
-                    onChange={(e) => setApplication(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
-                  >
-                    <option value="Household">Household</option>
-                    <option value="Commercial">Commercial</option>
-                    <option value="Office">Office</option>
-                    <option value="Industrial">Industrial</option>
-                    <option value="Universal">Universal</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Warranty Period</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Warranty</label>
                   <input
                     type="text"
                     value={warranty}
                     onChange={(e) => setWarranty(e.target.value)}
-                    placeholder="e.g. 1 Year Warranty"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Stock Status</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Stock</label>
                   <select
                     value={stockStatus}
                     onChange={(e) => setStockStatus(e.target.value as any)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
                   >
                     <option value="In Stock">In Stock</option>
                     <option value="Low Stock">Low Stock</option>
@@ -787,50 +771,49 @@ export default function ProductsView() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">Description</label>
                   <textarea
-                    rows={3}
+                    rows={2}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Product specifications, filtration capacity, stage details..."
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
                   />
                 </div>
 
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-[#141b2d] border border-[#2c3754]">
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-[#131B2E] border border-slate-700/50">
                   <input
                     type="checkbox"
                     id="featuredToggle"
                     checked={featured}
                     onChange={(e) => setFeatured(e.target.checked)}
-                    className="w-4 h-4 rounded text-[#00BCE1] focus:ring-[#00BCE1] bg-[#141b2d] border-[#2c3754] cursor-pointer"
+                    className="w-4 h-4 rounded text-[#00BCE1] focus:ring-[#00BCE1] bg-[#131B2E] border-slate-700/50 cursor-pointer"
                   />
                   <label htmlFor="featuredToggle" className="text-xs text-slate-200 cursor-pointer font-medium flex items-center gap-1.5">
-                    <Star className={`w-3.5 h-3.5 ${featured ? 'text-amber-400 fill-amber-400' : 'text-[#A0AEC0]'}`} />
-                    Highlight as Featured Product
+                    <Star className={`w-3.5 h-3.5 ${featured ? 'text-amber-400 fill-amber-400' : 'text-slate-400'}`} />
+                    Featured Product
                   </label>
                 </div>
               </div>
 
-              {/* Cloudinary Image Upload Section */}
+              {/* Upload Zone */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Product Image
+                  Photo
                 </label>
-                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#00BCE1] transition-colors bg-[#141b2d]">
+                <div className="border-2 border-dashed border-slate-700/60 hover:border-[#00BCE1] rounded-xl p-4 text-center transition-colors bg-[#131B2E]">
                   {previewUrl || existingImageUrl ? (
-                    <div className="relative w-36 h-36 mx-auto rounded-xl overflow-hidden border border-[#2c3754] shadow-md">
+                    <div className="relative w-32 h-32 mx-auto rounded-xl overflow-hidden border border-slate-700/50 shadow-md">
                       <img src={previewUrl || existingImageUrl} alt="Preview" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => { setSelectedFile(null); setPreviewUrl(''); setExistingImageUrl(''); }}
-                        className="absolute top-1.5 right-1.5 p-1.5 bg-[#141b2d] rounded-full text-white cursor-pointer hover:bg-rose-600 transition-colors"
+                        className="absolute top-1.5 right-1.5 p-1.5 bg-[#131B2E] rounded-full text-white cursor-pointer hover:bg-rose-600 transition-colors"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (
-                    <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-2">
-                      <Upload className="w-8 h-8 text-[#00BCE1] animate-bounce" />
-                      <span className="text-xs text-slate-300 font-medium">Click to upload product photo</span>
+                    <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-3">
+                      <Upload className="w-6 h-6 text-[#00BCE1]" />
+                      <span className="text-xs text-slate-300 font-medium">Upload Photo</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -842,23 +825,24 @@ export default function ProductsView() {
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-[#2c3754]">
+              {/* Action Buttons */}
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-700/60">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-slate-300 border border-[#2c3754] cursor-pointer transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#131B2E] hover:bg-slate-800 text-slate-300 border border-slate-700/50 cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                  className="bg-[#00BCE1] hover:bg-cyan-400 text-[#131B2E] text-xs font-bold shadow-[0_0_20px_rgba(0,188,225,0.4)] rounded-xl px-6 py-2 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   {isSaving ? (
                     <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>{selectedFile ? 'Uploading image...' : 'Saving...'}</span>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[#131B2E]" />
+                      <span>{selectedFile ? 'Uploading...' : 'Saving...'}</span>
                     </>
                   ) : (
                     <span>{editingProductId ? 'Update Product' : 'Save Product'}</span>
