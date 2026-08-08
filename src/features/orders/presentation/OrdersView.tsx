@@ -323,7 +323,7 @@ export default function OrdersView() {
         {/* Fulfillment Status Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-[#2c3754] scrollbar-none">
           {['All', 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map((status) => {
-            const count = status === 'All' ? orders.length : orders.filter(o => o.status === status).length;
+            const count = orders.filter(o => o.status === 'Pending').length;
             const isActive = activeStatus === status;
             return (
               <button
@@ -336,11 +336,13 @@ export default function OrdersView() {
                 }`}
               >
                 <span>{status}</span>
-                <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
-                }`}>
-                  {count}
-                </span>
+                {status === 'Pending' && (
+                  <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
+                    isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
+                  }`}>
+                    {count}
+                  </span>
+                )}
               </button>
             );
           })}

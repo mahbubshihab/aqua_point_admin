@@ -157,9 +157,7 @@ export default function ServiceRequestsView() {
       <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#2c3754]">
         {(['All', 'Pending', 'In Progress', 'Completed', 'Cancelled'] as const).map((st) => {
           const isActive = activeStatus === st;
-          const count = st === 'All' 
-            ? items.length 
-            : items.filter(i => i.status === st).length;
+          const count = items.filter(i => i.status === 'Pending').length;
 
           return (
             <button
@@ -172,11 +170,13 @@ export default function ServiceRequestsView() {
               }`}
             >
               <span>{st}</span>
-              <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                isActive ? 'bg-[#0F172A]/20 text-[#0F172A]' : 'bg-[#141b2d] text-[#00BCE1]'
-              }`}>
-                {count}
-              </span>
+              {st === 'Pending' && (
+                <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
+                  isActive ? 'bg-[#0F172A]/20 text-[#0F172A]' : 'bg-[#141b2d] text-[#00BCE1]'
+                }`}>
+                  {count}
+                </span>
+              )}
             </button>
           );
         })}
