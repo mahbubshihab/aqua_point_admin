@@ -330,10 +330,9 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-[#1f2940] border-b border-[#2c3754] px-6 flex items-center justify-between shadow-lg">
-      {/* Left Corner: User Profile Badge Dropdown & Route-Aware Search Bar */}
-      <div className="flex items-center gap-6">
-        {/* User Profile Badge Dropdown */}
+    <header className="sticky top-0 z-50 h-16 bg-[#0F172A]/90 backdrop-blur-md border-b border-slate-800/80 px-6 flex items-center justify-between gap-4 shadow-lg">
+      {/* Left Corner: User Profile Badge Dropdown */}
+      <div className="flex items-center shrink-0">
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -384,10 +383,12 @@ export default function Header() {
             </div>
           )}
         </div>
+      </div>
 
-        {/* Route-Aware Live Search Bar with 5-Result Autocomplete */}
+      {/* Center: Wide Route-Aware Live Search Bar with 5-Result Autocomplete */}
+      <div className="flex-1 flex justify-center max-w-2xl mx-4">
         <div 
-          className={`relative w-64 sm:w-80 transition-all duration-300 ${isSearchDisabled ? 'opacity-40 pointer-events-none' : 'opacity-100'}`} 
+          className={`relative w-full transition-all duration-300 ${isSearchDisabled ? 'opacity-40 pointer-events-none' : 'opacity-100'}`} 
           ref={searchRef}
         >
           <input
@@ -406,7 +407,7 @@ export default function Header() {
                 setIsDropdownOpen(false);
               }
             }}
-            className="w-full pl-4 pr-9 py-1.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-[#A0AEC0] focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all shadow-inner"
+            className="w-full pl-4 pr-9 py-2 text-xs rounded-xl bg-[#141b2d]/80 border border-[#2c3754] text-white placeholder-[#A0AEC0] focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 transition-all shadow-inner"
           />
           {searchTerm ? (
             <button
@@ -425,7 +426,7 @@ export default function Header() {
 
           {/* Glassmorphic 5-Result Live Autocomplete Search Dropdown */}
           {isDropdownOpen && searchTerm.trim().length > 0 && !isSearchDisabled && (
-            <div className="absolute top-full left-0 mt-2 w-80 sm:w-[420px] rounded-2xl bg-[#141b2d]/95 backdrop-blur-xl border border-[#2c3754] shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="absolute top-full left-0 right-0 mt-2 w-full rounded-2xl bg-[#141b2d]/95 backdrop-blur-xl border border-[#2c3754] shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
               <div className="px-3 py-2 border-b border-[#2c3754]/60 flex items-center justify-between">
                 <span className="text-[11px] font-bold text-[#A0AEC0] uppercase tracking-wider flex items-center gap-1.5">
                   <Sparkles className="w-3 h-3 text-[#00BCE1]" /> Live Search Results ({searchResults.length} / 5 max)
@@ -498,14 +499,8 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Right Corner: System Status, Notifications & Settings */}
-      <div className="flex items-center gap-3">
-        {/* System Status */}
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-xs font-semibold">
-          <span className="w-2 h-2 rounded-full bg-[#00BCE1] animate-pulse" />
-          <span className="text-[#00BCE1] text-[11px] font-bold">Cloud Node Active</span>
-        </div>
-
+      {/* Right Corner: Notifications & Settings */}
+      <div className="flex items-center gap-3 shrink-0">
         {/* Notifications Bell 🔔 */}
         <button 
           className="relative p-2.5 rounded-xl bg-[#141b2d] border border-[#2c3754] hover:border-[#00BCE1]/50 text-[#A0AEC0] hover:text-white transition-all cursor-pointer shadow-sm"
