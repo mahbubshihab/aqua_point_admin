@@ -83,6 +83,7 @@ export interface CustomerDoc {
   name: string;
   email: string;
   phone: string;
+  address?: string;
   joinedDate?: string;
   rewardPoints: number;
   referralCode: string;
@@ -956,7 +957,7 @@ export function subscribeToCustomers(
   limitOrCb?: number | ((customers: CustomerDoc[]) => void),
   cbParam?: (customers: CustomerDoc[]) => void
 ) {
-  let limitCount = 15;
+  let limitCount = 100;
   let callback: (customers: CustomerDoc[]) => void = () => {};
 
   if (typeof limitOrCb === 'function') {
@@ -976,16 +977,27 @@ export function subscribeToCustomers(
     (snapshot) => {
       const list: CustomerDoc[] = snapshot.docs.map((docSnap) => {
         const data = docSnap.data();
+        let formattedJoinedDate = 'N/A';
+        if (data.joinedDate) {
+          formattedJoinedDate = data.joinedDate;
+        } else if (data.createdAt) {
+          if (typeof data.createdAt.toDate === 'function') {
+            formattedJoinedDate = data.createdAt.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+          } else if (data.createdAt.seconds) {
+            formattedJoinedDate = new Date(data.createdAt.seconds * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+          }
+        }
         return {
           id: docSnap.id,
           name: data.name || data.customerName || 'Unnamed Customer',
-          email: data.email || '',
-          phone: data.phone || '',
-          joinedDate: data.joinedDate || (data.createdAt?.seconds ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'Recent'),
-          rewardPoints: Number(data.rewardPoints) || 500,
+          email: data.email || 'N/A',
+          phone: data.phone || 'N/A',
+          address: data.address || data.location || data.fullAddress || 'N/A',
+          joinedDate: formattedJoinedDate,
+          rewardPoints: Number(data.rewardPoints) || 0,
           referralCode: data.referralCode || `AQUA-${docSnap.id.substring(0, 6).toUpperCase()}`,
-          activeDevices: Number(data.activeDevices) || 1,
-          totalOrders: Number(data.totalOrders) || 1,
+          activeDevices: Number(data.activeDevices) || 0,
+          totalOrders: Number(data.totalOrders) || 0,
           createdAt: data.createdAt,
         };
       });

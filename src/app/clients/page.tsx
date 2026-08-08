@@ -1,5 +1,5 @@
-import ClientsView from '@/features/clients/presentation/ClientsView';
+import { redirect } from 'next/navigation';
 
 export default function ClientsPage() {
-  return <ClientsView />;
+  redirect('/customers');
 }
