@@ -90,6 +90,9 @@ export interface CustomerDoc {
   activeDevices: number;
   totalOrders: number;
   createdAt?: any;
+  lastMessage?: string;
+  lastMessageTime?: any;
+  unreadCount?: number;
 }
 
 export interface CustomProductDoc {
@@ -1027,6 +1030,9 @@ export function subscribeToCustomers(
           activeDevices: Number(data.activeDevices) || 0,
           totalOrders: Number(data.totalOrders) || 0,
           createdAt: data.createdAt,
+          lastMessage: data.lastMessage || data.lastMessageText || '',
+          lastMessageTime: data.lastMessageTime || data.updatedAt || data.createdAt,
+          unreadCount: Number(data.unreadCount) || 0,
         };
       });
       callback(list);

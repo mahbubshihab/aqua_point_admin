@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { 
   Search, Bell, Settings, X, LogOut, ChevronDown, User, Shield,
   Package, ShoppingCart, Users, Wrench, FolderTree, Star, Image as ImageIcon,
-  ArrowUpRight, Sparkles
+  ArrowUpRight, Sparkles, MessageSquare, CheckCheck, ExternalLink
 } from 'lucide-react';
 import { useSearch } from '@/core/context/SearchContext';
 import { 
@@ -37,6 +37,55 @@ interface SearchResultItem {
   url: string;
 }
 
+interface NotificationItem {
+  id: string;
+  type: 'order' | 'service' | 'review' | 'message';
+  title: string;
+  message: string;
+  timestamp: Date | null;
+  timeAgo: string;
+  url: string;
+  isRead: boolean;
+}
+
+function getTimeAgo(date: any): { timeAgo: string; dateObj: Date } {
+  let dateObj = new Date();
+  if (!date) {
+    return { timeAgo: 'Recently', dateObj };
+  }
+  if (date?.seconds) {
+    dateObj = new Date(date.seconds * 1000);
+  } else if (date?.toDate && typeof date.toDate === 'function') {
+    dateObj = date.toDate();
+  } else if (date instanceof Date) {
+    dateObj = date;
+  } else if (typeof date === 'string' || typeof date === 'number') {
+    dateObj = new Date(date);
+  }
+
+  if (isNaN(dateObj.getTime())) {
+    return { timeAgo: 'Recently', dateObj: new Date() };
+  }
+
+  const diffMs = Date.now() - dateObj.getTime();
+  const diffSecs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSecs / 60);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffSecs < 60) return { timeAgo: 'Just now', dateObj };
+  if (diffMins < 60) return { timeAgo: `${diffMins}m ago`, dateObj };
+  if (diffHours < 24) return { timeAgo: `${diffHours}h ago`, dateObj };
+  if (diffDays < 7) return { timeAgo: `${diffDays}d ago`, dateObj };
+  return {
+    timeAgo: dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    dateObj,
+  };
+}
+
+const STORAGE_KEY = 'aqua_admin_read_notification_ids';
+const MARK_ALL_TIME_KEY = 'aqua_admin_notifications_marked_read_time';
+
 export default function Header() {
   const { searchTerm, setSearchTerm } = useSearch();
   const router = useRouter();
@@ -44,11 +93,16 @@ export default function Header() {
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
+  const [readNotificationIds, setReadNotificationIds] = useState<string[]>([]);
+  const [markedAllTime, setMarkedAllTime] = useState<number>(0);
 
   const profileRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+  const notificationsRef = useRef<HTMLDivElement>(null);
 
-  // Firestore real-time cached lists for instant autocomplete response
+  // Firestore real-time cached lists
   const [products, setProducts] = useState<ProductDoc[]>([]);
   const [orders, setOrders] = useState<OrderDoc[]>([]);
   const [customers, setCustomers] = useState<CustomerDoc[]>([]);
@@ -56,6 +110,24 @@ export default function Header() {
   const [categories, setCategories] = useState<CategoryDoc[]>([]);
   const [banners, setBanners] = useState<BannerDoc[]>([]);
   const [reviews, setReviews] = useState<ReviewDoc[]>([]);
+
+  // Load read notification state from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          setReadNotificationIds(JSON.parse(stored));
+        }
+        const timeStored = localStorage.getItem(MARK_ALL_TIME_KEY);
+        if (timeStored) {
+          setMarkedAllTime(Number(timeStored));
+        }
+      } catch (e) {
+        console.error('Failed to load notification state from localStorage', e);
+      }
+    }
+  }, []);
 
   // Route-awareness configuration
   const isSearchDisabled = pathname === '/settings' || pathname === '/login';
@@ -102,12 +174,16 @@ export default function Header() {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
+        setIsNotificationsOpen(false);
+      }
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsDropdownOpen(false);
         setIsProfileOpen(false);
+        setIsNotificationsOpen(false);
       }
     };
 
@@ -315,6 +391,127 @@ export default function Header() {
     return items.slice(0, 5);
   }, [debouncedTerm, products, orders, customers, serviceRequests, categories, banners, reviews, pathname]);
 
+  // Unified Notification Items Generator from Orders, Service Requests, Reviews, and Inbox Messages
+  const notifications = useMemo<NotificationItem[]>(() => {
+    const list: NotificationItem[] = [];
+
+    // 1. Orders -> Package Icon
+    orders.forEach((o) => {
+      const id = `ord-${o.id}`;
+      const { timeAgo, dateObj } = getTimeAgo(o.createdAt);
+      const isRead = readNotificationIds.includes(id) || (markedAllTime > 0 && dateObj.getTime() <= markedAllTime);
+      list.push({
+        id,
+        type: 'order',
+        title: `New Order #${o.id ? o.id.slice(-6).toUpperCase() : 'REQ'}`,
+        message: `${o.customerName || 'Customer'} placed an order worth ৳${(o.totalAmount || 0).toLocaleString()}`,
+        timestamp: dateObj,
+        timeAgo,
+        url: '/orders',
+        isRead,
+      });
+    });
+
+    // 2. Service Requests -> Wrench Icon
+    serviceRequests.forEach((s) => {
+      const id = `serv-${s.id}`;
+      const { timeAgo, dateObj } = getTimeAgo(s.createdAt);
+      const isRead = readNotificationIds.includes(id) || (markedAllTime > 0 && dateObj.getTime() <= markedAllTime);
+      list.push({
+        id,
+        type: 'service',
+        title: `Service Request: ${s.machineModel || 'RO Purifier'}`,
+        message: `${s.customerName || 'Customer'}: ${s.problemDetails || 'Servicing requested'}`,
+        timestamp: dateObj,
+        timeAgo,
+        url: '/service-requests',
+        isRead,
+      });
+    });
+
+    // 3. Reviews -> Star Icon
+    reviews.forEach((r) => {
+      const id = `rev-${r.id}`;
+      const { timeAgo, dateObj } = getTimeAgo(r.createdAt);
+      const isRead = readNotificationIds.includes(id) || (markedAllTime > 0 && dateObj.getTime() <= markedAllTime);
+      list.push({
+        id,
+        type: 'review',
+        title: `New ${r.rating || 5}★ Customer Review`,
+        message: `${r.customerName || 'Customer'}: "${r.comment ? (r.comment.length > 50 ? r.comment.slice(0, 50) + '...' : r.comment) : 'Rated service'}"`,
+        timestamp: dateObj,
+        timeAgo,
+        url: '/reviews',
+        isRead,
+      });
+    });
+
+    // 4. Messages -> MessageSquare Icon
+    customers.forEach((c) => {
+      if (c.lastMessage) {
+        const id = `msg-${c.id}`;
+        const { timeAgo, dateObj } = getTimeAgo(c.lastMessageTime || c.createdAt);
+        const isRead = readNotificationIds.includes(id) || (markedAllTime > 0 && dateObj.getTime() <= markedAllTime);
+        list.push({
+          id,
+          type: 'message',
+          title: `Message from ${c.name || 'Customer'}`,
+          message: `"${c.lastMessage.length > 50 ? c.lastMessage.slice(0, 50) + '...' : c.lastMessage}"`,
+          timestamp: dateObj,
+          timeAgo,
+          url: '/messages',
+          isRead,
+        });
+      }
+    });
+
+    // Sort descending by timestamp
+    list.sort((a, b) => (b.timestamp?.getTime() || 0) - (a.timestamp?.getTime() || 0));
+
+    return list;
+  }, [orders, serviceRequests, reviews, customers, readNotificationIds, markedAllTime]);
+
+  const unreadCount = useMemo(() => {
+    return notifications.filter((n) => !n.isRead).length;
+  }, [notifications]);
+
+  const markAllAsRead = () => {
+    const allIds = notifications.map((n) => n.id);
+    const now = Date.now();
+    setReadNotificationIds(allIds);
+    setMarkedAllTime(now);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(allIds));
+        localStorage.setItem(MARK_ALL_TIME_KEY, now.toString());
+      } catch (e) {
+        console.error('Failed to save notification state to localStorage', e);
+      }
+    }
+  };
+
+  const markAsRead = (id: string) => {
+    if (!readNotificationIds.includes(id)) {
+      const updated = [...readNotificationIds, id];
+      setReadNotificationIds(updated);
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        } catch (e) {
+          console.error('Failed to save notification state to localStorage', e);
+        }
+      }
+    }
+  };
+
+  const handleBellClick = () => {
+    const nextState = !isNotificationsOpen;
+    setIsNotificationsOpen(nextState);
+    if (nextState && unreadCount > 0) {
+      markAllAsRead();
+    }
+  };
+
   const handleLogout = async () => {
     setIsProfileOpen(false);
     try {
@@ -502,13 +699,140 @@ export default function Header() {
       {/* Right Corner: Notifications & Settings */}
       <div className="flex items-center gap-3 shrink-0">
         {/* Notifications Bell 🔔 */}
-        <button 
-          className="relative p-2.5 rounded-xl bg-[#141b2d] border border-[#2c3754] hover:border-[#00BCE1]/50 text-[#A0AEC0] hover:text-white transition-all cursor-pointer shadow-sm"
-          title="Notifications"
-        >
-          <Bell className="w-4 h-4 text-[#A0AEC0] hover:text-white" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#00BCE1] shadow-[0_0_8px_#00BCE1]" />
-        </button>
+        <div className="relative" ref={notificationsRef}>
+          <button 
+            onClick={handleBellClick}
+            className={`relative p-2.5 rounded-xl bg-[#141b2d] border ${isNotificationsOpen ? 'border-[#00BCE1] bg-[#1a233a]' : 'border-[#2c3754] hover:border-[#00BCE1]/50'} text-[#A0AEC0] hover:text-white transition-all cursor-pointer shadow-sm focus:outline-none`}
+            title="Notifications Center"
+          >
+            <Bell className={`w-4 h-4 ${unreadCount > 0 ? 'text-[#00BCE1]' : 'text-[#A0AEC0] hover:text-white'}`} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-[#00BCE1] text-[#0F172A] font-extrabold text-[10px] flex items-center justify-center border-2 border-[#0F172A] shadow-[0_0_10px_#00BCE1] animate-pulse">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {/* Glassmorphic Notifications Dropdown Menu */}
+          {isNotificationsOpen && (
+            <div className="absolute top-full right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-[#141b2d]/95 backdrop-blur-xl border border-[#2c3754] shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="px-2 py-2 border-b border-[#2c3754]/80 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-[#00BCE1]" />
+                  <h3 className="text-xs font-bold text-white tracking-wide">Notifications Center</h3>
+                  {unreadCount > 0 && (
+                    <span className="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/30">
+                      {unreadCount} new
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={markAllAsRead}
+                  className="flex items-center gap-1 text-[11px] font-bold text-[#00BCE1] hover:text-cyan-300 transition-colors cursor-pointer bg-[#00BCE1]/10 hover:bg-[#00BCE1]/20 border border-[#00BCE1]/20 px-2 py-1 rounded-lg"
+                  title="Mark all notifications as read"
+                >
+                  <CheckCheck className="w-3.5 h-3.5" />
+                  <span>Mark all read</span>
+                </button>
+              </div>
+
+              {/* Notifications List */}
+              <div className="py-2 max-h-96 overflow-y-auto custom-scrollbar space-y-1">
+                {notifications.length > 0 ? (
+                  notifications.map((item) => {
+                    const getNotificationIcon = () => {
+                      switch (item.type) {
+                        case 'order':
+                          return <Package className="w-4 h-4" />;
+                        case 'service':
+                          return <Wrench className="w-4 h-4" />;
+                        case 'review':
+                          return <Star className="w-4 h-4" />;
+                        case 'message':
+                          return <MessageSquare className="w-4 h-4" />;
+                      }
+                    };
+
+                    const getNotificationIconStyle = () => {
+                      switch (item.type) {
+                        case 'order':
+                          return 'bg-purple-500/15 text-purple-400 border-purple-500/30';
+                        case 'service':
+                          return 'bg-amber-500/15 text-amber-400 border-amber-500/30';
+                        case 'review':
+                          return 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30';
+                        case 'message':
+                          return 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30';
+                      }
+                    };
+
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          markAsRead(item.id);
+                          setIsNotificationsOpen(false);
+                          router.push(item.url);
+                        }}
+                        className={`w-full flex items-start gap-3 p-2.5 rounded-xl transition-all cursor-pointer text-left border ${
+                          !item.isRead
+                            ? 'bg-[#1f2940]/90 border-[#00BCE1]/40 shadow-inner'
+                            : 'bg-transparent border-transparent hover:bg-[#1f2940]/50'
+                        }`}
+                      >
+                        <div className={`p-2 rounded-xl border ${getNotificationIconStyle()} shrink-0 mt-0.5`}>
+                          {getNotificationIcon()}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <p className={`text-xs font-bold truncate ${!item.isRead ? 'text-white' : 'text-slate-300'}`}>
+                              {item.title}
+                            </p>
+                            <span className="text-[10px] text-slate-400 shrink-0 font-mono">
+                              {item.timeAgo}
+                            </span>
+                          </div>
+
+                          <p className="text-[11px] text-[#A0AEC0] line-clamp-2 mt-0.5 leading-snug">
+                            {item.message}
+                          </p>
+                        </div>
+
+                        {!item.isRead && (
+                          <span className="w-2 h-2 rounded-full bg-[#00BCE1] shadow-[0_0_8px_#00BCE1] shrink-0 mt-1.5" />
+                        )}
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div className="p-6 text-center text-slate-400 text-xs">
+                    <Bell className="w-6 h-6 text-slate-500 mx-auto mb-2 opacity-50" />
+                    <p className="font-semibold text-white">No notifications yet</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      New orders, service requests, reviews, and messages will appear here
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer link to view all */}
+              <div className="pt-2 border-t border-[#2c3754]/60 flex items-center justify-between text-[11px]">
+                <span className="text-slate-400 font-mono">Total {notifications.length} notifications</span>
+                <button
+                  onClick={() => {
+                    setIsNotificationsOpen(false);
+                    router.push('/orders');
+                  }}
+                  className="text-[#00BCE1] hover:underline font-bold cursor-pointer flex items-center gap-1"
+                >
+                  <span>View Dashboard</span>
+                  <ExternalLink className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Settings Gear ⚙️ */}
         <button 
