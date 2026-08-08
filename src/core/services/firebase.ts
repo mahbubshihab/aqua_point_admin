@@ -63,6 +63,18 @@ export const COMPANY_INFO_COLLECTION = 'company_info';
 export const CLIENTS_COLLECTION = 'clients';
 export const BANNERS_COLLECTION = 'banners';
 export const CUSTOMERS_COLLECTION = 'customers';
+export const STORES_COLLECTION = 'stores';
+
+export interface StoreDoc {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  openingHours: string;
+  googleMapUrl?: string;
+  isActive: boolean;
+  createdAt?: any;
+}
 
 // Data Interfaces
 export interface CustomerMessageDoc {
@@ -1259,4 +1271,44 @@ export async function markThreadAsRead(customerId: string) {
   await setDoc(custRef, {
     unreadCount: 0,
   }, { merge: true });
+}
+
+// -------------------------------------------------------------
+// Stores Management CRUD
+// -------------------------------------------------------------
+export function subscribeToStores(callback: (stores: StoreDoc[]) => void) {
+  const ref = collection(db, STORES_COLLECTION);
+  const q = query(ref, orderBy('createdAt', 'desc'));
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const list = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      })) as StoreDoc[];
+      callback(list);
+    },
+    (error) => {
+      console.error('Error listening to stores:', error);
+      callback([]);
+    }
+  );
+}
+
+export async function addStoreToFirestore(data: Omit<StoreDoc, 'id'>) {
+  const ref = collection(db, STORES_COLLECTION);
+  return await addDoc(ref, {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateStoreInFirestore(id: string, data: Partial<StoreDoc>) {
+  const ref = doc(db, STORES_COLLECTION, id);
+  return await updateDoc(ref, data);
+}
+
+export async function deleteStoreFromFirestore(id: string) {
+  const ref = doc(db, STORES_COLLECTION, id);
+  return await deleteDoc(ref);
 }
