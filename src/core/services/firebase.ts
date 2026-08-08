@@ -114,7 +114,8 @@ export interface ClientDoc {
   id: string;
   name: string;
   industry?: string;
-  logoUrl: string;
+  logoUrl?: string;
+  imageUrl?: string;
   createdAt?: any;
 }
 
@@ -835,11 +836,13 @@ export function subscribeToClients(
   return onSnapshot(q, (snapshot) => {
     const list: ClientDoc[] = snapshot.docs.map((docSnap) => {
       const data = docSnap.data();
+      const image = data.imageUrl || data.logoUrl || '';
       return {
         id: docSnap.id,
         name: data.name || 'Unnamed Client',
-        industry: data.industry || 'Corporate',
-        logoUrl: data.logoUrl || data.imageUrl || '',
+        industry: data.industry || '',
+        logoUrl: image,
+        imageUrl: image,
         createdAt: data.createdAt,
       };
     });
@@ -850,11 +853,13 @@ export function subscribeToClients(
     onSnapshot(fallbackQ, (snapshot) => {
       const list: ClientDoc[] = snapshot.docs.map((docSnap) => {
         const data = docSnap.data();
+        const image = data.imageUrl || data.logoUrl || '';
         return {
           id: docSnap.id,
           name: data.name || 'Unnamed Client',
-          industry: data.industry || 'Corporate',
-          logoUrl: data.logoUrl || data.imageUrl || '',
+          industry: data.industry || '',
+          logoUrl: image,
+          imageUrl: image,
           createdAt: data.createdAt,
         };
       });
