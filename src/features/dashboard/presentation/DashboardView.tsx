@@ -28,61 +28,8 @@ interface ServiceRequest {
   priority: 'Urgent' | 'Normal';
 }
 
-const initialRequests: ServiceRequest[] = [
-  {
-    id: 'REQ-9041',
-    customerName: 'Sarah Jenkins',
-    phone: '+880 1711-234567',
-    model: 'AquaPurify Pro 900',
-    appointmentDate: '2026-08-08 14:00',
-    problem: 'Filter replacement alert & low flow rate',
-    status: 'Pending',
-    priority: 'Urgent',
-  },
-  {
-    id: 'REQ-9040',
-    customerName: 'Marcus Vance',
-    phone: '+880 1819-876543',
-    model: 'AquaUltra UV Pure',
-    appointmentDate: '2026-08-08 16:30',
-    problem: 'TDS sensor calibration required',
-    status: 'In Progress',
-    priority: 'Normal',
-  },
-  {
-    id: 'REQ-9039',
-    customerName: 'Elena Rostova',
-    phone: '+880 1912-345678',
-    model: 'AquaSmart Dispenser X1',
-    appointmentDate: '2026-08-07 11:00',
-    problem: 'Annual maintenance & UV sterilizer test',
-    status: 'Completed',
-    priority: 'Normal',
-  },
-  {
-    id: 'REQ-9038',
-    customerName: 'David Kim',
-    phone: '+880 1611-987654',
-    model: 'AquaAlkaline System HD',
-    appointmentDate: '2026-08-09 10:00',
-    problem: 'Cooling tank temperature check',
-    status: 'Pending',
-    priority: 'Normal',
-  },
-  {
-    id: 'REQ-9037',
-    customerName: 'Aisha Rahman',
-    phone: '+880 1755-654321',
-    model: 'AquaPurify Pro 900',
-    appointmentDate: '2026-08-07 15:00',
-    problem: 'Leakage around pre-filter housing',
-    status: 'Completed',
-    priority: 'Urgent',
-  },
-];
-
 export default function DashboardView() {
-  const [requests, setRequests] = useState<ServiceRequest[]>(initialRequests);
+  const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('All');
 
   // Real-time Firestore Metric States
@@ -117,60 +64,106 @@ export default function DashboardView() {
     return () => unsub();
   }, []);
 
-  // 2. ACTIVE REQUESTS & Service Table (collection: 'services')
+  // 2. ACTIVE REQUESTS & Recent Activity Table (collection: 'service_requests' / fallback 'services')
   useEffect(() => {
-    const unsub = onSnapshot(
-      collection(db, 'services'),
-      (snapshot) => {
-        let activeCount = 0;
-        let urgentCount = 0;
+    let unsubPrimary: (() => void) | null = null;
+    let unsubFallback: (() => void) | null = null;
 
-        const fetchedRequests: ServiceRequest[] = snapshot.docs.map((docSnap) => {
-          const data = docSnap.data();
-          const rawStatus = (data.status || 'Pending').toString();
-          let normStatus: ServiceRequest['status'] = 'Pending';
-          const upper = rawStatus.toUpperCase();
-          if (upper === 'PENDING') normStatus = 'Pending';
-          else if (upper === 'IN PROGRESS' || upper === 'IN_PROGRESS' || upper === 'CONFIRMED') normStatus = 'In Progress';
-          else if (upper === 'COMPLETED') normStatus = 'Completed';
+    const processDocs = (docs: any[]) => {
+      let activeCount = 0;
+      let urgentCount = 0;
 
-          const priority: ServiceRequest['priority'] =
-            data.priority === 'Urgent' || data.priority === 'High' ? 'Urgent' : 'Normal';
+      const parsed: (ServiceRequest & { createdAtMillis: number })[] = docs.map((docSnap) => {
+        const data = docSnap.data();
+        const rawStatus = (data.status || 'Pending').toString();
+        let normStatus: ServiceRequest['status'] = 'Pending';
+        const upper = rawStatus.toUpperCase();
+        if (upper === 'PENDING') normStatus = 'Pending';
+        else if (upper === 'IN PROGRESS' || upper === 'IN_PROGRESS' || upper === 'CONFIRMED') normStatus = 'In Progress';
+        else if (upper === 'COMPLETED') normStatus = 'Completed';
 
-          if (normStatus === 'Pending' || normStatus === 'In Progress') {
-            activeCount++;
-            if (priority === 'Urgent') {
-              urgentCount++;
-            }
+        const priority: ServiceRequest['priority'] =
+          data.priority === 'Urgent' || data.priority === 'High' ? 'Urgent' : 'Normal';
+
+        if (normStatus === 'Pending' || normStatus === 'In Progress') {
+          activeCount++;
+          if (priority === 'Urgent') {
+            urgentCount++;
           }
-
-          return {
-            id: docSnap.id,
-            customerName: data.customerName || data.name || 'Anonymous Customer',
-            phone: data.phone || 'N/A',
-            model: data.machineModel || data.model || 'RO Pure System',
-            appointmentDate: data.appointmentDate || data.preferredDate || new Date().toISOString().split('T')[0],
-            problem: data.problemDetails || data.problem || 'General Servicing',
-            status: normStatus,
-            priority: priority,
-          };
-        });
-
-        setActiveRequestsCount(activeCount);
-        setUrgentRequestsCount(urgentCount);
-        if (snapshot.docs.length > 0) {
-          setRequests(fetchedRequests);
-        } else {
-          setRequests([]);
         }
-        setLoading((prev) => ({ ...prev, requests: false }));
+
+        let formattedDate = 'N/A';
+        if (data.appointmentDate || data.preferredDate) {
+          formattedDate = (data.appointmentDate || data.preferredDate).toString();
+        } else if (data.createdAt?.toDate) {
+          formattedDate = data.createdAt.toDate().toISOString().split('T')[0];
+        }
+
+        let createdAtMillis = 0;
+        if (data.createdAt?.toDate) {
+          createdAtMillis = data.createdAt.toDate().getTime();
+        } else if (typeof data.createdAt === 'number') {
+          createdAtMillis = data.createdAt;
+        }
+
+        return {
+          id: docSnap.id,
+          customerName: data.customerName || data.name || 'Anonymous Customer',
+          phone: data.phone || 'N/A',
+          model: data.machineModel || data.model || data.machineType || 'RO Pure System',
+          appointmentDate: formattedDate,
+          problem: data.problemDetails || data.problem || data.problemDescription || 'General Servicing',
+          status: normStatus,
+          priority: priority,
+          createdAtMillis,
+        };
+      });
+
+      parsed.sort((a, b) => b.createdAtMillis - a.createdAtMillis);
+
+      setActiveRequestsCount(activeCount);
+      setUrgentRequestsCount(urgentCount);
+      setRequests(parsed.slice(0, 10));
+      setLoading((prev) => ({ ...prev, requests: false }));
+    };
+
+    unsubPrimary = onSnapshot(
+      collection(db, 'service_requests'),
+      (snapshot) => {
+        if (snapshot.docs.length > 0) {
+          processDocs(snapshot.docs);
+        } else {
+          unsubFallback = onSnapshot(
+            collection(db, 'services'),
+            (fallbackSnap) => {
+              processDocs(fallbackSnap.docs);
+            },
+            (err) => {
+              console.error('Error in services fallback snapshot:', err);
+              setLoading((prev) => ({ ...prev, requests: false }));
+            }
+          );
+        }
       },
       (error) => {
-        console.error('Error in services snapshot:', error);
-        setLoading((prev) => ({ ...prev, requests: false }));
+        console.warn('Error listening to service_requests, trying services collection:', error);
+        unsubFallback = onSnapshot(
+          collection(db, 'services'),
+          (fallbackSnap) => {
+            processDocs(fallbackSnap.docs);
+          },
+          (err) => {
+            console.error('Error in services fallback snapshot:', err);
+            setLoading((prev) => ({ ...prev, requests: false }));
+          }
+        );
       }
     );
-    return () => unsub();
+
+    return () => {
+      if (unsubPrimary) unsubPrimary();
+      if (unsubFallback) unsubFallback();
+    };
   }, []);
 
   // 3. PRODUCTS CATALOG (collection: 'products')
@@ -231,15 +224,15 @@ export default function DashboardView() {
   }, []);
 
   const toggleStatus = async (id: string) => {
-    const target = requests.find(req => req.id === id);
+    const target = requests.find((req) => req.id === id);
     if (!target) return;
 
     const nextStatus: ServiceRequest['status'] =
       target.status === 'Pending' ? 'In Progress' : target.status === 'In Progress' ? 'Completed' : 'Pending';
 
     // Optimistically update local state
-    setRequests(prev =>
-      prev.map(req => (req.id === id ? { ...req, status: nextStatus } : req))
+    setRequests((prev) =>
+      prev.map((req) => (req.id === id ? { ...req, status: nextStatus } : req))
     );
 
     try {
@@ -249,7 +242,7 @@ export default function DashboardView() {
     }
   };
 
-  const filteredRequests = requests.filter(req => 
+  const filteredRequests = requests.filter((req) =>
     statusFilter === 'All' ? true : req.status === statusFilter
   );
 
@@ -387,7 +380,6 @@ export default function DashboardView() {
             <h2 className="text-base font-bold text-white flex items-center gap-2">
               <Wrench className="w-4 h-4 text-[#00BCE1]" /> Recent Activity / Service Queue
             </h2>
-            <p className="text-xs text-slate-400 mt-1">Real-time service request queue synced with Cloud Firestore</p>
           </div>
 
           {/* Filter tabs */}
@@ -425,8 +417,8 @@ export default function DashboardView() {
             <tbody className="divide-y divide-[#2c3754]/50 bg-[#1f2940]">
               {filteredRequests.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-8 text-slate-500">
-                    No requests found matching "{statusFilter}" filter.
+                  <td colSpan={7} className="text-center py-12 text-slate-400 font-medium">
+                    No Service Requests Found
                   </td>
                 </tr>
               ) : (
