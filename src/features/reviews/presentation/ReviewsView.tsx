@@ -1,16 +1,13 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect } from 'react';
 import {
   MessageSquareQuote,
-  Plus,
   Star,
-  Edit2,
   Trash2,
   CheckCircle2,
   XCircle,
   AlertCircle,
-  X,
   Loader2,
   MapPin,
   LayoutGrid,
@@ -21,7 +18,6 @@ import {
 import {
   db,
   REVIEWS_COLLECTION,
-  addReviewToFirestore,
   updateReviewInFirestore,
   deleteReviewFromFirestore,
   ReviewDoc
@@ -38,23 +34,10 @@ export default function ReviewsView() {
   const [ratingFilter, setRatingFilter] = useState<'All' | number>('All');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
-  // Add / Edit Modal State
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
-
   // Delete Modal State
   const [deletingReview, setDeletingReview] = useState<ReviewDoc | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Form Fields
-  const [customerName, setCustomerName] = useState('');
-  const [location, setLocation] = useState('');
-  const [rating, setRating] = useState<number>(5);
-  const [comment, setComment] = useState('');
-  const [isApproved, setIsApproved] = useState<boolean>(true);
-
-  const [isSaving, setIsSaving] = useState(false);
-  const [formError, setFormError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
   // 100% Real-time Firestore Sync
@@ -154,69 +137,6 @@ export default function ReviewsView() {
     }
   };
 
-  const openAddModal = () => {
-    setEditingReviewId(null);
-    setCustomerName('');
-    setLocation('Dhaka');
-    setRating(5);
-    setComment('');
-    setIsApproved(true);
-    setFormError('');
-    setIsModalOpen(true);
-  };
-
-  const openEditModal = (rev: ReviewDoc) => {
-    setEditingReviewId(rev.id);
-    setCustomerName(rev.customerName);
-    setLocation(rev.location);
-    setRating(rev.rating);
-    setComment(rev.comment);
-    setIsApproved(rev.isApproved);
-    setFormError('');
-    setIsModalOpen(true);
-  };
-
-  const handleSaveReview = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!customerName.trim()) {
-      setFormError('Customer name is required.');
-      return;
-    }
-    if (!comment.trim()) {
-      setFormError('Review comment cannot be empty.');
-      return;
-    }
-
-    setIsSaving(true);
-    setFormError('');
-
-    try {
-      const payload: Omit<ReviewDoc, 'id'> = {
-        customerName: customerName.trim(),
-        location: location.trim() || 'Dhaka',
-        rating: Number(rating) || 5,
-        comment: comment.trim(),
-        isApproved,
-      };
-
-      if (editingReviewId) {
-        await updateReviewInFirestore(editingReviewId, payload);
-        setSuccessMessage(`Review by "${customerName}" updated!`);
-      } else {
-        await addReviewToFirestore(payload);
-        setSuccessMessage(`Review for "${customerName}" added to Firestore!`);
-      }
-
-      setTimeout(() => setSuccessMessage(''), 3500);
-      setIsModalOpen(false);
-    } catch (err: any) {
-      console.error('Error saving review:', err);
-      setFormError(err.message || 'Failed to save review.');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const confirmDeleteReview = async () => {
     if (!deletingReview) return;
     setIsDeleting(true);
@@ -253,12 +173,6 @@ export default function ReviewsView() {
             {filteredReviews.length} reviews
           </span>
         </div>
-        <button
-          onClick={openAddModal}
-          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-5 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer shrink-0"
-        >
-          <Plus className="w-4 h-4 stroke-[3]" /> Add Review
-        </button>
       </div>
 
       {/* Dynamic Summary Stats */}
@@ -419,14 +333,6 @@ export default function ReviewsView() {
               ? 'No reviews match your current filter query.'
               : 'No customer reviews submitted yet.'}
           </p>
-          <div className="pt-2">
-            <button
-              onClick={openAddModal}
-              className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 inline-flex items-center gap-2 cursor-pointer font-bold"
-            >
-              <Plus className="w-4 h-4 stroke-[3]" /> Add Review
-            </button>
-          </div>
         </div>
       ) : viewMode === 'grid' ? (
         /* Grid Layout */
@@ -488,13 +394,6 @@ export default function ReviewsView() {
                   </div>
 
                   <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => openEditModal(rev)}
-                      className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
-                      title="Edit Review"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </button>
                     <button
                       onClick={() => setDeletingReview(rev)}
                       className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
@@ -611,13 +510,6 @@ export default function ReviewsView() {
                     <td className="py-4 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
-                          onClick={() => openEditModal(rev)}
-                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
-                          title="Edit"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
                           onClick={() => setDeletingReview(rev)}
                           className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-[#2c3754] cursor-pointer transition-all"
                           title="Delete"
@@ -632,158 +524,6 @@ export default function ReviewsView() {
             </table>
           </div>
           <TableFooter totalItems={filteredReviews.length} />
-        </div>
-      )}
-
-      {/* Add / Edit Review Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/80 backdrop-blur-md">
-          <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                {editingReviewId ? (
-                  <Edit2 className="w-5 h-5 text-[#00BCE1]" />
-                ) : (
-                  <Plus className="w-5 h-5 text-[#00BCE1]" />
-                )}
-                {editingReviewId ? 'Edit Review' : 'Add New Customer Review'}
-              </h2>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-xl text-[#A0AEC0] hover:text-white hover:bg-[#141b2d] cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveReview} className="space-y-4">
-              {formError && (
-                <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{formError}</span>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Customer Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="e.g. Engr. Tanvir Ahmed"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Location *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="e.g. Gulshan, Dhaka"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Star Rating (1 to 5 Stars) *
-                </label>
-                <div className="flex items-center gap-2 py-1">
-                  {[1, 2, 3, 4, 5].map((starVal) => (
-                    <button
-                      key={starVal}
-                      type="button"
-                      onClick={() => setRating(starVal)}
-                      className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center gap-1 text-xs font-bold ${
-                        rating >= starVal
-                          ? 'bg-amber-500/20 border-amber-400/50 text-amber-300'
-                          : 'bg-[#141b2d] border-[#2c3754] text-slate-500 hover:text-white'
-                      }`}
-                    >
-                      <Star
-                        className={`w-4 h-4 ${
-                          rating >= starVal
-                            ? 'fill-amber-400 text-amber-400'
-                            : 'text-slate-600'
-                        }`}
-                      />
-                      <span>{starVal}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Review Comment *
-                </label>
-                <textarea
-                  rows={4}
-                  required
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="e.g. Excellent service and purified water TDS dropped significantly..."
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
-                />
-              </div>
-
-              {/* Approval Toggle */}
-              <div className="p-3 rounded-2xl bg-[#141b2d] border border-[#2c3754] flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-white">
-                    Approval & Publication Status
-                  </p>
-                  <p className="text-[11px] text-[#A0AEC0]">
-                    Enable to publish review publicly.
-                  </p>
-                </div>
-
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isApproved}
-                    onChange={(e) => setIsApproved(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-[#1f2940] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                </label>
-              </div>
-
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#2c3754]">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-slate-300 border border-[#2c3754] cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
-                >
-                  {isSaving ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <span>{editingReviewId ? 'Update Review' : 'Create Review'}</span>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       )}
 
