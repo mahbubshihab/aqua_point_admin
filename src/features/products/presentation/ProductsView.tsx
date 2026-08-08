@@ -258,7 +258,7 @@ export default function ProductsView() {
 
       const productPayload: Omit<ProductDoc, 'id'> = {
         name: name.trim(),
-        model: model.trim() || 'AP-' + Math.floor(100 + Math.random() * 900),
+        model: '',
         category,
         categoryId: category,
         type,
@@ -727,28 +727,16 @@ export default function ProductsView() {
                 </div>
               )}
 
-              {/* Row 1: Name & Model */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Model</label>
-                  <input
-                    type="text"
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
-                  />
-                </div>
+              {/* Row 1: Name */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Name</label>
+                <input
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
+                />
               </div>
 
               {/* Row 2: Category & Type */}
