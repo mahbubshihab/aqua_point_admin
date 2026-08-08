@@ -213,71 +213,28 @@ export default function CategoriesView() {
         </button>
       </div>
 
-      {/* Unified Filter Bar (Single Consolidated Bar) */}
-      <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
-            {/* Filter Dropdown */}
-            <div className="relative w-full sm:w-48">
-              <select
-                value={selectedFilter}
-                onChange={(e) => setSelectedFilter(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-all"
-              >
-                <option value="All">All Status</option>
-                <option value="WithProducts">Active With Products</option>
-                <option value="Empty">Empty (0 Products)</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-[#2c3754]">
-            <div className="p-1 rounded-xl bg-[#141b2d] border border-[#2c3754] flex items-center gap-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all cursor-pointer ${
-                  viewMode === 'grid'
-                    ? 'bg-[#3e4396] text-white shadow-md'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-                title="Grid View"
-              >
-                <LayoutGrid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('table')}
-                className={`p-2 rounded-lg transition-all cursor-pointer ${
-                  viewMode === 'table'
-                    ? 'bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40'
-                    : 'text-[#A0AEC0] hover:text-white'
-                }`}
-                title="Table View"
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Category Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-[#2c3754] scrollbar-none">
-          {['All', 'WithProducts', 'Empty'].map((opt) => {
-            const label = opt === 'All' ? 'All Categories' : opt === 'WithProducts' ? 'Active Catalogs' : 'Empty Categories';
-            const isActive = selectedFilter === opt;
-            return (
-              <button
-                key={opt}
-                onClick={() => setSelectedFilter(opt)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
-                  isActive
-                    ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-md'
-                    : 'bg-[#141b2d] text-[#A0AEC0] border border-[#2c3754] hover:text-white'
-                }`}
-              >
-                <span>{label}</span>
-              </button>
-            );
-          })}
+      {/* View Toggle */}
+      <div className="p-3 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl flex items-center justify-between">
+        <p className="text-xs text-[#A0AEC0] font-medium">
+          {filteredCategories.length} {filteredCategories.length === 1 ? 'category' : 'categories'}
+        </p>
+        <div className="p-1 rounded-xl bg-[#141b2d] border border-[#2c3754] flex items-center gap-1">
+          <button
+            onClick={() => setViewMode('grid')}
+            className={`p-2 rounded-lg transition-all cursor-pointer ${
+              viewMode === 'grid' ? 'bg-[#3e4396] text-white shadow-md' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <LayoutGrid className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setViewMode('table')}
+            className={`p-2 rounded-lg transition-all cursor-pointer ${
+              viewMode === 'table' ? 'bg-[#3e4396] text-white shadow-md' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <List className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
@@ -307,69 +264,40 @@ export default function CategoriesView() {
         </div>
       ) : viewMode === 'grid' ? (
         /* Grid View */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCategories.map((cat) => {
-            const liveProductCount = products.filter(p => p.category.toLowerCase() === cat.name.toLowerCase()).length;
-            return (
-              <div key={cat.id} className="bg-[#1f2940] border border-[#2c3754] hover:border-[#00BCE1]/50 rounded-2xl overflow-hidden flex flex-col justify-between group relative transition-all">
-                <div>
-                  {/* Banner Image */}
-                  <div className="relative w-full h-44 bg-[#141b2d] overflow-hidden">
-                    <img
-                      src={cat.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop'}
-                      alt={cat.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1f2940] via-[#1f2940]/40 to-transparent" />
-                    
-                    <div className="absolute top-3 right-3 px-3 py-1 text-xs font-extrabold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754] flex items-center gap-1.5">
-                      <Package className="w-3.5 h-3.5" /> {liveProductCount} Product{liveProductCount !== 1 ? 's' : ''}
-                    </div>
-                  </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          {filteredCategories.map((cat) => (
+            <div key={cat.id} className="bg-[#1f2940] border border-[#2c3754] hover:border-[#00BCE1]/50 rounded-2xl overflow-hidden group transition-all shadow-xl">
+              {/* Image */}
+              <div className="relative w-full h-36 bg-[#141b2d] overflow-hidden">
+                <img
+                  src={cat.imageUrl || ''}
+                  alt={cat.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
 
-                  {/* Content */}
-                  <div className="p-5 space-y-2 relative -mt-6">
-                    <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-[#141b2d] border border-[#2c3754] text-[#00BCE1]">
-                      /{cat.slug || cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
-                    </span>
-                    <h3 className="text-lg font-bold text-white pt-1 group-hover:text-[#00BCE1] transition-colors">
-                      {cat.name}
-                    </h3>
-                    <p className="text-xs text-[#A0AEC0] line-clamp-2 leading-relaxed">
-                      {cat.description || 'Category for Aqua Point purifiers, spare parts, and filtration systems.'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Card Actions */}
-                <div className="p-5 pt-0 flex items-center justify-between border-t border-[#2c3754] mt-2 pt-3">
-                  <Link
-                    href={`/products?category=${encodeURIComponent(cat.name)}`}
-                    className="text-xs font-semibold text-[#00BCE1] hover:text-white flex items-center gap-1 group/link"
+              {/* Name + Actions */}
+              <div className="p-4 flex items-center justify-between">
+                <h3 className="text-sm font-bold text-white group-hover:text-[#00BCE1] transition-colors truncate">
+                  {cat.name}
+                </h3>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={() => openEditModal(cat)}
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
                   >
-                    View Products <ArrowUpRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-                  </Link>
-
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => openEditModal(cat)}
-                      className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
-                      title="Edit Category"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => setDeletingCategory(cat)}
-                      className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
-                      title="Delete Category"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => setDeletingCategory(cat)}
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       ) : (
         /* Table View */
@@ -378,56 +306,41 @@ export default function CategoriesView() {
             <table className="w-full text-left text-xs text-slate-200">
               <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-[#2c3754]">
                 <tr>
-                  <th className="py-3.5 px-4">Category Name</th>
-                  <th className="py-3.5 px-4">Slug</th>
-                  <th className="py-3.5 px-4">Description</th>
-                  <th className="py-3.5 px-4">Live Items</th>
+                  <th className="py-3.5 px-4">Category</th>
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
-                {filteredCategories.map((cat) => {
-                  const liveCount = products.filter(p => p.category.toLowerCase() === cat.name.toLowerCase()).length;
-                  return (
-                    <tr key={cat.id} className="hover:bg-[#2c3754] transition-colors">
-                      <td className="py-4 px-4 font-bold text-white">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={cat.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop'}
-                            alt={cat.name}
-                            className="w-9 h-9 rounded-lg object-cover border border-[#2c3754] shrink-0"
-                          />
-                          <span>{cat.name}</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4 font-mono text-[#00BCE1]">/{cat.slug}</td>
-                      <td className="py-4 px-4 text-[#A0AEC0] max-w-xs truncate">{cat.description || 'N/A'}</td>
-                      <td className="py-4 px-4">
-                        <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
-                          {liveCount} Items
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => openEditModal(cat)}
-                            className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
-                            title="Edit"
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => setDeletingCategory(cat)}
-                            className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-[#2c3754] cursor-pointer transition-all"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {filteredCategories.map((cat) => (
+                  <tr key={cat.id} className="hover:bg-[#2c3754] transition-colors">
+                    <td className="py-3 px-4 font-bold text-white">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={cat.imageUrl || ''}
+                          alt={cat.name}
+                          className="w-9 h-9 rounded-lg object-cover border border-[#2c3754] shrink-0"
+                        />
+                        <span>{cat.name}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => openEditModal(cat)}
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] cursor-pointer transition-all"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => setDeletingCategory(cat)}
+                          className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-[#2c3754] cursor-pointer transition-all"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
