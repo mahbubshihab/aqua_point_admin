@@ -35,6 +35,7 @@ export default function BannersView() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const { searchTerm } = useSearch();
+  const [visibleCount, setVisibleCount] = useState(10);
 
   // Add / Edit Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -367,90 +368,101 @@ export default function BannersView() {
         </div>
       ) : viewMode === 'grid' ? (
         /* Grid View */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBanners.map((banner) => (
-            <div
-              key={banner.id}
-              className={`bg-[#1f2940] border rounded-2xl overflow-hidden flex flex-col justify-between group relative transition-all ${
-                banner.isActive ? 'border-[#00BCE1]/40' : 'border-[#2c3754] opacity-75'
-              }`}
-            >
-              <div>
-                {/* Banner Image Preview */}
-                <div className="relative w-full h-52 bg-[#141b2d] overflow-hidden">
-                  {banner.imageUrl ? (
-                    <img
-                      src={banner.imageUrl}
-                      alt={`Banner Order ${banner.order}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[#A0AEC0]">
-                      <ImageIcon className="w-10 h-10" />
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            {filteredBanners.slice(0, visibleCount).map((banner) => (
+              <div
+                key={banner.id}
+                className={`bg-[#1f2940] border rounded-2xl overflow-hidden flex flex-col justify-between group relative transition-all ${
+                  banner.isActive ? 'border-[#00BCE1]/40' : 'border-[#2c3754] opacity-75'
+                }`}
+              >
+                <div>
+                  {/* Banner Image Preview */}
+                  <div className="relative w-full h-52 bg-[#141b2d] overflow-hidden">
+                    {banner.imageUrl ? (
+                      <img
+                        src={banner.imageUrl}
+                        alt={`Banner Order ${banner.order}`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[#A0AEC0]">
+                        <ImageIcon className="w-10 h-10" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#1f2940] via-transparent to-transparent" />
+
+                    {/* Status & Position Badges */}
+                    <div className="absolute top-3 left-3 flex items-center gap-2 flex-wrap z-10">
+                      <span
+                        className={`px-3 py-1 text-[11px] font-extrabold rounded-full border flex items-center gap-1.5 shadow-lg ${
+                          banner.isActive
+                            ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40 backdrop-blur-md'
+                            : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754]'
+                        }`}
+                      >
+                        {banner.isActive ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                        {banner.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                      {renderPositionBadge(banner.position)}
                     </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#1f2940] via-transparent to-transparent" />
 
-                  {/* Status & Position Badges */}
-                  <div className="absolute top-3 left-3 flex items-center gap-2 flex-wrap z-10">
-                    <span
-                      className={`px-3 py-1 text-[11px] font-extrabold rounded-full border flex items-center gap-1.5 shadow-lg ${
-                        banner.isActive
-                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40 backdrop-blur-md'
-                          : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754]'
-                      }`}
+                    {/* Display Order Badge */}
+                    <div className="absolute top-3 right-3 z-10">
+                      <span className="px-3 py-1 text-[11px] font-mono font-bold rounded-full bg-[#141b2d]/80 text-[#00BCE1] border border-[#00BCE1]/40 backdrop-blur-md">
+                        Order #{banner.order || 1}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Banner Footer Controls */}
+                <div className="p-4 border-t border-[#2c3754] bg-[#141b2d]/50 flex items-center justify-between gap-2">
+                  <button
+                    onClick={() => handleToggleActive(banner)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                      banner.isActive
+                        ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
+                        : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754]'
+                    }`}
+                  >
+                    {banner.isActive ? (
+                      <ToggleRight className="w-4 h-4 text-[#00BCE1]" />
+                    ) : (
+                      <ToggleLeft className="w-4 h-4 text-[#A0AEC0]" />
+                    )}
+                    <span>{banner.isActive ? 'Active' : 'Disabled'}</span>
+                  </button>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => openEditModal(banner)}
+                      className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
+                      title="Edit Banner"
                     >
-                      {banner.isActive ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-                      {banner.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                    {renderPositionBadge(banner.position)}
-                  </div>
-
-                  {/* Display Order Badge */}
-                  <div className="absolute top-3 right-3 px-3 py-1 text-[11px] font-mono font-extrabold rounded-full bg-[#141b2d]/90 text-[#00BCE1] border border-[#2c3754] flex items-center gap-1 z-10 shadow-lg">
-                    <Hash className="w-3 h-3 text-[#00BCE1]" /> Order: {banner.order || 1}
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setDeletingBanner(banner)}
+                      className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
+                      title="Delete Banner"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
 
-              {/* Card Actions */}
-              <div className="p-4 flex items-center justify-between border-t border-[#2c3754] bg-[#1a2336]/60">
-                <button
-                  onClick={() => handleToggleActive(banner)}
-                  className={`text-xs font-semibold px-3 py-1.5 rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer ${
-                    banner.isActive
-                      ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
-                      : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754] hover:text-white'
-                  }`}
-                  title="Toggle active visibility"
-                >
-                  {banner.isActive ? (
-                    <ToggleRight className="w-4 h-4 text-[#00BCE1]" />
-                  ) : (
-                    <ToggleLeft className="w-4 h-4 text-[#A0AEC0]" />
-                  )}
-                  <span>{banner.isActive ? 'Active' : 'Disabled'}</span>
-                </button>
-
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => openEditModal(banner)}
-                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
-                    title="Edit Banner"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => setDeletingBanner(banner)}
-                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
-                    title="Delete Banner"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+          <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-lg">
+            <TableFooter 
+              totalItems={filteredBanners.length} 
+              visibleCount={visibleCount}
+              onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+            />
+          </div>
         </div>
       ) : (
         /* Table View */
@@ -467,7 +479,7 @@ export default function BannersView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
-                {filteredBanners.map((banner) => (
+                {filteredBanners.slice(0, visibleCount).map((banner) => (
                   <tr key={banner.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-3 px-4">
                       <img
@@ -515,7 +527,11 @@ export default function BannersView() {
               </tbody>
             </table>
           </div>
-          <TableFooter totalItems={filteredBanners.length} />
+          <TableFooter 
+            totalItems={filteredBanners.length} 
+            visibleCount={visibleCount}
+            onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+          />
         </div>
       )}
 

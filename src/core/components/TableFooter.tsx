@@ -1,7 +1,12 @@
 'use client';
 
+import { ChevronDown } from 'lucide-react';
+
 interface TableFooterProps {
   totalItems: number;
+  visibleCount?: number;
+  onSeeMore?: () => void;
+  onLoadMore?: () => void;
   selectedCount?: number;
   currentPage?: number;
   totalPages?: number;
@@ -11,17 +16,37 @@ interface TableFooterProps {
 
 export default function TableFooter({
   totalItems,
+  visibleCount,
+  onSeeMore,
+  onLoadMore,
   selectedCount = 0,
-  currentPage = 1,
-  totalPages = 1,
+  currentPage,
+  totalPages,
   onPageChange,
   showEntriesInfo = true,
 }: TableFooterProps) {
+  const currentVisible = visibleCount ?? (currentPage ? Math.min(currentPage * 10, totalItems) : totalItems);
+  const hasMore = currentVisible < totalItems;
+
+  const handleSeeMore = () => {
+    if (onSeeMore) {
+      onSeeMore();
+    } else if (onLoadMore) {
+      onLoadMore();
+    } else if (onPageChange && currentPage && totalPages) {
+      if (currentPage < totalPages) {
+        onPageChange(currentPage + 1);
+      }
+    }
+  };
+
   return (
-    <div className="bg-[#3e4396] text-white px-6 py-3.5 rounded-b-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold shadow-inner mt-0">
+    <div className="bg-[#3e4396] text-white px-4 sm:px-6 py-3 rounded-b-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold shadow-inner mt-0">
       <div className="flex items-center gap-3 text-slate-200">
         {showEntriesInfo && (
-          <span>Showing {totalItems > 0 ? 1 : 0} to {totalItems} of {totalItems} entries</span>
+          <span>
+            Showing {Math.min(currentVisible, totalItems)} of {totalItems} entries
+          </span>
         )}
         {selectedCount > 0 && (
           <span className="px-2.5 py-0.5 rounded-full bg-[#00BCE1]/20 text-[#00BCE1] text-[10px] font-bold border border-[#00BCE1]/40">
@@ -29,26 +54,22 @@ export default function TableFooter({
           </span>
         )}
       </div>
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          disabled={currentPage <= 1}
-          onClick={() => onPageChange?.(currentPage - 1)}
-          className="px-3 py-1.5 rounded-lg bg-[#1f2940] text-slate-200 hover:text-white hover:bg-[#141b2d] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer border border-[#2c3754]"
-        >
-          Previous
-        </button>
-        <span className="px-3 py-1 rounded-lg bg-[#141b2d] text-[#00BCE1] font-bold">
-          Page {currentPage} of {Math.max(1, totalPages)}
-        </span>
-        <button
-          type="button"
-          disabled={currentPage >= totalPages}
-          onClick={() => onPageChange?.(currentPage + 1)}
-          className="px-3 py-1.5 rounded-lg bg-[#1f2940] text-slate-200 hover:text-white hover:bg-[#141b2d] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer border border-[#2c3754]"
-        >
-          Next
-        </button>
+
+      <div>
+        {hasMore ? (
+          <button
+            type="button"
+            onClick={handleSeeMore}
+            className="px-5 py-2 rounded-xl bg-[#00BCE1] text-[#0F172A] hover:bg-cyan-300 font-extrabold text-xs transition-all cursor-pointer shadow-lg flex items-center gap-1.5 active:scale-95 border border-cyan-400/50"
+          >
+            <span>See More</span>
+            <ChevronDown className="w-4 h-4" />
+          </button>
+        ) : (
+          <span className="text-[11px] text-slate-300 font-medium italic">
+            {totalItems > 0 ? 'Showing all entries' : 'No entries'}
+          </span>
+        )}
       </div>
     </div>
   );

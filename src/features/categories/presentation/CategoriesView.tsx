@@ -57,6 +57,7 @@ export default function CategoriesView() {
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
+  const [visibleCount, setVisibleCount] = useState(10);
 
   // Real-time Firestore Sync with limit(15)
   useEffect(() => {
@@ -311,7 +312,7 @@ export default function CategoriesView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
-                {filteredCategories.map((cat) => (
+                {filteredCategories.slice(0, visibleCount).map((cat) => (
                   <tr key={cat.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-3 px-4 font-bold text-white">
                       <div className="flex items-center gap-3">
@@ -344,7 +345,11 @@ export default function CategoriesView() {
               </tbody>
             </table>
           </div>
-          <TableFooter totalItems={filteredCategories.length} />
+          <TableFooter 
+            totalItems={filteredCategories.length} 
+            visibleCount={visibleCount}
+            onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+          />
         </div>
       )}
 

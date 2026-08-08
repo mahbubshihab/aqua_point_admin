@@ -103,10 +103,14 @@ export default function ProductsView() {
   const [formError, setFormError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
 
+  // Visible Count State
+  const [visibleCount, setVisibleCount] = useState(10);
+
   // Real-time Firestore Sync with Server-Side Query
   useEffect(() => {
     setLoading(true);
-    const unsubProducts = subscribeToProducts(selectedCategoryFilter, 15, (data) => {
+    setVisibleCount(10);
+    const unsubProducts = subscribeToProducts(selectedCategoryFilter, 50, (data) => {
       setProducts(data);
       setLoading(false);
     });
@@ -492,8 +496,9 @@ export default function ProductsView() {
         </div>
       ) : viewMode === 'grid' ? (
         /* Product Card Grid (3-col / 4-col) */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((p) => (
+        <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
+            {filteredProducts.slice(0, visibleCount).map((p) => (
             <div 
               key={p.id} 
               className="bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl hover:border-[#00BCE1]/60 transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between group relative"
@@ -605,6 +610,15 @@ export default function ProductsView() {
               </div>
             </div>
           ))}
+          </div>
+
+          <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-lg">
+            <TableFooter 
+              totalItems={filteredProducts.length} 
+              visibleCount={visibleCount}
+              onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+            />
+          </div>
         </div>
       ) : (
         /* Table View */
@@ -624,7 +638,7 @@ export default function ProductsView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
-                {filteredProducts.map((p) => (
+                {filteredProducts.slice(0, visibleCount).map((p) => (
                   <tr key={p.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
@@ -698,7 +712,11 @@ export default function ProductsView() {
               </tbody>
             </table>
           </div>
-          <TableFooter totalItems={filteredProducts.length} />
+          <TableFooter 
+            totalItems={filteredProducts.length} 
+            visibleCount={visibleCount}
+            onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+          />
         </div>
       )}
 

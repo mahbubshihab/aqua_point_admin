@@ -40,13 +40,12 @@ export default function ServiceRequestsView() {
   const [successMessage, setSuccessMessage] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
-  // Pagination State (10 items per page)
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  // Visible Count State (starts at 10)
+  const [visibleCount, setVisibleCount] = useState(10);
 
   useEffect(() => {
     setLoading(true);
-    setCurrentPage(1);
+    setVisibleCount(10);
     const unsubscribe = subscribeToServiceRequests(activeStatus, 100, (data) => {
       setItems(data);
       setLoading(false);
@@ -54,8 +53,7 @@ export default function ServiceRequestsView() {
     return () => unsubscribe();
   }, [activeStatus]);
 
-  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
-  const paginatedItems = items.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginatedItems = items.slice(0, visibleCount);
 
   // Handle opening Action (Status Change) Modal
   const handleOpenActionModal = (item: ServiceRequestDoc) => {
@@ -260,9 +258,8 @@ export default function ServiceRequestsView() {
           </div>
           <TableFooter 
             totalItems={items.length} 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            visibleCount={visibleCount}
+            onSeeMore={() => setVisibleCount((prev) => prev + 10)}
           />
         </div>
       ) : (
@@ -360,9 +357,8 @@ export default function ServiceRequestsView() {
           <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-lg">
             <TableFooter 
               totalItems={items.length} 
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
+              visibleCount={visibleCount}
+              onSeeMore={() => setVisibleCount((prev) => prev + 10)}
             />
           </div>
         </div>

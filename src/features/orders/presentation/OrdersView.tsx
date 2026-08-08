@@ -232,16 +232,14 @@ export default function OrdersView() {
     return true;
   });
 
-  // Pagination (10 orders per page)
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  // Visible Count (starts at 10)
+  const [visibleCount, setVisibleCount] = useState(10);
 
   useEffect(() => {
-    setCurrentPage(1);
+    setVisibleCount(10);
   }, [activeStatus, paymentFilter, searchTerm]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredOrders.length / pageSize));
-  const paginatedOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginatedOrders = filteredOrders.slice(0, visibleCount);
 
   return (
     <div className="space-y-8 pb-12">
@@ -419,9 +417,8 @@ export default function OrdersView() {
           </div>
           <TableFooter 
             totalItems={filteredOrders.length} 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            visibleCount={visibleCount}
+            onSeeMore={() => setVisibleCount((prev) => prev + 10)}
           />
         </div>
       ) : (
@@ -512,9 +509,8 @@ export default function OrdersView() {
           <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-lg">
             <TableFooter 
               totalItems={filteredOrders.length} 
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
+              visibleCount={visibleCount}
+              onSeeMore={() => setVisibleCount((prev) => prev + 10)}
             />
           </div>
         </div>

@@ -31,6 +31,7 @@ interface ServiceRequest {
 export default function DashboardView() {
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('All');
+  const [visibleCount, setVisibleCount] = useState(10);
 
   // Real-time Firestore Metric States
   const [customersCount, setCustomersCount] = useState<number>(0);
@@ -376,7 +377,7 @@ export default function DashboardView() {
                   </td>
                 </tr>
               ) : (
-                filteredRequests.map((req) => (
+                filteredRequests.slice(0, visibleCount).map((req) => (
                   <tr key={req.id} className="hover:bg-[#2c3754]/30 transition-colors">
                     <td className="py-4 px-4 font-mono font-bold text-[#00BCE1]">
                       {req.id}
@@ -425,7 +426,11 @@ export default function DashboardView() {
             </tbody>
           </table>
         </div>
-        <TableFooter totalItems={filteredRequests.length} showEntriesInfo={false} />
+        <TableFooter 
+          totalItems={filteredRequests.length} 
+          visibleCount={visibleCount}
+          onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+        />
       </div>
     </div>
   );

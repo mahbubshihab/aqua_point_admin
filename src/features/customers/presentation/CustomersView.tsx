@@ -33,6 +33,7 @@ export default function CustomersView() {
   const [loading, setLoading] = useState(true);
   const { searchTerm } = useSearch();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(10);
 
   // Customer Profile Drawer State
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerDoc | null>(null);
@@ -138,11 +139,11 @@ export default function CustomersView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
-                {filteredCustomers.map((cust) => (
+                {filteredCustomers.slice(0, visibleCount).map((cust) => (
                   <tr 
                     key={cust.id} 
                     onClick={() => setSelectedCustomer(cust)}
-                    className="hover:bg-[#2c3754]/80 transition-colors cursor-pointer group"
+                    className="hover:bg-[#2c3754]/60 transition-colors cursor-pointer group"
                   >
                     {/* Customer Name */}
                     <td className="py-4 px-4 font-bold text-white flex items-center gap-3">
@@ -215,7 +216,11 @@ export default function CustomersView() {
               </tbody>
             </table>
           </div>
-          <TableFooter totalItems={filteredCustomers.length} />
+          <TableFooter 
+            totalItems={filteredCustomers.length} 
+            visibleCount={visibleCount}
+            onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+          />
         </div>
       )}
 

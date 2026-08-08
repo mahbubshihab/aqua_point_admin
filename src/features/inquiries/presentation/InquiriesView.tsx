@@ -29,6 +29,7 @@ export default function InquiriesView() {
   const { searchTerm } = useSearch();
   const [successMessage, setSuccessMessage] = useState('');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(10);
 
   useEffect(() => {
     setLoading(true);
@@ -203,7 +204,7 @@ export default function InquiriesView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
-                {filteredInquiries.map((inq) => (
+                {filteredInquiries.slice(0, visibleCount).map((inq) => (
                   <tr key={inq.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-4 px-4 font-bold text-white">{inq.name}</td>
                     <td className="py-4 px-4 text-slate-300">
@@ -242,90 +243,104 @@ export default function InquiriesView() {
               </tbody>
             </table>
           </div>
-          <TableFooter totalItems={filteredInquiries.length} />
+          <TableFooter 
+            totalItems={filteredInquiries.length} 
+            visibleCount={visibleCount}
+            onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+          />
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredInquiries.map((inq) => (
-            <div
-              key={inq.id}
-              className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 transition-all duration-200"
-            >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#2c3754]">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#3e4396] text-[#00BCE1] flex items-center justify-center font-bold text-sm border border-[#00BCE1]/40">
-                    {inq.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <h3 className="text-base font-bold text-white flex items-center gap-2">
-                      {inq.name}
-                      <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
-                        inq.status === 'Resolved'
-                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
-                          : inq.status === 'In Progress'
-                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                          : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                      }`}>
-                        {inq.status || 'New'}
-                      </span>
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-[#A0AEC0] mt-0.5">
-                      <span className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-[#00BCE1]" /> {inq.phone}
-                      </span>
-                      {inq.email && (
-                        <span className="flex items-center gap-1">
-                          <Mail className="w-3 h-3 text-[#00BCE1]" /> {inq.email}
+          <div className="space-y-4">
+            {filteredInquiries.slice(0, visibleCount).map((inq) => (
+              <div
+                key={inq.id}
+                className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 transition-all duration-200"
+              >
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#2c3754]">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#3e4396] text-[#00BCE1] flex items-center justify-center font-bold text-sm border border-[#00BCE1]/40">
+                      {inq.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                        {inq.name}
+                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
+                          inq.status === 'Resolved'
+                            ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
+                            : inq.status === 'In Progress'
+                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                            : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                        }`}>
+                          {inq.status || 'New'}
                         </span>
-                      )}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-4 text-xs text-[#A0AEC0] mt-0.5">
+                        <span className="flex items-center gap-1">
+                          <Phone className="w-3 h-3 text-[#00BCE1]" /> {inq.phone}
+                        </span>
+                        {inq.email && (
+                          <span className="flex items-center gap-1">
+                            <Mail className="w-3 h-3 text-[#00BCE1]" /> {inq.email}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  {(['New', 'In Progress', 'Resolved'] as const).map((st) => (
+                  <div className="flex items-center gap-2">
+                    {(['New', 'In Progress', 'Resolved'] as const).map((st) => (
+                      <button
+                        key={st}
+                        onClick={() => handleUpdateStatus(inq.id, st)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                          inq.status === st
+                            ? st === 'New'
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                              : st === 'In Progress'
+                              ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                              : 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
+                            : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754] hover:text-white'
+                        }`}
+                      >
+                        {st}
+                      </button>
+                    ))}
                     <button
-                      key={st}
-                      onClick={() => handleUpdateStatus(inq.id, st)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                        inq.status === st
-                          ? st === 'New'
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                            : st === 'In Progress'
-                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                            : 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
-                          : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754] hover:text-white'
-                      }`}
+                      onClick={() => handleDelete(inq.id)}
+                      disabled={isDeleting === inq.id}
+                      className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-[#2c3754] cursor-pointer disabled:opacity-50 ml-2 transition-all"
+                      title="Delete Inquiry"
                     >
-                      {st}
+                      {isDeleting === inq.id ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-3.5 h-3.5" />
+                      )}
                     </button>
-                  ))}
-                  <button
-                    onClick={() => handleDelete(inq.id)}
-                    disabled={isDeleting === inq.id}
-                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-900/50 text-rose-400 border border-[#2c3754] cursor-pointer disabled:opacity-50 ml-2 transition-all"
-                    title="Delete Inquiry"
-                  >
-                    {isDeleting === inq.id ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <Trash2 className="w-3.5 h-3.5" />
-                    )}
-                  </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Subject & Message Content */}
-              <div className="pt-4 space-y-2 text-xs">
-                <div className="font-bold text-[#00BCE1] flex items-center gap-1.5 text-sm">
-                  <Tag className="w-3.5 h-3.5" /> Subject: {inq.subject}
-                </div>
-                <div className="p-3.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-300 leading-relaxed">
-                  {inq.message}
+                {/* Subject & Message Content */}
+                <div className="pt-4 space-y-2 text-xs">
+                  <div className="font-bold text-[#00BCE1] flex items-center gap-1.5 text-sm">
+                    <Tag className="w-3.5 h-3.5" /> Subject: {inq.subject}
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-300 leading-relaxed">
+                    {inq.message}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-lg">
+            <TableFooter 
+              totalItems={filteredInquiries.length} 
+              visibleCount={visibleCount}
+              onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+            />
+          </div>
         </div>
       )}
     </div>

@@ -30,6 +30,7 @@ export default function ClientsView() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const { searchTerm } = useSearch();
+  const [visibleCount, setVisibleCount] = useState(10);
 
   // Add / Edit Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -287,7 +288,7 @@ export default function ClientsView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
-                {filteredClients.map((client) => {
+                {filteredClients.slice(0, visibleCount).map((client) => {
                   const logo = client.imageUrl || client.logoUrl || '';
                   return (
                     <tr key={client.id} className="hover:bg-[#2c3754] transition-colors">
@@ -324,7 +325,11 @@ export default function ClientsView() {
               </tbody>
             </table>
           </div>
-          <TableFooter totalItems={filteredClients.length} />
+          <TableFooter 
+            totalItems={filteredClients.length} 
+            visibleCount={visibleCount}
+            onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+          />
         </div>
       )}
 

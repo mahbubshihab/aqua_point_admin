@@ -36,6 +36,7 @@ export default function ReviewsView() {
   const [filterApproved, setFilterApproved] = useState<'all' | 'approved' | 'pending'>('all');
   const [ratingFilter, setRatingFilter] = useState<'All' | number>('All');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [visibleCount, setVisibleCount] = useState(10);
 
   // Add Review Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -405,103 +406,100 @@ export default function ReviewsView() {
         </div>
       ) : viewMode === 'grid' ? (
         /* Grid Layout */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredReviews.map((rev) => (
-            <div
-              key={rev.id}
-              className="bg-[#1f2940] border border-[#2c3754] hover:border-[#00BCE1]/50 rounded-2xl p-5 flex flex-col justify-between space-y-4 relative group transition-all"
-            >
-              <div className="space-y-3">
-                {/* Star Rating & Status Badge */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-amber-400">
-                    {[...Array(5)].map((_, idx) => (
-                      <Star
-                        key={idx}
-                        className={`w-4 h-4 ${
-                          idx < rev.rating
-                            ? 'fill-amber-400 text-amber-400'
-                            : 'text-slate-600 fill-slate-800'
-                        }`}
-                      />
-                    ))}
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            {filteredReviews.slice(0, visibleCount).map((rev) => (
+              <div
+                key={rev.id}
+                className="bg-[#1f2940] border border-[#2c3754] hover:border-[#00BCE1]/50 rounded-2xl p-5 flex flex-col justify-between space-y-4 relative group transition-all"
+              >
+                <div className="space-y-3">
+                  {/* Star Rating & Status Badge */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-amber-400">
+                      {[...Array(5)].map((_, idx) => (
+                        <Star
+                          key={idx}
+                          className={`w-4 h-4 ${idx < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-600'}`}
+                        />
+                      ))}
+                    </div>
+                    <span
+                      className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
+                        rev.isApproved
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
+                          : 'bg-amber-500/20 text-amber-300 border-amber-400/40'
+                      }`}
+                    >
+                      {rev.isApproved ? 'Approved' : 'Pending'}
+                    </span>
                   </div>
 
-                  <span
-                    className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border flex items-center gap-1 ${
-                      rev.isApproved
-                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
-                        : 'bg-amber-500/20 text-amber-300 border-amber-400/40'
-                    }`}
-                  >
-                    {rev.isApproved ? (
-                      <>
-                        <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Approved
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-3 h-3 text-amber-400" /> Pending
-                      </>
-                    )}
-                  </span>
+                  {/* Comment */}
+                  <p className="text-xs text-slate-300 leading-relaxed font-normal italic">
+                    "{rev.comment}"
+                  </p>
+
+                  {/* Customer Info */}
+                  <div className="pt-2 border-t border-[#2c3754]/60 flex items-center justify-between text-xs">
+                    <div className="font-bold text-white flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-[#00BCE1]/20 text-[#00BCE1] font-bold flex items-center justify-center text-xs">
+                        {rev.customerName ? rev.customerName.charAt(0).toUpperCase() : 'C'}
+                      </div>
+                      <span>{rev.customerName}</span>
+                    </div>
+                    <div className="text-[11px] text-[#00BCE1] font-medium flex items-center gap-1">
+                      <MapPin className="w-3 h-3" /> {rev.location}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Comment Text */}
-                <p className="text-xs text-slate-300 italic leading-relaxed bg-[#141b2d] p-3 rounded-xl border border-[#2c3754]">
-                  "{rev.comment}"
-                </p>
-              </div>
-
-              {/* Customer Details & Moderation Action Buttons */}
-              <div className="pt-3 border-t border-[#2c3754] flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="text-sm font-bold text-white">{rev.customerName}</h4>
-                    <p className="text-[11px] text-[#00BCE1] flex items-center gap-1 font-medium mt-0.5">
-                      <MapPin className="w-3 h-3" /> {rev.location}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-1">
+                {/* Moderation Controls */}
+                <div className="pt-3 border-t border-[#2c3754] flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setDeletingReview(rev)}
-                      className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
-                      title="Delete Review"
+                      onClick={() => handleApprove(rev.id)}
+                      disabled={rev.isApproved}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1 transition-all ${
+                        rev.isApproved
+                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 opacity-50'
+                          : 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-500 cursor-pointer shadow-md'
+                      }`}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Check className="w-3.5 h-3.5" /> Approve
+                    </button>
+                    <button
+                      onClick={() => handleReject(rev.id)}
+                      disabled={!rev.isApproved}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1 transition-all ${
+                        !rev.isApproved
+                          ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 opacity-50'
+                          : 'bg-amber-600 hover:bg-amber-500 text-white border-amber-500 cursor-pointer shadow-md'
+                      }`}
+                    >
+                      <Ban className="w-3.5 h-3.5" /> Reject
                     </button>
                   </div>
-                </div>
-
-                {/* Moderation Controls: Approve / Reject Toggle Buttons */}
-                <div className="flex items-center gap-2 pt-1 border-t border-[#2c3754]/50">
-                  <button
-                    onClick={(e) => handleApprove(rev.id, e)}
-                    disabled={rev.isApproved}
-                    className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                      rev.isApproved
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 opacity-70 cursor-default'
-                        : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm'
-                    }`}
-                  >
-                    <Check className="w-3.5 h-3.5" /> Approve
-                  </button>
 
                   <button
-                    onClick={(e) => handleReject(rev.id, e)}
-                    disabled={!rev.isApproved}
-                    className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                      !rev.isApproved
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 opacity-70 cursor-default'
-                        : 'bg-amber-600 hover:bg-amber-500 text-white shadow-sm'
-                    }`}
+                    onClick={() => setDeletingReview(rev)}
+                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
+                    title="Delete Review"
                   >
-                    <Ban className="w-3.5 h-3.5" /> Reject
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-lg">
+            <TableFooter 
+              totalItems={filteredReviews.length} 
+              visibleCount={visibleCount}
+              onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+            />
+          </div>
         </div>
       ) : (
         /* Table Layout */
@@ -519,7 +517,7 @@ export default function ReviewsView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
-                {filteredReviews.map((rev) => (
+                {filteredReviews.slice(0, visibleCount).map((rev) => (
                   <tr key={rev.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-4 px-4 font-bold text-white">{rev.customerName}</td>
                     <td className="py-4 px-4 text-[#00BCE1]">
@@ -592,7 +590,11 @@ export default function ReviewsView() {
               </tbody>
             </table>
           </div>
-          <TableFooter totalItems={filteredReviews.length} />
+          <TableFooter 
+            totalItems={filteredReviews.length} 
+            visibleCount={visibleCount}
+            onSeeMore={() => setVisibleCount((prev) => prev + 10)}
+          />
         </div>
       )}
 
