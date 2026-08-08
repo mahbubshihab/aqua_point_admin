@@ -3,11 +3,12 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { 
-  Search, Bell, Settings, X, LogOut, ChevronDown, User, Shield,
+  Search, Bell, Settings, X, LogOut, ChevronDown, User, Shield, Menu,
   Package, ShoppingCart, Users, Wrench, FolderTree, Star, Image as ImageIcon,
   ArrowUpRight, Sparkles, MessageSquare, CheckCheck, ExternalLink
 } from 'lucide-react';
 import { useSearch } from '@/core/context/SearchContext';
+import { useSidebar } from '@/core/context/SidebarContext';
 import { 
   logoutAdmin,
   subscribeToProducts,
@@ -526,23 +527,34 @@ export default function Header() {
     }
   };
 
+  const { toggleMobile } = useSidebar();
+
   return (
-    <header className="sticky top-0 z-50 shrink-0 h-16 bg-[#0F172A] border-b border-slate-800 px-6 flex items-center justify-between gap-4 shadow-lg">
-      {/* Left Corner: User Profile Badge Dropdown */}
-      <div className="flex items-center shrink-0">
+    <header className="sticky top-0 z-30 shrink-0 h-16 bg-[#0F172A] border-b border-slate-800 px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 shadow-lg">
+      {/* Left Corner: Mobile Hamburger Toggle + User Profile Badge */}
+      <div className="flex items-center gap-2 shrink-0">
+        {/* Mobile Hamburger Button */}
+        <button
+          onClick={toggleMobile}
+          className="md:hidden p-2 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#A0AEC0] hover:text-white transition-all cursor-pointer"
+          title="Open Menu"
+        >
+          <Menu className="w-5 h-5 text-[#00BCE1]" />
+        </button>
+
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-[#141b2d]/60 transition-colors cursor-pointer group focus:outline-none"
+            className="flex items-center gap-2 sm:gap-3 p-1.5 rounded-xl hover:bg-[#141b2d]/60 transition-colors cursor-pointer group focus:outline-none"
             title="User Profile Menu"
           >
             <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#3e4396] to-[#00BCE1] flex items-center justify-center text-white font-extrabold text-sm shadow-md border-2 border-[#00BCE1]">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-[#3e4396] to-[#00BCE1] flex items-center justify-center text-white font-extrabold text-xs sm:text-sm shadow-md border-2 border-[#00BCE1]">
                 MS
               </div>
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#00BCE1] rounded-full border-2 border-[#1f2940]" />
             </div>
-            <div className="flex flex-col text-left">
+            <div className="hidden sm:flex flex-col text-left">
               <span className="text-xs font-bold text-white leading-tight flex items-center gap-1">
                 Mahbub Shihab
                 <ChevronDown className={`w-3.5 h-3.5 text-[#A0AEC0] group-hover:text-white transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />

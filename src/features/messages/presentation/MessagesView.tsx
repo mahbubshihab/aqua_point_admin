@@ -12,7 +12,8 @@ import {
   RefreshCw,
   User,
   Check,
-  Copy
+  Copy,
+  ArrowLeft
 } from 'lucide-react';
 import { 
   collection, 
@@ -237,7 +238,9 @@ export default function MessagesView() {
       {/* Main Dual-Pane Grid */}
       <div className="grid grid-cols-12 gap-4 flex-1 h-full min-h-0">
         {/* LEFT PANEL: Customer Conversations List */}
-        <div className="col-span-4 flex flex-col h-full overflow-hidden bg-[#1E293B]/70 border border-slate-700/60 rounded-2xl">
+        <div className={`col-span-12 md:col-span-4 flex flex-col h-full overflow-hidden bg-[#1E293B]/70 border border-slate-700/60 rounded-2xl ${
+          selectedCustomerId ? 'hidden md:flex' : 'flex'
+        }`}>
           {/* Search Header */}
           <div className="p-3 border-b border-slate-700/60 bg-[#0F172A]/60 shrink-0">
             <div className="relative">
@@ -332,12 +335,21 @@ export default function MessagesView() {
         </div>
 
         {/* RIGHT PANEL: Active Chat Window */}
-        <div className="col-span-8 flex flex-col h-full overflow-hidden bg-[#1E293B]/70 border border-slate-700/60 rounded-2xl">
+        <div className={`col-span-12 md:col-span-8 flex flex-col h-full overflow-hidden bg-[#1E293B]/70 border border-slate-700/60 rounded-2xl ${
+          selectedCustomerId ? 'flex' : 'hidden md:flex'
+        }`}>
           {activeCustomer ? (
             <>
               {/* Chat Header */}
               <div className="p-3.5 border-b border-slate-700/60 bg-[#0F172A]/80 flex flex-wrap items-center justify-between gap-3 shrink-0">
                 <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setSelectedCustomerId(null)}
+                    className="md:hidden p-2 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] hover:text-white"
+                    title="Back to conversations"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#3e4396] to-[#00BCE1] flex items-center justify-center text-white font-bold text-xs shadow-md shrink-0">
                     {activeCustomer.name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase()}
                   </div>
