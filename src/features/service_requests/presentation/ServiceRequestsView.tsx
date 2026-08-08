@@ -4,80 +4,82 @@ import { useState, useEffect } from 'react';
 import { 
   Wrench, 
   Clock, 
-  User, 
   Phone, 
   MapPin, 
   Loader2,
   CheckCircle2,
   UserPlus,
   LayoutGrid,
-  List
+  List,
+  Edit2,
+  X,
+  User
 } from 'lucide-react';
 import { 
   subscribeToServiceRequests, 
   updateServiceRequestStatusInFirestore, 
-  assignTechnicianInFirestore,
   ServiceRequestDoc 
 } from '@/core/services/firebase';
 import TableFooter from '@/core/components/TableFooter';
-import { useSearch } from '@/core/context/SearchContext';
 
 export default function ServiceRequestsView() {
   const [items, setItems] = useState<ServiceRequestDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeStatus, setActiveStatus] = useState<string>('All');
-  const { searchTerm } = useSearch();
   
-  // Technician Assignment Modal State
-  const [assigningItem, setAssigningItem] = useState<ServiceRequestDoc | null>(null);
+  // Action Modal State
+  const [selectedItem, setSelectedItem] = useState<ServiceRequestDoc | null>(null);
+  const [modalStatus, setModalStatus] = useState<ServiceRequestDoc['status']>('Pending');
   const [technicianName, setTechnicianName] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+
   useEffect(() => {
     setLoading(true);
-    const unsubscribe = subscribeToServiceRequests(activeStatus, 15, (data) => {
+    const unsubscribe = subscribeToServiceRequests(activeStatus, 25, (data) => {
       setItems(data);
       setLoading(false);
     });
     return () => unsubscribe();
   }, [activeStatus]);
 
-  const handleUpdateStatus = async (id: string, newStatus: ServiceRequestDoc['status']) => {
-    try {
-      await updateServiceRequestStatusInFirestore(id, newStatus);
-      setSuccessMessage(`Status updated to ${newStatus}`);
-      setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err: any) {
-      alert(`Failed to update status: ${err.message}`);
-    }
+  const handleOpenActionModal = (item: ServiceRequestDoc) => {
+    setSelectedItem(item);
+    setModalStatus(item.status);
+    setTechnicianName(item.technician !== 'Unassigned' ? item.technician : '');
   };
 
-  const handleAssignTechnician = async (e: React.FormEvent) => {
+  const handleSaveActionModal = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!assigningItem || !technicianName.trim()) return;
+    if (!selectedItem) return;
 
     setIsUpdating(true);
     try {
-      await assignTechnicianInFirestore(assigningItem.id, technicianName.trim());
-      setSuccessMessage(`Technician assigned to ${technicianName.trim()}`);
-      setAssigningItem(null);
-      setTechnicianName('');
+      await updateServiceRequestStatusInFirestore(
+        selectedItem.id, 
+        modalStatus, 
+        technicianName.trim() || 'Unassigned'
+      );
+      setSuccessMessage(`Updated #${selectedItem.id} status to ${modalStatus}`);
+      setSelectedItem(null);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err: any) {
-      alert(`Failed to assign technician: ${err.message}`);
+      alert(`Failed to update service request: ${err.message}`);
     } finally {
       setIsUpdating(false);
     }
   };
 
-  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-  const [priorityFilter, setPriorityFilter] = useState<'All' | 'Urgent' | 'Normal'>('All');
-
-  const filteredItems = items;
+  const formatId = (id: string) => {
+    if (!id) return '#000';
+    if (id.startsWith('#')) return id;
+    return id.length <= 6 ? `#${id}` : `#${id.substring(0, 8)}`;
+  };
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-6 pb-12">
       {/* Toast Notification */}
       {successMessage && (
         <div className="fixed top-5 right-5 z-50 p-4 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] animate-in slide-in-from-top-4">
@@ -93,91 +95,56 @@ export default function ServiceRequestsView() {
             Service Requests
           </h1>
           <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754]">
-            {filteredItems.length} requests
+            {items.length} requests
           </span>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <button
-            onClick={() => setAssigningItem(items[0] || null)}
-            className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer shrink-0"
-          >
-            <UserPlus className="w-4 h-4 stroke-[2.5]" /> Assign Technician
-          </button>
+          <div className="flex items-center bg-[#141b2d] p-1 rounded-xl border border-[#2c3754]">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-1.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[#3e4396] text-white' : 'text-[#A0AEC0] hover:text-white'}`}
+              title="Grid View"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              className={`p-1.5 rounded-lg transition-all ${viewMode === 'table' ? 'bg-[#3e4396] text-white' : 'text-[#A0AEC0] hover:text-white'}`}
+              title="Table View"
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Unified Filter Bar (Single Consolidated Bar) */}
-      <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
-            {/* Priority Filter Dropdown */}
-            <div className="relative w-full sm:w-44">
-              <select
-                value={priorityFilter}
-                onChange={(e) => setPriorityFilter(e.target.value as any)}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-all"
-              >
-                <option value="All">All Priorities</option>
-                <option value="Urgent">Urgent Only</option>
-                <option value="Normal">Normal Only</option>
-              </select>
-            </div>
-          </div>
+      {/* Status Filter Tabs */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#2c3754]">
+        {(['All', 'Pending', 'In Progress', 'Completed', 'Cancelled'] as const).map((st) => {
+          const isActive = activeStatus === st;
+          const count = st === 'All' 
+            ? items.length 
+            : items.filter(i => i.status === st).length;
 
-          {/* View Toggles */}
-          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-[#2c3754]">
-            <div className="p-1 rounded-xl bg-[#141b2d] border border-[#2c3754] flex items-center gap-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all cursor-pointer ${
-                  viewMode === 'grid'
-                    ? 'bg-[#3e4396] text-white shadow-md'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-                title="Grid Cards View"
-              >
-                <LayoutGrid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('table')}
-                className={`p-2 rounded-lg transition-all cursor-pointer ${
-                  viewMode === 'table'
-                    ? 'bg-[#3e4396] text-white shadow-md'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-                title="Table List View"
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Status Filter Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-[#2c3754] scrollbar-none">
-          {['All', 'Pending', 'In Progress', 'Completed', 'Cancelled'].map((status) => {
-            const count = status === 'All' ? items.length : items.filter(i => i.status === status).length;
-            const isActive = activeStatus === status;
-            return (
-              <button
-                key={status}
-                onClick={() => setActiveStatus(status)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
-                  isActive
-                    ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
-                    : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
-                }`}
-              >
-                <span>{status}</span>
-                <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
-                }`}>
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+          return (
+            <button
+              key={st}
+              onClick={() => setActiveStatus(st)}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+                isActive
+                  ? 'bg-[#00BCE1] text-[#0F172A] shadow-md shadow-[#00BCE1]/20'
+                  : 'bg-[#1f2940] text-[#A0AEC0] hover:text-white border border-[#2c3754]'
+              }`}
+            >
+              <span>{st}</span>
+              <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
+                isActive ? 'bg-[#0F172A]/20 text-[#0F172A]' : 'bg-[#141b2d] text-[#00BCE1]'
+              }`}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Request Queue Cards / Detailed List */}
@@ -186,9 +153,9 @@ export default function ServiceRequestsView() {
           <Loader2 className="w-10 h-10 text-[#00BCE1] animate-spin" />
           <p className="text-xs text-[#A0AEC0]">Loading service requests...</p>
         </div>
-      ) : filteredItems.length === 0 ? (
+      ) : items.length === 0 ? (
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-12 text-center text-[#A0AEC0] text-xs">
-          No service requests found matching your filters.
+          No service requests found.
         </div>
       ) : viewMode === 'table' ? (
         /* Table View */
@@ -197,32 +164,30 @@ export default function ServiceRequestsView() {
             <table className="w-full text-left text-xs text-slate-200">
               <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-[#2c3754]">
                 <tr>
-                  <th className="py-3.5 px-4">Request ID</th>
+                  <th className="py-3.5 px-4">ID</th>
                   <th className="py-3.5 px-4">Customer</th>
-                  <th className="py-3.5 px-4">Machine Model</th>
+                  <th className="py-3.5 px-4">Address</th>
                   <th className="py-3.5 px-4">Appointment</th>
                   <th className="py-3.5 px-4">Technician</th>
                   <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
+                  <th className="py-3.5 px-4 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
-                {filteredItems.map((item) => (
-                  <tr key={item.id} className="hover:bg-[#2c3754] transition-colors">
+                {items.map((item) => (
+                  <tr key={item.id} className="hover:bg-[#2c3754]/50 transition-colors">
                     <td className="py-4 px-4 font-mono font-bold text-[#00BCE1]">
-                      {item.id.substring(0, 10)}
-                      {item.priority === 'Urgent' && (
-                        <span className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded bg-rose-500/20 text-rose-300 border border-rose-500/40">
-                          URGENT
-                        </span>
-                      )}
+                      {formatId(item.id)}
                     </td>
                     <td className="py-4 px-4">
                       <div className="font-bold text-white">{item.customerName}</div>
                       <div className="text-[11px] text-[#A0AEC0]">{item.phone}</div>
                     </td>
-                    <td className="py-4 px-4 font-medium text-slate-200">{item.machineModel}</td>
-                    <td className="py-4 px-4 text-[#A0AEC0]">{item.appointmentDate}</td>
+                    <td className="py-4 px-4 text-slate-300 max-w-xs truncate">{item.address}</td>
+                    <td className="py-4 px-4 text-[#A0AEC0]">
+                      <div>{item.appointmentDate}</div>
+                      <div className="text-[10px] text-slate-400">{item.appointmentTime}</div>
+                    </td>
                     <td className="py-4 px-4 text-slate-300">{item.technician || 'Unassigned'}</td>
                     <td className="py-4 px-4">
                       <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${
@@ -230,6 +195,8 @@ export default function ServiceRequestsView() {
                           ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                           : item.status === 'In Progress'
                           ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                          : item.status === 'Cancelled'
+                          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
                           : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                       }`}>
                         {item.status}
@@ -237,13 +204,10 @@ export default function ServiceRequestsView() {
                     </td>
                     <td className="py-4 px-4 text-right">
                       <button
-                        onClick={() => {
-                          setAssigningItem(item);
-                          setTechnicianName(item.technician !== 'Unassigned' ? item.technician : '');
-                        }}
-                        className="px-2.5 py-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] cursor-pointer transition-all text-xs font-semibold"
+                        onClick={() => handleOpenActionModal(item)}
+                        className="px-3 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#00BCE1] text-[#00BCE1] hover:text-[#0F172A] border border-[#2c3754] cursor-pointer transition-all text-xs font-bold"
                       >
-                        Assign
+                        Action
                       </button>
                     </td>
                   </tr>
@@ -251,54 +215,136 @@ export default function ServiceRequestsView() {
               </tbody>
             </table>
           </div>
-          <TableFooter totalItems={filteredItems.length} />
+          <TableFooter totalItems={items.length} />
         </div>
       ) : (
-        <div className="space-y-4">
-          {filteredItems.map((item) => (
+        /* Grid / Card View */
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {items.map((item) => (
             <div
               key={item.id}
-              className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 transition-all duration-200"
+              className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-5 hover:border-[#00BCE1]/50 transition-all duration-200 shadow-lg space-y-4 flex flex-col justify-between"
             >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#2c3754]">
-                <div className="flex items-center gap-3">
-                  <div className="px-3 py-1.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono font-bold text-xs">
-                    {item.id.substring(0, 12)}
+              <div>
+                {/* Card Header: ID, Status, Action */}
+                <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#2c3754]">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono font-bold text-xs">
+                      {formatId(item.id)}
+                    </span>
+                    <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
+                      item.status === 'Completed'
+                        ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
+                        : item.status === 'In Progress'
+                        ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                        : item.status === 'Cancelled'
+                        ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                        : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                    }`}>
+                      {item.status}
+                    </span>
                   </div>
-                  <div>
-                    <h3 className="text-base font-bold text-white flex items-center gap-2">
-                      {item.customerName}
-                      {item.priority === 'Urgent' && (
-                        <span className="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40">
-                          URGENT
-                        </span>
-                      )}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-[#A0AEC0] mt-0.5">
-                      <span className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-[#00BCE1]" /> {item.phone}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-[#00BCE1]" /> {item.address}
-                      </span>
+
+                  <button
+                    onClick={() => handleOpenActionModal(item)}
+                    className="px-3 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#00BCE1] text-[#00BCE1] hover:text-[#0F172A] border border-[#2c3754] cursor-pointer transition-all text-xs font-bold flex items-center gap-1.5"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" /> Action
+                  </button>
+                </div>
+
+                {/* Customer Details */}
+                <div className="pt-3 space-y-1.5">
+                  <h3 className="text-base font-bold text-white">
+                    {item.customerName}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-[#A0AEC0]">
+                    <span className="flex items-center gap-1">
+                      <Phone className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.phone}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.address}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Info Grid */}
+                <div className="grid grid-cols-2 gap-3 pt-3 text-xs">
+                  <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754]/80">
+                    <span className="text-[#A0AEC0] font-medium block mb-1">Appointment</span>
+                    <div className="font-bold text-white flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.appointmentDate}
+                    </div>
+                    <div className="text-slate-400 text-[11px] mt-0.5">{item.appointmentTime}</div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754]/80">
+                    <span className="text-[#A0AEC0] font-medium block mb-1">Technician</span>
+                    <div className="font-bold text-white flex items-center gap-1">
+                      <User className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.technician || 'Unassigned'}
                     </div>
                   </div>
                 </div>
 
-                {/* Status Selector Pills */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-[#A0AEC0] mr-1 font-medium">Update Status:</span>
-                  {(['Pending', 'In Progress', 'Completed'] as const).map((st) => (
+                {/* Description */}
+                {item.problemDetails && (
+                  <div className="mt-3 p-3 rounded-xl bg-[#141b2d]/60 border border-[#2c3754]/60 text-xs text-slate-300">
+                    <span className="font-bold text-[#00BCE1]">Note: </span>
+                    {item.problemDetails}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Action / Manage Modal */}
+      {selectedItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/85 backdrop-blur-xl">
+          <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-md rounded-2xl p-6 relative space-y-5 shadow-2xl animate-in fade-in duration-200">
+            <div className="flex items-center justify-between border-b border-[#2c3754] pb-3">
+              <div>
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <Wrench className="w-4 h-4 text-[#00BCE1]" /> Update Service Request
+                </h2>
+                <p className="text-xs text-[#A0AEC0]">
+                  Request ID: <span className="font-mono text-[#00BCE1] font-bold">{formatId(selectedItem.id)}</span>
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedItem(null)}
+                className="p-2 rounded-xl bg-[#141b2d] text-slate-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveActionModal} className="space-y-4">
+              {/* Customer Info Summary */}
+              <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754] text-xs space-y-1">
+                <div className="font-bold text-white">{selectedItem.customerName}</div>
+                <div className="text-[#A0AEC0]">{selectedItem.phone} • {selectedItem.address}</div>
+              </div>
+
+              {/* Status Selector */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-2">Status</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {(['Pending', 'In Progress', 'Completed', 'Cancelled'] as const).map((st) => (
                     <button
                       key={st}
-                      onClick={() => handleUpdateStatus(item.id, st)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                        item.status === st
+                      type="button"
+                      onClick={() => setModalStatus(st)}
+                      className={`p-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer text-center ${
+                        modalStatus === st
                           ? st === 'Pending'
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                            ? 'bg-amber-500/20 text-amber-300 border-amber-500'
                             : st === 'In Progress'
-                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                            : 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
+                            ? 'bg-blue-500/20 text-blue-300 border-blue-500'
+                            : st === 'Completed'
+                            ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]'
+                            : 'bg-rose-500/20 text-rose-300 border-rose-500'
                           : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754] hover:text-white'
                       }`}
                     >
@@ -308,89 +354,33 @@ export default function ServiceRequestsView() {
                 </div>
               </div>
 
-              {/* Request Details Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 text-xs">
-                <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754]">
-                  <span className="text-[#A0AEC0] font-semibold block mb-1">Machine & Telemetry</span>
-                  <div className="font-bold text-[#00BCE1] text-sm">{item.machineModel}</div>
-                  <div className="text-[#00BCE1] mt-1">Output TDS: {item.tdsReading || 45} PPM</div>
-                </div>
-
-                <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754]">
-                  <span className="text-[#A0AEC0] font-semibold block mb-1">Appointment Slot</span>
-                  <div className="font-bold text-white flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.appointmentDate}
-                  </div>
-                  <div className="text-slate-300 mt-1">{item.appointmentTime}</div>
-                </div>
-
-                <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754] flex items-center justify-between">
-                  <div>
-                    <span className="text-[#A0AEC0] font-semibold block mb-1">Assigned Technician</span>
-                    <div className="font-bold text-white flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.technician || 'Unassigned'}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setAssigningItem(item);
-                      setTechnicianName(item.technician !== 'Unassigned' ? item.technician : '');
-                    }}
-                    className="p-1.5 rounded-lg bg-[#3e4396] hover:bg-[#00BCE1] text-white hover:text-[#141b2d] border border-[#2c3754] cursor-pointer flex items-center gap-1 text-[11px] font-bold transition-all"
-                  >
-                    <UserPlus className="w-3.5 h-3.5" /> Assign
-                  </button>
-                </div>
-              </div>
-
-              {/* Problem Description */}
-              <div className="mt-3 p-3 rounded-xl bg-[#141b2d] border border-[#2c3754] text-xs">
-                <span className="font-bold text-[#00BCE1]">Problem Description: </span>
-                <span className="text-slate-300">{item.problemDetails}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Assign Technician Modal */}
-      {assigningItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/80 backdrop-blur-md">
-          <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-md rounded-3xl p-6 relative space-y-4">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <UserPlus className="w-5 h-5 text-[#00BCE1]" /> Assign Service Technician
-            </h2>
-            <p className="text-xs text-[#A0AEC0]">
-              Assign a specialist for request <span className="font-mono text-[#00BCE1]">{assigningItem.id.substring(0, 10)}</span> ({assigningItem.customerName}).
-            </p>
-
-            <form onSubmit={handleAssignTechnician} className="space-y-4 pt-2">
+              {/* Assign Technician Input */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Technician Name</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Technician</label>
                 <input
                   type="text"
-                  required
                   value={technicianName}
                   onChange={(e) => setTechnicianName(e.target.value)}
-                  placeholder="e.g. Alex Rivera (Technician Lead)"
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
+                  placeholder="Technician name (optional)"
+                  className="w-full px-3 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-all"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2c3754]">
+              {/* Modal Actions */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2c3754]">
                 <button
                   type="button"
-                  onClick={() => setAssigningItem(null)}
-                  className="px-4 py-2 text-xs rounded-xl bg-[#141b2d] text-slate-300 border border-[#2c3754] cursor-pointer"
+                  onClick={() => setSelectedItem(null)}
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] text-slate-300 border border-[#2c3754] hover:bg-[#2c3754] transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                  className="bg-[#00BCE1] hover:bg-cyan-400 text-[#0F172A] text-xs font-bold rounded-xl px-5 py-2 transition-all disabled:opacity-50 cursor-pointer"
                 >
-                  {isUpdating ? 'Saving...' : 'Save Assignment'}
+                  {isUpdating ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>
