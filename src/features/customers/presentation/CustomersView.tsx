@@ -258,52 +258,59 @@ export default function CustomersView() {
             </div>
 
             {/* Customer Information Summary Bar */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <div className="p-3.5 rounded-2xl bg-[#141b2d] border border-[#2c3754]">
-                <span className="text-[10px] font-medium text-[#A0AEC0] block">Primary Address</span>
-                <span className="text-xs font-semibold text-white mt-1 block truncate" title={customerAddresses[0]?.address || selectedCustomer.address}>
-                  {customerAddresses[0]?.address || selectedCustomer.address || 'N/A'}
-                </span>
+                <span className="text-[10px] font-bold text-[#A0AEC0] uppercase tracking-wider block">Total Orders</span>
+                <span className="text-sm font-extrabold text-[#00BCE1] mt-0.5 block">{selectedCustomer.totalOrders || 0} Orders</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-[#141b2d] border border-[#2c3754]">
-                <span className="text-[10px] font-medium text-[#A0AEC0] block">Total Orders</span>
-                <span className="text-sm font-extrabold text-blue-400 mt-0.5 block">{selectedCustomer.totalOrders || 0} Orders</span>
+                <span className="text-[10px] font-bold text-[#A0AEC0] uppercase tracking-wider block">Reward Points</span>
+                <span className="text-sm font-extrabold text-amber-400 mt-0.5 block">{selectedCustomer.rewardPoints || 0} pts</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-[#141b2d] border border-[#2c3754]">
-                <span className="text-[10px] font-medium text-[#A0AEC0] block">Joined Date</span>
+                <span className="text-[10px] font-bold text-[#A0AEC0] uppercase tracking-wider block">Joined Date</span>
                 <span className="text-xs font-semibold text-white mt-1 block">{selectedCustomer.joinedDate || 'N/A'}</span>
               </div>
             </div>
 
-            {/* CUSTOMER ADDRESSES SUBCOLLECTION SECTION */}
+            {/* CUSTOMER SAVED ADDRESSES SECTION (From sub-collection) */}
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-[#00BCE1]" />
-                  <h3 className="text-sm font-bold text-white">Saved Addresses Sub-collection</h3>
-                  <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
-                    customers/{selectedCustomer.id}/addresses
-                  </span>
+                  <MapPin className="w-4 h-4 text-[#00BCE1]" />
+                  <h3 className="text-sm font-bold text-white">Saved Addresses</h3>
                 </div>
-                <span className="text-xs font-mono font-semibold text-slate-300">
-                  {customerAddresses.length} addresses
+                <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
+                  {customerAddresses.length || (selectedCustomer.address ? 1 : 0)} saved
                 </span>
               </div>
 
               {customerAddresses.length === 0 ? (
-                <div className="p-4 rounded-2xl bg-[#141b2d] border border-[#2c3754] text-xs text-[#A0AEC0]">
-                  No addresses saved in sub-collection.
-                </div>
+                selectedCustomer.address ? (
+                  <div className="p-3.5 rounded-2xl bg-[#141b2d] border border-[#2c3754] flex items-center justify-between gap-3 text-xs text-white">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <MapPin className="w-4 h-4 text-[#00BCE1] shrink-0" />
+                      <span className="font-medium truncate">{selectedCustomer.address}</span>
+                    </div>
+                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0">
+                      Primary
+                    </span>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-2xl bg-[#141b2d] border border-[#2c3754] text-xs text-[#A0AEC0]">
+                    No addresses saved yet.
+                  </div>
+                )
               ) : (
                 <div className="space-y-2">
                   {customerAddresses.map((addr, idx) => (
                     <div key={addr.id || idx} className="p-3.5 rounded-2xl bg-[#141b2d] border border-[#2c3754] flex items-center justify-between gap-3 text-xs text-white">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
                         <MapPin className="w-4 h-4 text-[#00BCE1] shrink-0" />
-                        <span className="font-medium">{addr.address}</span>
+                        <span className="font-medium truncate">{addr.address}</span>
                       </div>
                       {idx === 0 && (
-                        <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                        <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0">
                           Primary
                         </span>
                       )}
@@ -313,17 +320,14 @@ export default function CustomersView() {
               )}
             </div>
 
-            {/* CUSTOMER CUSTOM PRODUCTS SUBCOLLECTION SECTION */}
-            <div className="space-y-4 pt-2">
+            {/* CUSTOMER CUSTOM PRODUCTS SECTION */}
+            <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Package className="w-5 h-5 text-[#00BCE1]" />
-                  <h3 className="text-sm font-bold text-white">Customer Custom Products</h3>
-                  <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
-                    customers/{selectedCustomer.id}/custom_products
-                  </span>
+                  <Package className="w-4 h-4 text-[#00BCE1]" />
+                  <h3 className="text-sm font-bold text-white">Custom Products</h3>
                 </div>
-                <span className="text-xs font-mono font-semibold text-slate-300">
+                <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
                   {customProducts.length} items
                 </span>
               </div>
