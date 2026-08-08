@@ -13,18 +13,20 @@ import {
   X,
   Loader2,
   MapPin,
-  ThumbsUp,
   LayoutGrid,
   List,
-  Filter
+  Check,
+  Ban
 } from 'lucide-react';
 import {
-  subscribeToReviews,
+  db,
+  REVIEWS_COLLECTION,
   addReviewToFirestore,
   updateReviewInFirestore,
   deleteReviewFromFirestore,
   ReviewDoc
 } from '@/core/services/firebase';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import TableFooter from '@/core/components/TableFooter';
 import { useSearch } from '@/core/context/SearchContext';
 
@@ -33,6 +35,7 @@ export default function ReviewsView() {
   const [loading, setLoading] = useState(true);
   const { searchTerm } = useSearch();
   const [filterApproved, setFilterApproved] = useState<'all' | 'approved' | 'pending'>('all');
+  const [ratingFilter, setRatingFilter] = useState<'All' | number>('All');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
   // Add / Edit Modal State
@@ -54,16 +57,102 @@ export default function ReviewsView() {
   const [formError, setFormError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Firestore Realtime Subscription
+  // 100% Real-time Firestore Sync
   useEffect(() => {
     setLoading(true);
-    const approvedParam = filterApproved === 'approved' ? true : filterApproved === 'pending' ? false : 'all';
-    const unsub = subscribeToReviews(approvedParam, 15, (data) => {
-      setReviews(data);
-      setLoading(false);
-    });
-    return () => unsub();
-  }, [filterApproved]);
+    const q = query(collection(db, REVIEWS_COLLECTION), orderBy('createdAt', 'desc'));
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const list: ReviewDoc[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return {
+            id: docSnap.id,
+            customerName: data.customerName || data.name || data.userName || 'Anonymous Customer',
+            location: data.location || data.userLocation || 'Dhaka',
+            rating: Number(data.rating) || 5,
+            comment: data.comment || data.reviewText || data.text || '',
+            isApproved: data.isApproved !== undefined ? Boolean(data.isApproved) : false,
+            createdAt: data.createdAt,
+          };
+        });
+        setReviews(list);
+        setLoading(false);
+      },
+      (error) => {
+        console.warn('Ordered query fallback to raw collection snapshot:', error);
+        const fallbackUnsub = onSnapshot(collection(db, REVIEWS_COLLECTION), (snapshot) => {
+          const list: ReviewDoc[] = snapshot.docs.map((docSnap) => {
+            const data = docSnap.data();
+            return {
+              id: docSnap.id,
+              customerName: data.customerName || data.name || data.userName || 'Anonymous Customer',
+              location: data.location || data.userLocation || 'Dhaka',
+              rating: Number(data.rating) || 5,
+              comment: data.comment || data.reviewText || data.text || '',
+              isApproved: data.isApproved !== undefined ? Boolean(data.isApproved) : false,
+              createdAt: data.createdAt,
+            };
+          });
+          setReviews(list);
+          setLoading(false);
+        });
+        return fallbackUnsub;
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  // Summary Metrics calculated live
+  const totalReviews = reviews.length;
+  const approvedCount = reviews.filter((r) => r.isApproved).length;
+  const pendingCount = reviews.filter((r) => !r.isApproved).length;
+  const avgRating =
+    totalReviews > 0
+      ? (reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews).toFixed(1)
+      : '0.0';
+
+  // Filtered Reviews
+  const filteredReviews = reviews.filter((r) => {
+    if (filterApproved === 'approved' && !r.isApproved) return false;
+    if (filterApproved === 'pending' && r.isApproved) return false;
+    if (ratingFilter !== 'All' && r.rating !== Number(ratingFilter)) return false;
+
+    if (searchTerm && searchTerm.trim() !== '') {
+      const term = searchTerm.toLowerCase().trim();
+      const matchName = r.customerName.toLowerCase().includes(term);
+      const matchLocation = r.location.toLowerCase().includes(term);
+      const matchComment = r.comment.toLowerCase().includes(term);
+      if (!matchName && !matchLocation && !matchComment) return false;
+    }
+
+    return true;
+  });
+
+  // Action Controls
+  const handleApprove = async (revId: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    try {
+      await updateReviewInFirestore(revId, { isApproved: true });
+      setSuccessMessage('Review approved & published.');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err: any) {
+      console.error('Error approving review:', err);
+    }
+  };
+
+  const handleReject = async (revId: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    try {
+      await updateReviewInFirestore(revId, { isApproved: false });
+      setSuccessMessage('Review status set to Pending.');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err: any) {
+      console.error('Error rejecting review:', err);
+    }
+  };
 
   const openAddModal = () => {
     setEditingReviewId(null);
@@ -104,7 +193,7 @@ export default function ReviewsView() {
     try {
       const payload: Omit<ReviewDoc, 'id'> = {
         customerName: customerName.trim(),
-        location: location.trim() || 'Bangladesh',
+        location: location.trim() || 'Dhaka',
         rating: Number(rating) || 5,
         comment: comment.trim(),
         isApproved,
@@ -112,7 +201,7 @@ export default function ReviewsView() {
 
       if (editingReviewId) {
         await updateReviewInFirestore(editingReviewId, payload);
-        setSuccessMessage(`Review by "${customerName}" updated successfully!`);
+        setSuccessMessage(`Review by "${customerName}" updated!`);
       } else {
         await addReviewToFirestore(payload);
         setSuccessMessage(`Review for "${customerName}" added to Firestore!`);
@@ -125,16 +214,6 @@ export default function ReviewsView() {
       setFormError(err.message || 'Failed to save review.');
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const handleToggleApproved = async (rev: ReviewDoc) => {
-    try {
-      await updateReviewInFirestore(rev.id, { isApproved: !rev.isApproved });
-      setSuccessMessage(`Review status updated to ${!rev.isApproved ? 'Approved' : 'Pending'}.`);
-      setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err: any) {
-      console.error('Error updating approval status:', err);
     }
   };
 
@@ -154,20 +233,8 @@ export default function ReviewsView() {
     }
   };
 
-  const [ratingFilter, setRatingFilter] = useState<'All' | number>('All');
-
-  const filteredReviews = reviews;
-
-  const totalReviews = reviews.length;
-  const approvedCount = reviews.filter((r) => r.isApproved).length;
-  const pendingCount = reviews.filter((r) => !r.isApproved).length;
-  const avgRating =
-    totalReviews > 0
-      ? (reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews).toFixed(1)
-      : '5.0';
-
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-6 pb-12">
       {/* Toast Notification */}
       {successMessage && (
         <div className="fixed top-5 right-5 z-50 p-4 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-[0_0_25px_rgba(16,185,129,0.35)] animate-in slide-in-from-top-4">
@@ -176,7 +243,7 @@ export default function ReviewsView() {
         </div>
       )}
 
-      {/* Page Header Row */}
+      {/* Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
@@ -188,16 +255,16 @@ export default function ReviewsView() {
         </div>
         <button
           onClick={openAddModal}
-          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer shrink-0"
+          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-5 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> Add Review
         </button>
       </div>
 
-      {/* Metrics Banner */}
+      {/* Dynamic Summary Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
-          <div className="p-3.5 rounded-2xl bg-[#00BCE1]/15 border border-[#00BCE1]/30 text-[#00BCE1]">
+          <div className="p-3 rounded-2xl bg-[#00BCE1]/15 border border-[#00BCE1]/30 text-[#00BCE1]">
             <MessageSquareQuote className="w-5 h-5" />
           </div>
           <div>
@@ -207,27 +274,27 @@ export default function ReviewsView() {
         </div>
 
         <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
-          <div className="p-3.5 rounded-2xl bg-[#00BCE1]/15 border border-[#00BCE1]/30 text-[#00BCE1]">
+          <div className="p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-[11px] text-slate-400 font-medium">Approved & Published</p>
+            <p className="text-[11px] text-slate-400 font-medium">Approved</p>
             <p className="text-lg font-bold text-white">{approvedCount}</p>
           </div>
         </div>
 
         <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
-          <div className="p-3.5 rounded-2xl bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b]">
+          <div className="p-3 rounded-2xl bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b]">
             <AlertCircle className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-[11px] text-slate-400 font-medium">Pending Moderation</p>
+            <p className="text-[11px] text-slate-400 font-medium">Pending</p>
             <p className="text-lg font-bold text-white">{pendingCount}</p>
           </div>
         </div>
 
         <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
-          <div className="p-3.5 rounded-2xl bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b]">
+          <div className="p-3 rounded-2xl bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b]">
             <Star className="w-5 h-5 fill-[#f59e0b]" />
           </div>
           <div>
@@ -237,16 +304,15 @@ export default function ReviewsView() {
         </div>
       </div>
 
-      {/* Unified Filter Bar (Single Consolidated Bar) */}
+      {/* Consolidated Filter Bar */}
       <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
-            {/* Rating Filter Dropdown */}
-            <div className="relative w-full sm:w-44">
+            <div className="relative w-full sm:w-48">
               <select
                 value={ratingFilter}
                 onChange={(e) => setRatingFilter(e.target.value === 'All' ? 'All' : Number(e.target.value))}
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-all"
+                className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer"
               >
                 <option value="All">All Star Ratings</option>
                 <option value={5}>5 Stars ★★★★★</option>
@@ -258,7 +324,7 @@ export default function ReviewsView() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between sm:justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-[#2c3754]">
+          <div className="flex items-center justify-end gap-3 border-t lg:border-t-0 pt-3 lg:pt-0 border-[#2c3754]">
             <div className="p-1 rounded-xl bg-[#141b2d] border border-[#2c3754] flex items-center gap-1">
               <button
                 onClick={() => setViewMode('grid')}
@@ -286,7 +352,7 @@ export default function ReviewsView() {
           </div>
         </div>
 
-        {/* Approval Filter Tabs */}
+        {/* Approval Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-[#2c3754] scrollbar-none">
           <button
             onClick={() => setFilterApproved('all')}
@@ -308,13 +374,13 @@ export default function ReviewsView() {
             onClick={() => setFilterApproved('approved')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
               filterApproved === 'approved'
-                ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
+                ? 'bg-emerald-500 text-[#141b2d] font-bold shadow-md'
                 : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
             }`}
           >
-            <span>Approved & Live</span>
+            <span>Approved</span>
             <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-              filterApproved === 'approved' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
+              filterApproved === 'approved' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-emerald-400'
             }`}>
               {approvedCount}
             </span>
@@ -328,7 +394,7 @@ export default function ReviewsView() {
                 : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
             }`}
           >
-            <span>Pending Moderation</span>
+            <span>Pending</span>
             <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
               filterApproved === 'pending' ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#f59e0b]'
             }`}>
@@ -342,7 +408,7 @@ export default function ReviewsView() {
       {loading ? (
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 flex flex-col items-center justify-center space-y-4">
           <Loader2 className="w-10 h-10 text-[#00BCE1] animate-spin" />
-          <p className="text-xs text-[#A0AEC0]">Loading reviews from Cloud Firestore...</p>
+          <p className="text-xs text-[#A0AEC0]">Syncing reviews from Firestore in real-time...</p>
         </div>
       ) : filteredReviews.length === 0 ? (
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-16 text-center space-y-4">
@@ -350,15 +416,15 @@ export default function ReviewsView() {
           <h3 className="text-base font-bold text-white">No Reviews Found</h3>
           <p className="text-xs text-[#A0AEC0] max-w-sm mx-auto">
             {searchTerm || filterApproved !== 'all'
-              ? 'No reviews match your current filters.'
-              : 'There are no customer reviews stored in Cloud Firestore yet.'}
+              ? 'No reviews match your current filter query.'
+              : 'No customer reviews submitted yet.'}
           </p>
           <div className="pt-2">
             <button
               onClick={openAddModal}
               className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 inline-flex items-center gap-2 cursor-pointer font-bold"
             >
-              <Plus className="w-4 h-4 stroke-[3]" /> Add First Review
+              <Plus className="w-4 h-4 stroke-[3]" /> Add Review
             </button>
           </div>
         </div>
@@ -371,7 +437,7 @@ export default function ReviewsView() {
               className="bg-[#1f2940] border border-[#2c3754] hover:border-[#00BCE1]/50 rounded-2xl p-5 flex flex-col justify-between space-y-4 relative group transition-all"
             >
               <div className="space-y-3">
-                {/* Header: Star Rating & Approval Badge */}
+                {/* Star Rating & Status Badge */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1 text-amber-400">
                     {[...Array(5)].map((_, idx) => (
@@ -386,13 +452,11 @@ export default function ReviewsView() {
                     ))}
                   </div>
 
-                  <button
-                    onClick={() => handleToggleApproved(rev)}
-                    title={rev.isApproved ? 'Click to unapprove' : 'Click to approve'}
-                    className={`px-2.5 py-1 text-[10px] font-bold rounded-full border transition-all cursor-pointer flex items-center gap-1 ${
+                  <span
+                    className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border flex items-center gap-1 ${
                       rev.isApproved
-                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 hover:bg-emerald-500/30'
-                        : 'bg-amber-500/20 text-amber-300 border-amber-400/40 hover:bg-amber-500/30'
+                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
+                        : 'bg-amber-500/20 text-amber-300 border-amber-400/40'
                     }`}
                   >
                     {rev.isApproved ? (
@@ -404,38 +468,67 @@ export default function ReviewsView() {
                         <XCircle className="w-3 h-3 text-amber-400" /> Pending
                       </>
                     )}
-                  </button>
+                  </span>
                 </div>
 
-                {/* Comment */}
+                {/* Comment Text */}
                 <p className="text-xs text-slate-300 italic leading-relaxed bg-[#141b2d] p-3 rounded-xl border border-[#2c3754]">
                   "{rev.comment}"
                 </p>
               </div>
 
-              {/* Customer Info & Actions */}
-              <div className="pt-3 border-t border-[#2c3754] flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-bold text-white">{rev.customerName}</h4>
-                  <p className="text-[11px] text-[#00BCE1] flex items-center gap-1 font-medium mt-0.5">
-                    <MapPin className="w-3 h-3" /> {rev.location}
-                  </p>
+              {/* Customer Details & Moderation Action Buttons */}
+              <div className="pt-3 border-t border-[#2c3754] flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-bold text-white">{rev.customerName}</h4>
+                    <p className="text-[11px] text-[#00BCE1] flex items-center gap-1 font-medium mt-0.5">
+                      <MapPin className="w-3 h-3" /> {rev.location}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => openEditModal(rev)}
+                      className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
+                      title="Edit Review"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setDeletingReview(rev)}
+                      className="p-1.5 rounded-lg bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
+                      title="Delete Review"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-1.5">
+                {/* Moderation Controls: Approve / Reject Toggle Buttons */}
+                <div className="flex items-center gap-2 pt-1 border-t border-[#2c3754]/50">
                   <button
-                    onClick={() => openEditModal(rev)}
-                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-[#00BCE1] hover:text-white border border-[#2c3754] transition-all cursor-pointer"
-                    title="Edit Review"
+                    onClick={(e) => handleApprove(rev.id, e)}
+                    disabled={rev.isApproved}
+                    className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      rev.isApproved
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 opacity-70 cursor-default'
+                        : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm'
+                    }`}
                   >
-                    <Edit2 className="w-3.5 h-3.5" />
+                    <Check className="w-3.5 h-3.5" /> Approve
                   </button>
+
                   <button
-                    onClick={() => setDeletingReview(rev)}
-                    className="p-2 rounded-xl bg-[#141b2d] hover:bg-rose-950 text-rose-400 border border-[#2c3754] transition-all cursor-pointer"
-                    title="Delete Review"
+                    onClick={(e) => handleReject(rev.id, e)}
+                    disabled={!rev.isApproved}
+                    className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      !rev.isApproved
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 opacity-70 cursor-default'
+                        : 'bg-amber-600 hover:bg-amber-500 text-white shadow-sm'
+                    }`}
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Ban className="w-3.5 h-3.5" /> Reject
                   </button>
                 </div>
               </div>
@@ -453,7 +546,7 @@ export default function ReviewsView() {
                   <th className="py-3.5 px-4">Location</th>
                   <th className="py-3.5 px-4">Rating</th>
                   <th className="py-3.5 px-4 max-w-xs">Comment</th>
-                  <th className="py-3.5 px-4">Status</th>
+                  <th className="py-3.5 px-4">Status & Moderation</th>
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -477,16 +570,43 @@ export default function ReviewsView() {
                       "{rev.comment}"
                     </td>
                     <td className="py-4 px-4">
-                      <button
-                        onClick={() => handleToggleApproved(rev)}
-                        className={`px-2.5 py-1 text-[10px] font-bold rounded-full border transition-colors ${
-                          rev.isApproved
-                            ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
-                            : 'bg-amber-500/20 text-amber-300 border-amber-400/40'
-                        }`}
-                      >
-                        {rev.isApproved ? 'Approved' : 'Pending'}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
+                            rev.isApproved
+                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
+                              : 'bg-amber-500/20 text-amber-300 border-amber-400/40'
+                          }`}
+                        >
+                          {rev.isApproved ? 'Approved' : 'Pending'}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleApprove(rev.id)}
+                            disabled={rev.isApproved}
+                            className={`p-1 rounded-lg border transition-all ${
+                              rev.isApproved
+                                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 opacity-50'
+                                : 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-500 cursor-pointer'
+                            }`}
+                            title="Approve Review"
+                          >
+                            <Check className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={() => handleReject(rev.id)}
+                            disabled={!rev.isApproved}
+                            className={`p-1 rounded-lg border transition-all ${
+                              !rev.isApproved
+                                ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 opacity-50'
+                                : 'bg-amber-600 hover:bg-amber-500 text-white border-amber-500 cursor-pointer'
+                            }`}
+                            title="Reject Review"
+                          >
+                            <Ban className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
                     </td>
                     <td className="py-4 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
@@ -605,7 +725,7 @@ export default function ReviewsView() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Review Comment / Feedback *
+                  Review Comment *
                 </label>
                 <textarea
                   rows={4}
@@ -620,11 +740,11 @@ export default function ReviewsView() {
               {/* Approval Toggle */}
               <div className="p-3 rounded-2xl bg-[#141b2d] border border-[#2c3754] flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <p className="text-xs font-bold text-white">
                     Approval & Publication Status
                   </p>
                   <p className="text-[11px] text-[#A0AEC0]">
-                    If enabled, this review will be displayed on the User Web testimonials slider.
+                    Enable to publish review publicly.
                   </p>
                 </div>
 
@@ -655,7 +775,7 @@ export default function ReviewsView() {
                   {isSaving ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>Saving to Firestore...</span>
+                      <span>Saving...</span>
                     </>
                   ) : (
                     <span>{editingReviewId ? 'Update Review' : 'Create Review'}</span>
