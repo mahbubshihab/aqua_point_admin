@@ -555,9 +555,9 @@ export function subscribeToOrders(
         return {
           id: docSnap.id,
           customerName: data.customerName || data.name || 'Anonymous Customer',
-          phone: data.phone || 'N/A',
+          phone: data.customerPhone || data.phone || 'N/A',
           email: data.email || '',
-          address: data.address || 'N/A',
+          address: data.shippingAddress || data.address || 'N/A',
           district: data.district || '',
           items: Array.isArray(data.items) ? data.items : [],
           totalAmount: Number(data.totalAmount) || 0,
@@ -589,9 +589,9 @@ export function subscribeToOrders(
           return {
             id: docSnap.id,
             customerName: data.customerName || data.name || 'Anonymous Customer',
-            phone: data.phone || 'N/A',
+            phone: data.customerPhone || data.phone || 'N/A',
             email: data.email || '',
-            address: data.address || 'N/A',
+            address: data.shippingAddress || data.address || 'N/A',
             district: data.district || '',
             items: Array.isArray(data.items) ? data.items : [],
             totalAmount: Number(data.totalAmount) || 0,
@@ -605,6 +605,31 @@ export function subscribeToOrders(
       });
     }
   );
+}
+
+export async function addOrderToFirestore(orderData: {
+  customerName: string;
+  customerPhone: string;
+  shippingAddress: string;
+  items: OrderItemDoc[];
+  totalAmount: number;
+  paymentMethod: string;
+  paymentStatus: OrderDoc['paymentStatus'];
+  status: OrderDoc['status'];
+}) {
+  return await addDoc(collection(db, ORDERS_COLLECTION), {
+    customerName: orderData.customerName,
+    customerPhone: orderData.customerPhone,
+    phone: orderData.customerPhone,
+    shippingAddress: orderData.shippingAddress,
+    address: orderData.shippingAddress,
+    items: orderData.items,
+    totalAmount: orderData.totalAmount,
+    paymentMethod: orderData.paymentMethod,
+    paymentStatus: orderData.paymentStatus,
+    status: orderData.status,
+    createdAt: serverTimestamp(),
+  });
 }
 
 export async function updateOrderStatusInFirestore(id: string, status: OrderDoc['status'], paymentStatus?: OrderDoc['paymentStatus']) {
