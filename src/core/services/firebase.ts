@@ -1011,40 +1011,76 @@ export function subscribeToCustomers(
 
   return onSnapshot(
     q,
-    (snapshot) => {
-      const list: CustomerDoc[] = snapshot.docs.map((docSnap) => {
-        const data = docSnap.data();
-        let formattedJoinedDate = 'N/A';
-        if (data.joinedDate) {
-          formattedJoinedDate = data.joinedDate;
-        } else if (data.createdAt) {
-          if (typeof data.createdAt.toDate === 'function') {
-            formattedJoinedDate = data.createdAt.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-          } else if (data.createdAt.seconds) {
-            formattedJoinedDate = new Date(data.createdAt.seconds * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    async (snapshot) => {
+      const list: CustomerDoc[] = await Promise.all(
+        snapshot.docs.map(async (docSnap) => {
+          const data = docSnap.data();
+          let formattedJoinedDate = 'N/A';
+          if (data.joinedDate) {
+            formattedJoinedDate = data.joinedDate;
+          } else if (data.createdAt) {
+            if (typeof data.createdAt.toDate === 'function') {
+              formattedJoinedDate = data.createdAt.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            } else if (data.createdAt.seconds) {
+              formattedJoinedDate = new Date(data.createdAt.seconds * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            }
           }
-        }
-        return {
-          id: docSnap.id,
-          name: data.name || data.customerName || 'Unnamed Customer',
-          email: data.email || 'N/A',
-          phone: data.phone || 'N/A',
-          address: data.address || data.location || data.fullAddress || 'N/A',
-          joinedDate: formattedJoinedDate,
-          rewardPoints: Number(data.rewardPoints) || 0,
-          referralCode: data.referralCode || `AQUA-${docSnap.id.substring(0, 6).toUpperCase()}`,
-          activeDevices: Number(data.activeDevices) || 0,
-          totalOrders: Number(data.totalOrders) || 0,
-          createdAt: data.createdAt,
-          lastMessage: data.lastMessage || data.lastMessageText || '',
-          lastMessageTime: data.lastMessageTime || data.updatedAt || data.createdAt,
-          unreadCount: Number(data.unreadCount) || 0,
-        };
-      });
+
+          // Dynamically retrieve primary address from customers/{id}/addresses sub-collection
+          let primaryAddress = data.address || data.location || data.fullAddress || '';
+          if (!primaryAddress) {
+            try {
+              const addrSnap = await getDocs(collection(db, CUSTOMERS_COLLECTION, docSnap.id, 'addresses'));
+              if (!addrSnap.empty) {
+                primaryAddress = addrSnap.docs[0].data().address || '';
+              }
+            } catch (_) {}
+          }
+
+          return {
+            id: docSnap.id,
+            name: data.name || data.customerName || 'Unnamed Customer',
+            email: data.email || 'N/A',
+            phone: data.phone || 'N/A',
+            address: primaryAddress || 'N/A',
+            joinedDate: formattedJoinedDate,
+            rewardPoints: Number(data.rewardPoints) || 0,
+            referralCode: data.referralCode || `AQUA-${docSnap.id.substring(0, 6).toUpperCase()}`,
+            activeDevices: Number(data.activeDevices) || 0,
+            totalOrders: Number(data.totalOrders) || 0,
+            createdAt: data.createdAt,
+            lastMessage: data.lastMessage || data.lastMessageText || '',
+            lastMessageTime: data.lastMessageTime || data.updatedAt || data.createdAt,
+            unreadCount: Number(data.unreadCount) || 0,
+          };
+        })
+      );
       callback(list);
     },
     (error) => {
       console.error('Error fetching customers snapshot:', error);
+    }
+  );
+}
+
+export function subscribeToCustomerAddresses(
+  customerId: string,
+  callback: (addresses: { id: string; address: string }[]) => void
+) {
+  if (!customerId) return () => {};
+  const ref = collection(db, CUSTOMERS_COLLECTION, customerId, 'addresses');
+  return onSnapshot(
+    ref,
+    (snapshot) => {
+      const list = snapshot.docs.map((d) => ({
+        id: d.id,
+        address: d.data().address || '',
+      }));
+      callback(list);
+    },
+    (error) => {
+      console.error('Error fetching customer addresses:', error);
+      callback([]);
     }
   );
 }

@@ -23,6 +23,7 @@ import { useSearch } from '@/core/context/SearchContext';
 import { 
   subscribeToCustomers, 
   subscribeToCustomerCustomProducts, 
+  subscribeToCustomerAddresses,
   CustomerDoc, 
   CustomProductDoc 
 } from '@/core/services/firebase';
@@ -37,6 +38,7 @@ export default function CustomersView() {
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerDoc | null>(null);
   const [customProducts, setCustomProducts] = useState<CustomProductDoc[]>([]);
   const [loadingCustomProducts, setLoadingCustomProducts] = useState(false);
+  const [customerAddresses, setCustomerAddresses] = useState<{ id: string; address: string }[]>([]);
 
   // Subscribe to Customers real-time from Cloud Firestore
   useEffect(() => {
@@ -49,20 +51,28 @@ export default function CustomersView() {
     return () => unsub();
   }, []);
 
-  // Fetch Custom Products from customers/{userId}/custom_products subcollection when selected
+  // Fetch Custom Products and Addresses from sub-collections when selected
   useEffect(() => {
     if (!selectedCustomer) {
       setCustomProducts([]);
+      setCustomerAddresses([]);
       return;
     }
 
     setLoadingCustomProducts(true);
-    const unsub = subscribeToCustomerCustomProducts(selectedCustomer.id, 50, (prods) => {
+    const unsubProds = subscribeToCustomerCustomProducts(selectedCustomer.id, 50, (prods) => {
       setCustomProducts(prods || []);
       setLoadingCustomProducts(false);
     });
 
-    return () => unsub();
+    const unsubAddrs = subscribeToCustomerAddresses(selectedCustomer.id, (addrs) => {
+      setCustomerAddresses(addrs || []);
+    });
+
+    return () => {
+      unsubProds();
+      unsubAddrs();
+    };
   }, [selectedCustomer]);
 
   const copyReferral = (code: string) => {
@@ -245,9 +255,9 @@ export default function CustomersView() {
             {/* Customer Information Summary Bar */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="p-3.5 rounded-2xl bg-[#141b2d] border border-[#2c3754]">
-                <span className="text-[10px] font-medium text-[#A0AEC0] block">Address</span>
-                <span className="text-xs font-semibold text-white mt-1 block truncate" title={selectedCustomer.address}>
-                  {selectedCustomer.address || 'N/A'}
+                <span className="text-[10px] font-medium text-[#A0AEC0] block">Primary Address</span>
+                <span className="text-xs font-semibold text-white mt-1 block truncate" title={customerAddresses[0]?.address || selectedCustomer.address}>
+                  {customerAddresses[0]?.address || selectedCustomer.address || 'N/A'}
                 </span>
               </div>
               <div className="p-3.5 rounded-2xl bg-[#141b2d] border border-[#2c3754]">
@@ -258,6 +268,44 @@ export default function CustomersView() {
                 <span className="text-[10px] font-medium text-[#A0AEC0] block">Joined Date</span>
                 <span className="text-xs font-semibold text-white mt-1 block">{selectedCustomer.joinedDate || 'N/A'}</span>
               </div>
+            </div>
+
+            {/* CUSTOMER ADDRESSES SUBCOLLECTION SECTION */}
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-[#00BCE1]" />
+                  <h3 className="text-sm font-bold text-white">Saved Addresses Sub-collection</h3>
+                  <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
+                    customers/{selectedCustomer.id}/addresses
+                  </span>
+                </div>
+                <span className="text-xs font-mono font-semibold text-slate-300">
+                  {customerAddresses.length} addresses
+                </span>
+              </div>
+
+              {customerAddresses.length === 0 ? (
+                <div className="p-4 rounded-2xl bg-[#141b2d] border border-[#2c3754] text-xs text-[#A0AEC0]">
+                  No addresses saved in sub-collection.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {customerAddresses.map((addr, idx) => (
+                    <div key={addr.id || idx} className="p-3.5 rounded-2xl bg-[#141b2d] border border-[#2c3754] flex items-center justify-between gap-3 text-xs text-white">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-[#00BCE1] shrink-0" />
+                        <span className="font-medium">{addr.address}</span>
+                      </div>
+                      {idx === 0 && (
+                        <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                          Primary
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* CUSTOMER CUSTOM PRODUCTS SUBCOLLECTION SECTION */}
