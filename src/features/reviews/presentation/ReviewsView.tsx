@@ -237,45 +237,45 @@ export default function ReviewsView() {
         </button>
       </div>
 
-      {/* Dynamic Summary Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
-          <div className="p-3 rounded-2xl bg-[#00BCE1]/15 border border-[#00BCE1]/30 text-[#00BCE1]">
-            <MessageSquareQuote className="w-5 h-5" />
+      {/* Dynamic Summary Stats in 2 Lines on Mobile */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-3 sm:p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-2.5 sm:gap-3 shadow-xl min-w-0">
+          <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-[#00BCE1]/15 border border-[#00BCE1]/30 text-[#00BCE1] shrink-0">
+            <MessageSquareQuote className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <p className="text-[11px] text-slate-400 font-medium">Total Reviews</p>
-            <p className="text-lg font-bold text-white">{totalReviews}</p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
-          <div className="p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
-          <div>
-            <p className="text-[11px] text-slate-400 font-medium">Approved</p>
-            <p className="text-lg font-bold text-white">{approvedCount}</p>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">Total Reviews</p>
+            <p className="text-base sm:text-lg font-bold text-white leading-tight">{totalReviews}</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
-          <div className="p-3 rounded-2xl bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b]">
-            <AlertCircle className="w-5 h-5" />
+        <div className="p-3 sm:p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-2.5 sm:gap-3 shadow-xl min-w-0">
+          <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shrink-0">
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <p className="text-[11px] text-slate-400 font-medium">Pending</p>
-            <p className="text-lg font-bold text-white">{pendingCount}</p>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">Approved</p>
+            <p className="text-base sm:text-lg font-bold text-white leading-tight">{approvedCount}</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-3 shadow-xl">
-          <div className="p-3 rounded-2xl bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b]">
-            <Star className="w-5 h-5 fill-[#f59e0b]" />
+        <div className="p-3 sm:p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-2.5 sm:gap-3 shadow-xl min-w-0">
+          <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b] shrink-0">
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
-          <div>
-            <p className="text-[11px] text-slate-400 font-medium">Average Rating</p>
-            <p className="text-lg font-bold text-white">{avgRating} / 5.0</p>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">Pending</p>
+            <p className="text-base sm:text-lg font-bold text-white leading-tight">{pendingCount}</p>
+          </div>
+        </div>
+
+        <div className="p-3 sm:p-4 rounded-2xl bg-[#1f2940] border border-[#2c3754] flex items-center gap-2.5 sm:gap-3 shadow-xl min-w-0">
+          <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-[#f59e0b]/15 border border-[#f59e0b]/30 text-[#f59e0b] shrink-0">
+            <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-[#f59e0b]" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium truncate">Average Rating</p>
+            <p className="text-base sm:text-lg font-bold text-white leading-tight">{avgRating} / 5.0</p>
           </div>
         </div>
       </div>
