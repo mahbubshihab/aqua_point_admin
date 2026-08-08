@@ -9,6 +9,7 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  getDocs,
   onSnapshot,
   query,
   orderBy,
