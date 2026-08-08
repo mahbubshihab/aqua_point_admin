@@ -54,7 +54,7 @@ if (typeof window !== 'undefined') {
 // Collection References
 export const PRODUCTS_COLLECTION = 'products';
 export const CATEGORIES_COLLECTION = 'categories';
-export const SERVICES_COLLECTION = 'services';
+export const SERVICES_COLLECTION = 'service_requests';
 export const ORDERS_COLLECTION = 'orders';
 export const INQUIRIES_COLLECTION = 'inquiries';
 export const REVIEWS_COLLECTION = 'reviews';
