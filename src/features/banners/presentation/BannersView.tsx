@@ -521,16 +521,16 @@ export default function BannersView() {
 
       {/* Add / Edit Banner Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/80 backdrop-blur-md">
-          <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-lg rounded-3xl p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between pb-4 border-b border-[#2c3754]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#131B2E]/80 backdrop-blur-md">
+          <div className="bg-[#1F293D]/95 backdrop-blur-xl border border-slate-700/60 rounded-2xl w-full max-w-lg p-6 relative space-y-5 animate-in fade-in zoom-in-95 duration-200 shadow-2xl">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-700/50">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
                 {editingBannerId ? <Edit2 className="w-5 h-5 text-[#00BCE1]" /> : <Plus className="w-5 h-5 text-[#00BCE1]" />}
                 {editingBannerId ? 'Edit Banner' : 'Add New Banner'}
               </h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-xl text-[#A0AEC0] hover:text-white hover:bg-[#141b2d] cursor-pointer"
+                className="p-1 rounded-xl text-slate-400 hover:text-white hover:bg-[#131B2E] transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -544,19 +544,19 @@ export default function BannersView() {
                 </div>
               )}
 
-              {/* Cloudinary Image Upload */}
+              {/* Image Upload */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Banner Image * (Cloudinary Folder: <span className="text-[#00BCE1]">banners/</span>)
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Image
                 </label>
-                <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#00BCE1] transition-colors bg-[#141b2d]">
+                <div className="border-2 border-dashed border-slate-700/50 rounded-xl p-4 text-center hover:border-[#00BCE1] transition-colors bg-[#131B2E]">
                   {previewUrl || existingImageUrl ? (
-                    <div className="relative w-full h-40 mx-auto rounded-xl overflow-hidden border border-[#2c3754]">
+                    <div className="relative w-full h-40 mx-auto rounded-xl overflow-hidden border border-slate-700/50">
                       <img src={previewUrl || existingImageUrl} alt="Banner Preview" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => { setSelectedFile(null); setPreviewUrl(''); setExistingImageUrl(''); }}
-                        className="absolute top-2 right-2 p-1.5 bg-[#141b2d]/80 hover:bg-rose-600 rounded-full text-white cursor-pointer transition-colors"
+                        className="absolute top-2 right-2 p-1.5 bg-[#131B2E]/80 hover:bg-rose-600 rounded-full text-white cursor-pointer transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -565,7 +565,6 @@ export default function BannersView() {
                     <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-6">
                       <Upload className="w-8 h-8 text-[#00BCE1] animate-bounce" />
                       <span className="text-xs text-slate-300 font-medium">Click to upload banner image file</span>
-                      <span className="text-[10px] text-[#A0AEC0] font-mono">Preset: aqua_point | Folder: banners</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -579,11 +578,11 @@ export default function BannersView() {
 
               {/* Position Selection */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Banner Position *</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Position</label>
                 <select
                   value={position}
                   onChange={(e) => setPosition(e.target.value as any)}
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
                 >
                   <option value="main">Main Carousel Slider</option>
                   <option value="side_top">Side Banner Top</option>
@@ -593,8 +592,8 @@ export default function BannersView() {
 
               {/* Display Order / Sequence Input */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Display Order / Sequence (Main Slider) *
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Sequence
                 </label>
                 <input
                   type="number"
@@ -603,18 +602,14 @@ export default function BannersView() {
                   value={order}
                   onChange={(e) => setOrder(Math.max(1, parseInt(e.target.value) || 1))}
                   placeholder="e.g. 1, 2, 3..."
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#00BCE1]"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#131B2E] border border-slate-700/50 text-white font-mono focus:outline-none focus:border-[#00BCE1] transition-colors"
                 />
-                <p className="text-[10px] text-[#A0AEC0] mt-1">
-                  Numeric sequence order for banner display on the homepage carousel.
-                </p>
               </div>
 
               {/* Active Status Toggle */}
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#141b2d] border border-[#2c3754]">
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#131B2E] border border-slate-700/50">
                 <div>
-                  <p className="text-xs font-semibold text-white">Active Visibility</p>
-                  <p className="text-[11px] text-[#A0AEC0]">Show this banner on the user website</p>
+                  <p className="text-xs font-semibold text-white">Active</p>
                 </div>
                 <button
                   type="button"
@@ -622,26 +617,26 @@ export default function BannersView() {
                   className={`p-1.5 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
                     isActive
                       ? 'bg-[#00BCE1]/20 border-[#00BCE1]/40 text-[#00BCE1]'
-                      : 'bg-[#141b2d] border-[#2c3754] text-[#A0AEC0]'
+                      : 'bg-[#1F293D] border-slate-700/50 text-slate-400'
                   }`}
                 >
-                  {isActive ? <ToggleRight className="w-6 h-6 text-[#00BCE1]" /> : <ToggleLeft className="w-6 h-6 text-[#A0AEC0]" />}
+                  {isActive ? <ToggleRight className="w-6 h-6 text-[#00BCE1]" /> : <ToggleLeft className="w-6 h-6 text-slate-400" />}
                   <span className="text-xs font-bold pr-1">{isActive ? 'Active' : 'Inactive'}</span>
                 </button>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#2c3754]">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-700/50">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-slate-300 border border-[#2c3754] cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#131B2E] hover:bg-[#1F293D] text-slate-300 border border-slate-700/50 cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                  className="bg-[#00BCE1] hover:bg-cyan-400 text-[#131B2E] text-xs font-bold shadow-[0_0_20px_rgba(0,188,225,0.4)] rounded-xl px-6 py-2.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   {isSaving ? (
                     <>

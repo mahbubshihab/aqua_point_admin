@@ -136,6 +136,7 @@ export interface ProductDoc {
   featured?: boolean;
   filterHealth?: number;
   imageUrl: string;
+  images?: string[];
   createdAt?: any;
 }
 
@@ -284,6 +285,7 @@ export function subscribeToProducts(
           featured: Boolean(data.featured),
           filterHealth: Number(data.filterHealth) || 100,
           imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop',
+          images: Array.isArray(data.images) && data.images.length > 0 ? data.images : (data.imageUrl ? [data.imageUrl] : []),
           createdAt: data.createdAt,
         };
       });
@@ -313,6 +315,7 @@ export function subscribeToProducts(
             featured: Boolean(data.featured),
             filterHealth: Number(data.filterHealth) || 100,
             imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop',
+            images: Array.isArray(data.images) && data.images.length > 0 ? data.images : (data.imageUrl ? [data.imageUrl] : []),
             createdAt: data.createdAt,
           };
         });
