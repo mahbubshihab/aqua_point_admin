@@ -771,18 +771,18 @@ export interface CompanySettingsDoc {
 }
 
 export const DEFAULT_COMPANY_SETTINGS: CompanySettingsDoc = {
-  phone1: '01780-885841',
-  phone2: '09613 700 750',
-  whatsapp: '+8801780885841',
-  email: 'aquabd112@gmail.com',
-  address: 'House 72, Janata Housing Road, 3 Ring Road, Dhaka 1219',
-  googleMapsUrl: 'https://maps.google.com/?q=House+72,+Janata+Housing+Road,+3+Ring+Road,+Dhaka+1219',
-  facebookUrl: 'https://facebook.com/aquapointbd',
-  whatsappLink: 'https://wa.me/8801780885841',
-  youtubeUrl: 'https://youtube.com/@aquapointbd',
-  instagramUrl: 'https://instagram.com/aquapointbd',
-  linkedinUrl: 'https://linkedin.com/company/aquapointbd',
-  twitterUrl: 'https://x.com/aquapointbd',
+  phone1: '',
+  phone2: '',
+  whatsapp: '',
+  email: '',
+  address: '',
+  googleMapsUrl: '',
+  facebookUrl: '',
+  whatsappLink: '',
+  youtubeUrl: '',
+  instagramUrl: '',
+  linkedinUrl: '',
+  twitterUrl: '',
 };
 
 export function subscribeToCompanyInfo(callback: (info: CompanySettingsDoc) => void) {
@@ -791,18 +791,18 @@ export function subscribeToCompanyInfo(callback: (info: CompanySettingsDoc) => v
     if (docSnap.exists()) {
       const data = docSnap.data();
       callback({
-        phone1: data.phone1 ?? DEFAULT_COMPANY_SETTINGS.phone1,
-        phone2: data.phone2 ?? DEFAULT_COMPANY_SETTINGS.phone2,
-        whatsapp: data.whatsapp ?? DEFAULT_COMPANY_SETTINGS.whatsapp,
-        email: data.email ?? DEFAULT_COMPANY_SETTINGS.email,
-        address: data.address ?? DEFAULT_COMPANY_SETTINGS.address,
-        googleMapsUrl: data.googleMapsUrl ?? DEFAULT_COMPANY_SETTINGS.googleMapsUrl,
-        facebookUrl: data.facebookUrl ?? DEFAULT_COMPANY_SETTINGS.facebookUrl,
-        whatsappLink: data.whatsappLink ?? DEFAULT_COMPANY_SETTINGS.whatsappLink,
-        youtubeUrl: data.youtubeUrl ?? DEFAULT_COMPANY_SETTINGS.youtubeUrl,
-        instagramUrl: data.instagramUrl ?? DEFAULT_COMPANY_SETTINGS.instagramUrl,
-        linkedinUrl: data.linkedinUrl ?? DEFAULT_COMPANY_SETTINGS.linkedinUrl,
-        twitterUrl: data.twitterUrl ?? DEFAULT_COMPANY_SETTINGS.twitterUrl,
+        phone1: data.phone1 || '',
+        phone2: data.phone2 || '',
+        whatsapp: data.whatsapp || '',
+        email: data.email || '',
+        address: data.address || '',
+        googleMapsUrl: data.googleMapsUrl || '',
+        facebookUrl: data.facebookUrl || '',
+        whatsappLink: data.whatsappLink || '',
+        youtubeUrl: data.youtubeUrl || '',
+        instagramUrl: data.instagramUrl || '',
+        linkedinUrl: data.linkedinUrl || '',
+        twitterUrl: data.twitterUrl || '',
       });
     } else {
       callback(DEFAULT_COMPANY_SETTINGS);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Building2,
   Phone, 
@@ -10,6 +10,8 @@ import {
   Share2, 
   Check, 
   Save, 
+  Pencil,
+  Lock,
   Loader2,
   X,
   ExternalLink
@@ -61,15 +63,23 @@ const XIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
 export default function SettingsView() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<'all' | 'contact' | 'social'>('all');
 
   // Company Contact & Social Media State
   const [contactInfo, setContactInfo] = useState<CompanySettingsDoc>(DEFAULT_COMPANY_SETTINGS);
 
+  const isEditingRef = useRef(isEditing);
+  useEffect(() => {
+    isEditingRef.current = isEditing;
+  }, [isEditing]);
+
   useEffect(() => {
     const unsubscribe = subscribeToCompanyInfo((info) => {
-      setContactInfo(info);
+      if (!isEditingRef.current) {
+        setContactInfo(info);
+      }
       setLoading(false);
     });
     return () => unsubscribe();
@@ -84,6 +94,7 @@ export default function SettingsView() {
     try {
       await saveCompanyInfoToFirestore(contactInfo);
       setToastMessage('Settings updated successfully!');
+      setIsEditing(false);
       setTimeout(() => {
         setToastMessage(null);
       }, 4000);
@@ -94,6 +105,22 @@ export default function SettingsView() {
       setSaving(false);
     }
   };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setLoading(true);
+    const unsubscribe = subscribeToCompanyInfo((info) => {
+      setContactInfo(info);
+      setLoading(false);
+    });
+    unsubscribe();
+  };
+
+  const getInputClassName = (isMono = false) => `w-full px-3.5 py-2.5 text-xs rounded-xl transition-all duration-200 ${isMono ? 'font-mono' : ''} ${
+    !isEditing
+      ? 'bg-[#141b2d]/40 border border-[#2c3754]/50 text-slate-400 cursor-not-allowed select-none opacity-80'
+      : 'bg-[#141b2d] border border-[#00BCE1]/40 text-white focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/40 cursor-text shadow-inner'
+  }`;
 
   return (
     <div className="space-y-6 max-w-5xl relative pb-12">
@@ -120,23 +147,57 @@ export default function SettingsView() {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
+        <div className="flex items-center gap-3">
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
             Settings
           </h1>
-        </div>
-        <button
-          onClick={handleSave}
-          disabled={saving || loading}
-          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
-        >
-          {saving ? (
-            <Loader2 className="w-4 h-4 animate-spin text-white" />
+          {isEditing ? (
+            <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-semibold flex items-center gap-1.5 animate-pulse">
+              <Pencil className="w-3 h-3" /> Editing Mode
+            </span>
           ) : (
-            <Save className="w-4 h-4" />
+            <span className="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-slate-400 text-[10px] font-semibold flex items-center gap-1.5">
+              <Lock className="w-3 h-3 text-slate-500" /> Read Only
+            </span>
           )}
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
+        </div>
+
+        {/* Toggle Edit / Save Changes Buttons */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          {isEditing ? (
+            <>
+              <button
+                onClick={handleCancel}
+                disabled={saving}
+                className="px-4 py-2.5 rounded-full border border-[#2c3754] text-slate-300 hover:text-white hover:border-slate-500 bg-[#1f2940] text-xs font-semibold transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+              >
+                <X className="w-3.5 h-3.5" />
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
+              >
+                {saving ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => setIsEditing(true)}
+              disabled={loading}
+              className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-6 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
+            >
+              <Pencil className="w-4 h-4" />
+              Edit
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Simplified Tabs */}
@@ -183,10 +244,11 @@ export default function SettingsView() {
               </label>
               <input
                 type="text"
+                disabled={!isEditing}
                 value={contactInfo.phone1}
                 onChange={(e) => handleChange('phone1', e.target.value)}
-                placeholder="01780-885841"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#00BCE1] transition-colors"
+                placeholder="e.g. 01780-000000"
+                className={getInputClassName(true)}
               />
             </div>
 
@@ -197,67 +259,72 @@ export default function SettingsView() {
               </label>
               <input
                 type="text"
+                disabled={!isEditing}
                 value={contactInfo.phone2}
                 onChange={(e) => handleChange('phone2', e.target.value)}
-                placeholder="09613 700 750"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#00BCE1] transition-colors"
+                placeholder="e.g. 09613-000000"
+                className={getInputClassName(true)}
               />
             </div>
 
             {/* WhatsApp */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <WhatsappIcon className="w-3.5 h-3.5 text-[#25D366]" /> WhatsApp
+                <WhatsappIcon className="w-3.5 h-3.5 text-[#25D366]" /> WhatsApp Number
               </label>
               <input
                 type="text"
+                disabled={!isEditing}
                 value={contactInfo.whatsapp}
                 onChange={(e) => handleChange('whatsapp', e.target.value)}
-                placeholder="+8801780885841"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#00BCE1] transition-colors"
+                placeholder="e.g. +8801780000000"
+                className={getInputClassName(true)}
               />
             </div>
 
             {/* Email */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <Mail className="w-3.5 h-3.5 text-[#00BCE1]" /> Email
+                <Mail className="w-3.5 h-3.5 text-[#00BCE1]" /> Email Address
               </label>
               <input
                 type="email"
+                disabled={!isEditing}
                 value={contactInfo.email}
                 onChange={(e) => handleChange('email', e.target.value)}
-                placeholder="aquabd112@gmail.com"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
+                placeholder="e.g. info@company.com"
+                className={getInputClassName(false)}
               />
             </div>
 
             {/* Address */}
             <div className="md:col-span-2">
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#00BCE1]" /> Address
+                <MapPin className="w-3.5 h-3.5 text-[#00BCE1]" /> Physical Address
               </label>
               <input
                 type="text"
+                disabled={!isEditing}
                 value={contactInfo.address}
                 onChange={(e) => handleChange('address', e.target.value)}
-                placeholder="House 72, Janata Housing Road, 3 Ring Road, Dhaka 1219"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] transition-colors"
+                placeholder="e.g. House #, Road #, Area, City"
+                className={getInputClassName(false)}
               />
             </div>
 
             {/* Maps URL */}
             <div className="md:col-span-2">
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 text-[#00BCE1]" /> Maps URL
+                <Globe className="w-3.5 h-3.5 text-[#00BCE1]" /> Google Maps Location URL
               </label>
               <div className="flex gap-2">
                 <input
                   type="url"
+                  disabled={!isEditing}
                   value={contactInfo.googleMapsUrl}
                   onChange={(e) => handleChange('googleMapsUrl', e.target.value)}
-                  placeholder="https://maps.google.com/..."
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#00BCE1] transition-colors"
+                  placeholder="e.g. https://maps.google.com/..."
+                  className={getInputClassName(true)}
                 />
                 {contactInfo.googleMapsUrl && (
                   <a
@@ -292,84 +359,90 @@ export default function SettingsView() {
             {/* Facebook */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <FacebookIcon className="w-4 h-4 text-[#1877F2]" /> Facebook
+                <FacebookIcon className="w-4 h-4 text-[#1877F2]" /> Facebook Page URL
               </label>
               <input
                 type="url"
+                disabled={!isEditing}
                 value={contactInfo.facebookUrl}
                 onChange={(e) => handleChange('facebookUrl', e.target.value)}
-                placeholder="https://facebook.com/yourpage"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#1877F2] transition-colors"
+                placeholder="e.g. https://facebook.com/yourpage"
+                className={getInputClassName(true)}
               />
             </div>
 
             {/* WhatsApp Link */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <WhatsappIcon className="w-4 h-4 text-[#25D366]" /> WhatsApp Link
+                <WhatsappIcon className="w-4 h-4 text-[#25D366]" /> WhatsApp Direct Link
               </label>
               <input
                 type="url"
+                disabled={!isEditing}
                 value={contactInfo.whatsappLink}
                 onChange={(e) => handleChange('whatsappLink', e.target.value)}
-                placeholder="https://wa.me/8801780885841"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#25D366] transition-colors"
+                placeholder="e.g. https://wa.me/8801780000000"
+                className={getInputClassName(true)}
               />
             </div>
 
             {/* YouTube */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <YoutubeIcon className="w-4 h-4 text-[#FF0000]" /> YouTube
+                <YoutubeIcon className="w-4 h-4 text-[#FF0000]" /> YouTube Channel URL
               </label>
               <input
                 type="url"
+                disabled={!isEditing}
                 value={contactInfo.youtubeUrl}
                 onChange={(e) => handleChange('youtubeUrl', e.target.value)}
-                placeholder="https://youtube.com/@yourchannel"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#FF0000] transition-colors"
+                placeholder="e.g. https://youtube.com/@yourchannel"
+                className={getInputClassName(true)}
               />
             </div>
 
             {/* Instagram */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <InstagramIcon className="w-4 h-4 text-[#E4405F]" /> Instagram
+                <InstagramIcon className="w-4 h-4 text-[#E4405F]" /> Instagram Profile URL
               </label>
               <input
                 type="url"
+                disabled={!isEditing}
                 value={contactInfo.instagramUrl}
                 onChange={(e) => handleChange('instagramUrl', e.target.value)}
-                placeholder="https://instagram.com/yourhandle"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#E4405F] transition-colors"
+                placeholder="e.g. https://instagram.com/yourhandle"
+                className={getInputClassName(true)}
               />
             </div>
 
             {/* LinkedIn */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <LinkedinIcon className="w-4 h-4 text-[#0A66C2]" /> LinkedIn
+                <LinkedinIcon className="w-4 h-4 text-[#0A66C2]" /> LinkedIn Company URL
               </label>
               <input
                 type="url"
+                disabled={!isEditing}
                 value={contactInfo.linkedinUrl}
                 onChange={(e) => handleChange('linkedinUrl', e.target.value)}
-                placeholder="https://linkedin.com/company/yourcompany"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#0A66C2] transition-colors"
+                placeholder="e.g. https://linkedin.com/company/yourcompany"
+                className={getInputClassName(true)}
               />
             </div>
 
             {/* X / Twitter */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <XIcon className="w-4 h-4 text-slate-200" /> X / Twitter
+                <XIcon className="w-4 h-4 text-slate-200" /> X / Twitter Profile URL
               </label>
               <input
                 type="url"
+                disabled={!isEditing}
                 value={contactInfo.twitterUrl || ''}
                 onChange={(e) => handleChange('twitterUrl', e.target.value)}
-                placeholder="https://x.com/yourhandle"
-                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-slate-400 transition-colors"
+                placeholder="e.g. https://x.com/yourhandle"
+                className={getInputClassName(true)}
               />
             </div>
           </div>
