@@ -1073,10 +1073,15 @@ export function subscribeToCustomerAddresses(
   return onSnapshot(
     ref,
     (snapshot) => {
-      const list = snapshot.docs.map((d) => ({
-        id: d.id,
-        address: d.data().address || '',
-      }));
+      const list = snapshot.docs.map((d) => {
+        const data = d.data();
+        return {
+          id: d.id,
+          address: data.address || '',
+          isPrimary: !!data.isPrimary,
+        };
+      });
+      list.sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0));
       callback(list);
     },
     (error) => {
