@@ -11,7 +11,6 @@ import {
   Wrench, 
   ShoppingBag,
   Inbox,
-  MessageSquare,
   MessageSquareQuote,
   Users, 
   Settings, 
@@ -22,7 +21,6 @@ import {
 import { 
   subscribeToServiceRequests, 
   subscribeToOrders, 
-  subscribeToInquiries,
   subscribeToCustomerThreads,
   logoutAdmin
 } from '@/core/services/firebase';
@@ -54,7 +52,6 @@ const navGroups: NavGroup[] = [
       { name: 'Service Requests', href: '/requests', icon: Wrench },
       { name: 'Orders', href: '/orders', icon: ShoppingBag },
       { name: 'Inbox', href: '/messages', icon: Inbox },
-      { name: 'Inquiries', href: '/inquiries', icon: MessageSquare },
       { name: 'Reviews', href: '/reviews', icon: MessageSquareQuote },
       { name: 'Customers', href: '/customers', icon: Users },
     ],
@@ -72,7 +69,6 @@ export default function Sidebar() {
   const router = useRouter();
   const [servicesCount, setServicesCount] = useState<number>(0);
   const [ordersCount, setOrdersCount] = useState<number>(0);
-  const [inquiriesCount, setInquiriesCount] = useState<number>(0);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState<number>(0);
   const [collapsed, setCollapsed] = useState(false);
 
@@ -83,9 +79,6 @@ export default function Sidebar() {
     const unsubOrders = subscribeToOrders((data) => {
       setOrdersCount(data.length);
     });
-    const unsubInquiries = subscribeToInquiries((data) => {
-      setInquiriesCount(data.length);
-    });
     const unsubThreads = subscribeToCustomerThreads((data) => {
       const totalUnread = data.reduce((acc, t) => acc + (t.unreadCount || 0), 0);
       setUnreadMessagesCount(totalUnread);
@@ -94,7 +87,6 @@ export default function Sidebar() {
     return () => {
       unsubServices();
       unsubOrders();
-      unsubInquiries();
       unsubThreads();
     };
   }, []);
@@ -102,7 +94,6 @@ export default function Sidebar() {
   const getBadgeCount = (href: string): number => {
     if (href === '/requests') return servicesCount;
     if (href === '/orders') return ordersCount;
-    if (href === '/inquiries') return inquiriesCount;
     if (href === '/messages') return unreadMessagesCount;
     return 0;
   };

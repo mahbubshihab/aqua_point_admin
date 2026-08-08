@@ -1,5 +1,6 @@
-import InquiriesView from '@/features/inquiries/presentation/InquiriesView';
+import { redirect } from 'next/navigation';
 
 export default function InquiriesPage() {
-  return <InquiriesView />;
+  redirect('/inbox');
 }
+
