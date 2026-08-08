@@ -256,75 +256,52 @@ export default function DashboardView() {
         </h1>
       </div>
 
-      {/* Top Row: 3 Sleek KPI Metric Cards in 1 Row */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-5">
+      {/* Top Row: 2 KPI Metric Cards in 1 Row */}
+      <div className="grid grid-cols-2 gap-4 sm:gap-6">
         {/* Card 1: Total Customers */}
-        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-3 sm:p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#00BCE1]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[9px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Total Customers</span>
-            <div className="bg-[#00BCE1]/15 text-[#00BCE1] p-1.5 sm:p-3 rounded-lg sm:rounded-xl border border-[#00BCE1]/30 group-hover:scale-110 transition-transform shrink-0">
-              <Users className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#00BCE1]" />
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-4 sm:p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#00BCE1]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Total Customers</span>
+            <div className="bg-[#00BCE1]/15 text-[#00BCE1] p-2 sm:p-3 rounded-xl border border-[#00BCE1]/30 group-hover:scale-110 transition-transform shrink-0">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-[#00BCE1]" />
             </div>
           </div>
-          <div className="mt-2 sm:mt-4">
+          <div className="mt-3 sm:mt-4">
             {loading.customers ? (
               <div className="flex items-center gap-1.5 my-1">
                 <Loader2 className="w-4 h-4 animate-spin text-[#00BCE1]" />
                 <span className="text-xs font-semibold text-slate-400 animate-pulse hidden sm:inline">Syncing...</span>
               </div>
             ) : (
-              <h3 className="text-lg sm:text-3xl font-extrabold text-white tracking-tight">
+              <h3 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
                 {customersCount.toLocaleString()}
               </h3>
             )}
           </div>
-          <div className="absolute -bottom-6 -right-6 w-16 sm:w-24 h-16 sm:h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -right-6 w-20 sm:w-24 h-20 sm:h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 
-        {/* Card 2: Active Requests */}
-        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-3 sm:p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#00BCE1]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[9px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Active Requests</span>
-            <div className="bg-[#00BCE1]/15 text-[#00BCE1] p-1.5 sm:p-3 rounded-lg sm:rounded-xl border border-[#00BCE1]/30 group-hover:scale-110 transition-transform shrink-0">
-              <Wrench className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#00BCE1]" />
+        {/* Card 2: Products Catalog */}
+        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-4 sm:p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#00BCE1]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Products</span>
+            <div className="bg-[#00BCE1]/15 text-[#00BCE1] p-2 sm:p-3 rounded-xl border border-[#00BCE1]/30 group-hover:scale-110 transition-transform shrink-0">
+              <Package className="w-4 h-4 sm:w-5 sm:h-5 text-[#00BCE1]" />
             </div>
           </div>
-          <div className="mt-2 sm:mt-4">
-            {loading.requests ? (
-              <div className="flex items-center gap-1.5 my-1">
-                <Loader2 className="w-4 h-4 animate-spin text-[#00BCE1]" />
-                <span className="text-xs font-semibold text-slate-400 animate-pulse hidden sm:inline">Syncing...</span>
-              </div>
-            ) : (
-              <h3 className="text-lg sm:text-3xl font-extrabold text-white tracking-tight">
-                {activeRequestsCount.toLocaleString()}
-              </h3>
-            )}
-          </div>
-          <div className="absolute -bottom-6 -right-6 w-16 sm:w-24 h-16 sm:h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
-        </div>
-
-        {/* Card 3: Products Catalog */}
-        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-3 sm:p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#00BCE1]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[9px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate">Products</span>
-            <div className="bg-[#00BCE1]/15 text-[#00BCE1] p-1.5 sm:p-3 rounded-lg sm:rounded-xl border border-[#00BCE1]/30 group-hover:scale-110 transition-transform shrink-0">
-              <Package className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#00BCE1]" />
-            </div>
-          </div>
-          <div className="mt-2 sm:mt-4">
+          <div className="mt-3 sm:mt-4">
             {loading.products ? (
               <div className="flex items-center gap-1.5 my-1">
                 <Loader2 className="w-4 h-4 animate-spin text-[#00BCE1]" />
                 <span className="text-xs font-semibold text-slate-400 animate-pulse hidden sm:inline">Syncing...</span>
               </div>
             ) : (
-              <h3 className="text-lg sm:text-3xl font-extrabold text-white tracking-tight">
+              <h3 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
                 {productsCount.toLocaleString()}
               </h3>
             )}
           </div>
-          <div className="absolute -bottom-6 -right-6 w-16 sm:w-24 h-16 sm:h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-6 -right-6 w-20 sm:w-24 h-20 sm:h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
         </div>
       </div>
 
