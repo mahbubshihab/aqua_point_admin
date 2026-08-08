@@ -255,8 +255,8 @@ export default function DashboardView() {
         </h1>
       </div>
 
-      {/* Top Row: 4 Sleek KPI Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* Top Row: 3 Sleek KPI Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         {/* Card 1: Total Customers */}
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#00BCE1]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
           <div className="flex items-center justify-between">
@@ -306,7 +306,7 @@ export default function DashboardView() {
         {/* Card 3: Products Catalog */}
         <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#00BCE1]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Products Catalog</span>
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Products</span>
             <div className="bg-[#00BCE1]/15 text-[#00BCE1] p-3 rounded-xl border border-[#00BCE1]/30 group-hover:scale-110 transition-transform">
               <Package className="w-5 h-5 text-[#00BCE1]" />
             </div>
@@ -320,29 +320,6 @@ export default function DashboardView() {
             ) : (
               <h3 className="text-3xl font-extrabold text-white tracking-tight">
                 {productsCount.toLocaleString()}
-              </h3>
-            )}
-          </div>
-          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-[#00BCE1]/10 rounded-full blur-2xl pointer-events-none" />
-        </div>
-
-        {/* Card 4: Total Revenue */}
-        <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-[#00BCE1]/60 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Revenue</span>
-            <div className="bg-[#00BCE1]/15 text-[#00BCE1] p-3 rounded-xl border border-[#00BCE1]/30 group-hover:scale-110 transition-transform">
-              <CreditCard className="w-5 h-5 text-[#00BCE1]" />
-            </div>
-          </div>
-          <div className="mt-4">
-            {loading.revenue ? (
-              <div className="flex items-center gap-2 my-1">
-                <Loader2 className="w-5 h-5 animate-spin text-[#00BCE1]" />
-                <span className="text-sm font-semibold text-slate-400 animate-pulse">Syncing...</span>
-              </div>
-            ) : (
-              <h3 className="text-3xl font-extrabold text-white tracking-tight">
-                ৳{totalRevenue.toLocaleString()}
               </h3>
             )}
           </div>
