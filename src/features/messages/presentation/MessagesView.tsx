@@ -67,7 +67,7 @@ export default function MessagesView() {
           const data = docSnap.data();
           return {
             id: docSnap.id,
-            name: data.name || data.customerName || 'Unnamed Customer',
+            name: data.name || data.customerName || 'Customer',
             phone: data.phone || 'N/A',
             email: data.email || '',
             address: data.address || '',
@@ -257,7 +257,7 @@ export default function MessagesView() {
             {filteredThreads.length === 0 ? (
               <div className="p-6 text-center text-slate-400 text-xs space-y-2">
                 <MessageSquare className="w-6 h-6 text-slate-500 mx-auto opacity-50" />
-                <p>No messages yet</p>
+                <p className="text-slate-300 font-medium">No Conversations Yet</p>
               </div>
             ) : (
               filteredThreads.map((thread) => {
@@ -489,9 +489,9 @@ export default function MessagesView() {
           ) : (
             <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400">
               <User className="w-10 h-10 text-slate-600 mb-2" />
-              <p className="text-xs font-semibold text-white">Select a customer conversation</p>
+              <p className="text-xs font-semibold text-white">No Conversations Yet</p>
               <p className="text-[11px] text-slate-400 mt-0.5">
-                Choose any customer from the left panel to begin chat
+                When customers reach out, their messages will appear here
               </p>
             </div>
           )}

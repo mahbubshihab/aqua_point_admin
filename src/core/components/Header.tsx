@@ -330,7 +330,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 h-16 bg-[#0F172A]/90 backdrop-blur-md border-b border-slate-800/80 px-6 flex items-center justify-between gap-4 shadow-lg">
+    <header className="sticky top-0 z-50 shrink-0 h-16 bg-[#0F172A] border-b border-slate-800 px-6 flex items-center justify-between gap-4 shadow-lg">
       {/* Left Corner: User Profile Badge Dropdown */}
       <div className="flex items-center shrink-0">
         <div className="relative" ref={profileRef}>
