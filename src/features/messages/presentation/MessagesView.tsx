@@ -344,7 +344,7 @@ export default function MessagesView() {
               <div className="p-3.5 border-b border-slate-700/60 bg-[#0F172A]/80 flex flex-wrap items-center justify-between gap-3 shrink-0">
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setSelectedCustomerId(null)}
+                    onClick={() => setSelectedCustomerId('')}
                     className="md:hidden p-2 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] hover:text-white"
                     title="Back to conversations"
                   >
