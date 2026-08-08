@@ -40,14 +40,22 @@ export default function ServiceRequestsView() {
   const [successMessage, setSuccessMessage] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
+  // Pagination State (10 items per page)
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
   useEffect(() => {
     setLoading(true);
-    const unsubscribe = subscribeToServiceRequests(activeStatus, 25, (data) => {
+    setCurrentPage(1);
+    const unsubscribe = subscribeToServiceRequests(activeStatus, 100, (data) => {
       setItems(data);
       setLoading(false);
     });
     return () => unsubscribe();
   }, [activeStatus]);
+
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const paginatedItems = items.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   // Handle opening Action (Status Change) Modal
   const handleOpenActionModal = (item: ServiceRequestDoc) => {
@@ -201,7 +209,7 @@ export default function ServiceRequestsView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
-                {items.map((item) => (
+                {paginatedItems.map((item) => (
                   <tr key={item.id} className="hover:bg-[#2c3754]/50 transition-colors">
                     <td className="py-4 px-4 font-mono font-bold text-[#00BCE1]">
                       {formatId(item.id)}
@@ -250,97 +258,113 @@ export default function ServiceRequestsView() {
               </tbody>
             </table>
           </div>
-          <TableFooter totalItems={items.length} />
+          <TableFooter 
+            totalItems={items.length} 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
       ) : (
         /* Grid / Card View */
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-5 hover:border-[#00BCE1]/50 transition-all duration-200 shadow-lg space-y-4 flex flex-col justify-between"
-            >
-              <div>
-                {/* Card Header: ID, Status, Buttons */}
-                <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#2c3754]">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono font-bold text-xs">
-                      {formatId(item.id)}
-                    </span>
-                    <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
-                      item.status === 'Completed'
-                        ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
-                        : item.status === 'In Progress'
-                        ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                        : item.status === 'Cancelled'
-                        ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                        : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                    }`}>
-                      {item.status}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleOpenAssignModal(item)}
-                      className="px-2.5 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-white border border-[#2c3754] cursor-pointer transition-all text-xs font-semibold flex items-center gap-1"
-                    >
-                      <UserPlus className="w-3.5 h-3.5 text-[#00BCE1]" /> Assign
-                    </button>
-                    <button
-                      onClick={() => handleOpenActionModal(item)}
-                      className="px-3 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#00BCE1] text-[#00BCE1] hover:text-[#0F172A] border border-[#2c3754] cursor-pointer transition-all text-xs font-bold flex items-center gap-1"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" /> Action
-                    </button>
-                  </div>
-                </div>
-
-                {/* Customer Details */}
-                <div className="pt-3 space-y-1.5">
-                  <h3 className="text-base font-bold text-white">
-                    {item.customerName}
-                  </h3>
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-[#A0AEC0]">
-                    <span className="flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.phone}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.address}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Info Grid */}
-                <div className="grid grid-cols-2 gap-3 pt-3 text-xs">
-                  <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754]/80">
-                    <span className="text-[#A0AEC0] font-medium block mb-1">Appointment</span>
-                    <div className="font-bold text-white flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.appointmentDate}
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {paginatedItems.map((item) => (
+              <div
+                key={item.id}
+                className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-5 hover:border-[#00BCE1]/50 transition-all duration-200 shadow-lg space-y-4 flex flex-col justify-between"
+              >
+                <div>
+                  {/* Card Header: ID, Status, Buttons */}
+                  <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#2c3754]">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-1 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono font-bold text-xs">
+                        {formatId(item.id)}
+                      </span>
+                      <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
+                        item.status === 'Completed'
+                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
+                          : item.status === 'In Progress'
+                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                          : item.status === 'Cancelled'
+                          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                          : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                      }`}>
+                        {item.status}
+                      </span>
                     </div>
-                    <div className="text-slate-400 text-[11px] mt-0.5">{item.appointmentTime}</div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleOpenAssignModal(item)}
+                        className="px-2.5 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#3e4396] text-white border border-[#2c3754] cursor-pointer transition-all text-xs font-semibold flex items-center gap-1"
+                      >
+                        <UserPlus className="w-3.5 h-3.5 text-[#00BCE1]" /> Assign
+                      </button>
+                      <button
+                        onClick={() => handleOpenActionModal(item)}
+                        className="px-3 py-1.5 rounded-xl bg-[#141b2d] hover:bg-[#00BCE1] text-[#00BCE1] hover:text-[#0F172A] border border-[#2c3754] cursor-pointer transition-all text-xs font-bold flex items-center gap-1"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" /> Action
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754]/80 flex flex-col justify-between">
-                    <div>
-                      <span className="text-[#A0AEC0] font-medium block mb-1">Technician</span>
+                  {/* Customer Details */}
+                  <div className="pt-3 space-y-1.5">
+                    <h3 className="text-base font-bold text-white">
+                      {item.customerName}
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-[#A0AEC0]">
+                      <span className="flex items-center gap-1">
+                        <Phone className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.phone}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.address}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Info Grid */}
+                  <div className="grid grid-cols-2 gap-3 pt-3 text-xs">
+                    <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754]/80">
+                      <span className="text-[#A0AEC0] font-medium block mb-1">Appointment</span>
                       <div className="font-bold text-white flex items-center gap-1">
-                        <User className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.technician || 'Unassigned'}
+                        <Clock className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.appointmentDate}
+                      </div>
+                      <div className="text-slate-400 text-[11px] mt-0.5">{item.appointmentTime}</div>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-[#141b2d] border border-[#2c3754]/80 flex flex-col justify-between">
+                      <div>
+                        <span className="text-[#A0AEC0] font-medium block mb-1">Technician</span>
+                        <div className="font-bold text-white flex items-center gap-1">
+                          <User className="w-3.5 h-3.5 text-[#00BCE1]" /> {item.technician || 'Unassigned'}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Description */}
-                {item.problemDetails && (
-                  <div className="mt-3 p-3 rounded-xl bg-[#141b2d]/60 border border-[#2c3754]/60 text-xs text-slate-300">
-                    <span className="font-bold text-[#00BCE1]">Note: </span>
-                    {item.problemDetails}
-                  </div>
-                )}
+                  {/* Description */}
+                  {item.problemDetails && (
+                    <div className="mt-3 p-3 rounded-xl bg-[#141b2d]/60 border border-[#2c3754]/60 text-xs text-slate-300">
+                      <span className="font-bold text-[#00BCE1]">Note: </span>
+                      {item.problemDetails}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-lg">
+            <TableFooter 
+              totalItems={items.length} 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </div>
       )}
 

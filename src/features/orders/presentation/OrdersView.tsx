@@ -232,6 +232,17 @@ export default function OrdersView() {
     return true;
   });
 
+  // Pagination (10 orders per page)
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeStatus, paymentFilter, searchTerm]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredOrders.length / pageSize));
+  const paginatedOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <div className="space-y-8 pb-12">
       {/* Toast Notification */}
@@ -366,7 +377,7 @@ export default function OrdersView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2c3754] bg-[#1f2940]">
-                {filteredOrders.map((order) => (
+                {paginatedOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-4 px-4 font-mono font-bold text-[#00BCE1]">
                       {order.id.substring(0, 10)}
@@ -404,99 +415,106 @@ export default function OrdersView() {
               </tbody>
             </table>
           </div>
-          <TableFooter totalItems={filteredOrders.length} />
+          <TableFooter 
+            totalItems={filteredOrders.length} 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredOrders.map((order) => (
-            <div
-              key={order.id}
-              className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 transition-all duration-200"
-            >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#2c3754]">
-                <div className="flex items-center gap-3">
-                  <div className="px-3 py-1.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono font-bold text-xs">
-                    {order.id.substring(0, 12)}
-                  </div>
-                  <div>
-                    <h3 className="text-base font-bold text-white flex items-center gap-2">
-                      {order.customerName}
-                      <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
-                        order.paymentStatus === 'Paid'
-                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
-                          : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                      }`}>
-                        {order.paymentMethod} • {order.paymentStatus}
-                      </span>
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-[#A0AEC0] mt-0.5">
-                      <span className="flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-[#00BCE1]" /> {order.phone}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-[#00BCE1]" /> {order.address} {order.district ? `(${order.district})` : ''}
-                      </span>
+          <div className="space-y-4">
+            {paginatedOrders.map((order) => (
+              <div
+                key={order.id}
+                className="bg-[#1f2940] border border-[#2c3754] rounded-2xl p-6 transition-all duration-200"
+              >
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#2c3754]">
+                  <div className="flex items-center gap-3">
+                    <div className="px-3 py-1.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono font-bold text-xs">
+                      {order.id.substring(0, 12)}
                     </div>
-                  </div>
-                </div>
-
-                {/* Fulfillment Status Selector */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-[#A0AEC0] mr-1 font-medium">Fulfillment Status:</span>
-                  {(['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] as const).map((st) => (
-                    <button
-                      key={st}
-                      onClick={() => handleUpdateStatus(order.id, st, st === 'Delivered' ? 'Paid' : undefined)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                        order.status === st
-                          ? st === 'Pending'
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                            : st === 'Processing'
-                            ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                            : st === 'Shipped'
-                            ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                            : st === 'Delivered'
+                    <div>
+                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                        {order.customerName}
+                        <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
+                          order.paymentStatus === 'Paid'
                             ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
-                            : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                          : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754] hover:text-white'
-                      }`}
-                    >
-                      {st}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Order Content Summary */}
-              <div className="pt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex-1 space-y-2">
-                  <span className="text-xs font-semibold text-[#A0AEC0] block">Ordered Items:</span>
-                  {order.items && order.items.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {order.items.map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-2 p-2 rounded-xl bg-[#141b2d] border border-[#2c3754] text-xs text-white">
-                          {item.imageUrl && (
-                            <img src={item.imageUrl} alt={item.name} className="w-7 h-7 rounded-lg object-cover" />
-                          )}
-                          <span>{item.name} <strong className="text-[#00BCE1]">x{item.quantity}</strong></span>
-                          <span className="text-[#A0AEC0]">(৳{item.price.toLocaleString()})</span>
-                        </div>
-                      ))}
+                            : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                        }`}>
+                          {order.paymentMethod} • {order.paymentStatus}
+                        </span>
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-4 text-xs text-[#A0AEC0] mt-0.5">
+                        <span className="flex items-center gap-1">
+                          <Phone className="w-3 h-3 text-[#00BCE1]" /> {order.phone}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-[#00BCE1]" /> {order.address} {order.district ? `(${order.district})` : ''}
+                        </span>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-xs text-[#A0AEC0] italic">Standard RO Water Purifier Package</div>
-                  )}
+                  </div>
+
+                  {/* Fulfillment Status Selector */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-[#A0AEC0] mr-1 font-medium">Fulfillment Status:</span>
+                    {(['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'] as const).map((st) => (
+                      <button
+                        key={st}
+                        onClick={() => handleUpdateStatus(order.id, st, st === 'Delivered' ? 'Paid' : undefined)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                          order.status === st
+                            ? 'bg-[#00BCE1] text-[#141b2d] border-[#00BCE1]'
+                            : 'bg-[#141b2d] text-slate-400 border-[#2c3754] hover:text-white'
+                        }`}
+                      >
+                        {st}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="text-right flex flex-col items-end justify-center pt-2 md:pt-0 border-t md:border-t-0 border-[#2c3754]">
-                  <span className="text-xs text-[#A0AEC0]">Total Order Amount</span>
-                  <div className="text-xl font-extrabold text-white">
-                    ৳{order.totalAmount.toLocaleString()}
+                <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                  <div className="md:col-span-2">
+                    <div className="text-xs font-semibold text-slate-300 mb-2">Order Items ({order.items?.length || 0}):</div>
+                    {order.items && order.items.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {order.items.map((item, idx) => (
+                          <div key={idx} className="px-3 py-1.5 rounded-xl bg-[#141b2d] border border-[#2c3754] text-xs text-white flex items-center gap-2">
+                            {item.imageUrl && (
+                              <img src={item.imageUrl} alt={item.name} className="w-7 h-7 rounded-lg object-cover" />
+                            )}
+                            <span>{item.name} <strong className="text-[#00BCE1]">x{item.quantity}</strong></span>
+                            <span className="text-[#A0AEC0]">(৳{item.price.toLocaleString()})</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-[#A0AEC0] italic">Standard RO Water Purifier Package</div>
+                    )}
+                  </div>
+
+                  <div className="text-right flex flex-col items-end justify-center pt-2 md:pt-0 border-t md:border-t-0 border-[#2c3754]">
+                    <span className="text-xs text-[#A0AEC0]">Total Order Amount</span>
+                    <div className="text-xl font-extrabold text-white">
+                      ৳{order.totalAmount.toLocaleString()}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <div className="bg-[#1f2940] border border-[#2c3754] rounded-2xl overflow-hidden shadow-lg">
+            <TableFooter 
+              totalItems={filteredOrders.length} 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </div>
       )}
 
