@@ -93,12 +93,9 @@ export interface CustomProductDoc {
 
 export interface BannerDoc {
   id: string;
-  title: string;
-  tag?: string;
   imageUrl: string;
-  ctaLink?: string;
-  linkUrl?: string;
-  position?: 'main' | 'side_top' | 'side_bottom' | string;
+  position: 'main' | 'side_top' | 'side_bottom' | string;
+  order: number;
   isActive: boolean;
   createdAt?: any;
 }
@@ -886,12 +883,9 @@ export function subscribeToBanners(
       const data = docSnap.data();
       return {
         id: docSnap.id,
-        title: data.title || 'Untitled Banner',
-        tag: data.tag || data.badge || '',
         imageUrl: data.imageUrl || data.image || '',
-        ctaLink: data.ctaLink || data.link || data.linkUrl || '',
-        linkUrl: data.linkUrl || data.ctaLink || data.link || '',
         position: data.position || 'main',
+        order: typeof data.order === 'number' ? data.order : (typeof data.sequence === 'number' ? data.sequence : 1),
         isActive: data.isActive !== undefined ? Boolean(data.isActive) : true,
         createdAt: data.createdAt,
       };
@@ -905,12 +899,9 @@ export function subscribeToBanners(
         const data = docSnap.data();
         return {
           id: docSnap.id,
-          title: data.title || 'Untitled Banner',
-          tag: data.tag || data.badge || '',
           imageUrl: data.imageUrl || data.image || '',
-          ctaLink: data.ctaLink || data.link || data.linkUrl || '',
-          linkUrl: data.linkUrl || data.ctaLink || data.link || '',
           position: data.position || 'main',
+          order: typeof data.order === 'number' ? data.order : (typeof data.sequence === 'number' ? data.sequence : 1),
           isActive: data.isActive !== undefined ? Boolean(data.isActive) : true,
           createdAt: data.createdAt,
         };

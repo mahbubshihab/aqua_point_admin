@@ -13,12 +13,11 @@ import {
   Trash2,
   Loader2,
   CheckCircle2,
-  ExternalLink,
-  Tag,
   ToggleLeft,
   ToggleRight,
   Eye,
-  EyeOff
+  EyeOff,
+  Hash
 } from 'lucide-react';
 import { uploadToCloudinary } from '@/core/services/cloudinary';
 import { 
@@ -45,11 +44,9 @@ export default function BannersView() {
   const [deletingBanner, setDeletingBanner] = useState<BannerDoc | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Form State
-  const [title, setTitle] = useState('');
-  const [tag, setTag] = useState('');
-  const [ctaLink, setCtaLink] = useState('');
+  // Form State (Image-only banner with position, order, and active toggle)
   const [position, setPosition] = useState<'main' | 'side_top' | 'side_bottom'>('main');
+  const [order, setOrder] = useState<number>(1);
   const [isActive, setIsActive] = useState(true);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -64,10 +61,10 @@ export default function BannersView() {
   const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Inactive'>('All');
   const [positionFilter, setPositionFilter] = useState<'All' | 'main' | 'side_top' | 'side_bottom'>('All');
 
-  // Real-time Firestore Sync with limit(15)
+  // Real-time Firestore Sync
   useEffect(() => {
     setLoading(true);
-    const unsub = subscribeToBanners(15, (data) => {
+    const unsub = subscribeToBanners(50, (data) => {
       setBanners(data);
       setLoading(false);
     });
@@ -86,10 +83,8 @@ export default function BannersView() {
 
   const openAddModal = () => {
     setEditingBannerId(null);
-    setTitle('');
-    setTag('');
-    setCtaLink('');
     setPosition('main');
+    setOrder(banners.length + 1);
     setIsActive(true);
     setSelectedFile(null);
     setPreviewUrl('');
@@ -100,10 +95,8 @@ export default function BannersView() {
 
   const openEditModal = (banner: BannerDoc) => {
     setEditingBannerId(banner.id);
-    setTitle(banner.title);
-    setTag(banner.tag || '');
-    setCtaLink(banner.ctaLink || banner.linkUrl || '');
     setPosition((banner.position as any) || 'main');
+    setOrder(banner.order || 1);
     setIsActive(banner.isActive);
     setSelectedFile(null);
     setPreviewUrl('');
@@ -114,8 +107,25 @@ export default function BannersView() {
 
   const handleSaveBanner = async (e: FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) {
-      setFormError('Banner Title is required.');
+
+    let finalImageUrl = existingImageUrl;
+
+    if (selectedFile) {
+      setIsSaving(true);
+      setFormError('');
+      try {
+        // Upload to folder 'banners/' on Cloudinary
+        finalImageUrl = await uploadToCloudinary(selectedFile, 'banners');
+      } catch (err: any) {
+        console.error('Error uploading banner image to Cloudinary:', err);
+        setFormError('Failed to upload banner image to Cloudinary.');
+        setIsSaving(false);
+        return;
+      }
+    }
+
+    if (!finalImageUrl) {
+      setFormError('Please select a banner image file to upload.');
       return;
     }
 
@@ -123,29 +133,19 @@ export default function BannersView() {
     setFormError('');
 
     try {
-      let finalImageUrl = existingImageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop';
-
-      if (selectedFile) {
-        // Upload to folder 'banners/' on Cloudinary
-        finalImageUrl = await uploadToCloudinary(selectedFile, 'banners');
-      }
-
       const payload: Omit<BannerDoc, 'id'> = {
-        title: title.trim(),
-        tag: tag.trim(),
         imageUrl: finalImageUrl,
-        ctaLink: ctaLink.trim(),
-        linkUrl: ctaLink.trim(),
         position: position,
+        order: Number(order) || 1,
         isActive: isActive,
       };
 
       if (editingBannerId) {
         await updateBannerInFirestore(editingBannerId, payload);
-        setSuccessMessage(`Banner "${title}" updated successfully!`);
+        setSuccessMessage('Banner updated successfully!');
       } else {
         await addBannerToFirestore(payload);
-        setSuccessMessage(`Banner "${title}" created in Cloud Firestore!`);
+        setSuccessMessage('Banner created in Cloud Firestore!');
       }
 
       setTimeout(() => setSuccessMessage(''), 3500);
@@ -175,7 +175,7 @@ export default function BannersView() {
     setIsDeleting(true);
     try {
       await deleteBannerFromFirestore(deletingBanner.id);
-      setSuccessMessage(`Banner "${deletingBanner.title}" removed.`);
+      setSuccessMessage('Banner removed successfully.');
       setTimeout(() => setSuccessMessage(''), 3500);
       setDeletingBanner(null);
     } catch (err: any) {
@@ -191,32 +191,39 @@ export default function BannersView() {
       case 'side_top':
         return (
           <span className="px-2.5 py-1 text-[10px] font-extrabold rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-lg">
-            Side Top
+            Side Banner Top
           </span>
         );
       case 'side_bottom':
         return (
           <span className="px-2.5 py-1 text-[10px] font-extrabold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-lg">
-            Side Bottom
+            Side Banner Bottom
           </span>
         );
       case 'main':
       default:
         return (
           <span className="px-2.5 py-1 text-[10px] font-extrabold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-lg">
-            Main
+            Main Carousel Slider
           </span>
         );
     }
   };
 
-  const filteredBanners = banners.filter((banner) => {
-    if (statusFilter === 'Active' && !banner.isActive) return false;
-    if (statusFilter === 'Inactive' && banner.isActive) return false;
-    if (positionFilter !== 'All' && (banner.position || 'main') !== positionFilter) return false;
-    if (searchTerm && !banner.title.toLowerCase().includes(searchTerm.toLowerCase())) return false;
-    return true;
-  });
+  const filteredBanners = banners
+    .filter((banner) => {
+      if (statusFilter === 'Active' && !banner.isActive) return false;
+      if (statusFilter === 'Inactive' && banner.isActive) return false;
+      if (positionFilter !== 'All' && (banner.position || 'main') !== positionFilter) return false;
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        const posLabel = (banner.position || '').toLowerCase();
+        const orderStr = String(banner.order || '');
+        if (!posLabel.includes(term) && !orderStr.includes(term)) return false;
+      }
+      return true;
+    })
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
     <div className="space-y-8 pb-12">
@@ -232,7 +239,7 @@ export default function BannersView() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
-            Banners
+            Image Banners
           </h1>
           <span className="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754]">
             {filteredBanners.length} banners
@@ -264,16 +271,16 @@ export default function BannersView() {
             </div>
 
             {/* Position Filter Dropdown */}
-            <div className="relative w-full sm:w-48">
+            <div className="relative w-full sm:w-56">
               <select
                 value={positionFilter}
                 onChange={(e) => setPositionFilter(e.target.value as any)}
                 className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-all"
               >
                 <option value="All">All Positions</option>
-                <option value="main">Main Slider</option>
-                <option value="side_top">Side Banner (Top)</option>
-                <option value="side_bottom">Side Banner (Bottom)</option>
+                <option value="main">Main Carousel Slider</option>
+                <option value="side_top">Side Banner Top</option>
+                <option value="side_bottom">Side Banner Bottom</option>
               </select>
             </div>
           </div>
@@ -347,7 +354,7 @@ export default function BannersView() {
           <p className="text-xs text-[#A0AEC0] max-w-sm mx-auto">
             {searchTerm
               ? 'No banners match your search query.'
-              : 'Add your first promotional hero or promo side banner.'}
+              : 'Add your first promotional hero slider or side banner image.'}
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             <button
@@ -370,11 +377,11 @@ export default function BannersView() {
             >
               <div>
                 {/* Banner Image Preview */}
-                <div className="relative w-full h-48 bg-[#141b2d] overflow-hidden">
+                <div className="relative w-full h-52 bg-[#141b2d] overflow-hidden">
                   {banner.imageUrl ? (
                     <img
                       src={banner.imageUrl}
-                      alt={banner.title}
+                      alt={`Banner Order ${banner.order}`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
@@ -399,31 +406,15 @@ export default function BannersView() {
                     {renderPositionBadge(banner.position)}
                   </div>
 
-                  {/* Tag / Badge */}
-                  {banner.tag && (
-                    <div className="absolute top-3 right-3 px-3 py-1 text-[11px] font-extrabold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754] flex items-center gap-1 z-10">
-                      <Tag className="w-3 h-3 text-[#00BCE1]" /> {banner.tag}
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="p-5 space-y-2 relative">
-                  <h3 className="text-base font-bold text-white group-hover:text-[#00BCE1] transition-colors line-clamp-2">
-                    {banner.title}
-                  </h3>
-
-                  {(banner.ctaLink || banner.linkUrl) && (
-                    <div className="flex items-center gap-1.5 text-xs text-[#00BCE1]/90 font-mono truncate pt-1">
-                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate">{banner.ctaLink || banner.linkUrl}</span>
-                    </div>
-                  )}
+                  {/* Display Order Badge */}
+                  <div className="absolute top-3 right-3 px-3 py-1 text-[11px] font-mono font-extrabold rounded-full bg-[#141b2d]/90 text-[#00BCE1] border border-[#2c3754] flex items-center gap-1 z-10 shadow-lg">
+                    <Hash className="w-3 h-3 text-[#00BCE1]" /> Order: {banner.order || 1}
+                  </div>
                 </div>
               </div>
 
               {/* Card Actions */}
-              <div className="p-5 pt-0 flex items-center justify-between border-t border-[#2c3754] mt-2 pt-3">
+              <div className="p-4 flex items-center justify-between border-t border-[#2c3754] bg-[#1a2336]/60">
                 <button
                   onClick={() => handleToggleActive(banner)}
                   className={`text-xs font-semibold px-3 py-1.5 rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer ${
@@ -469,10 +460,8 @@ export default function BannersView() {
               <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-[#2c3754]">
                 <tr>
                   <th className="py-3.5 px-4">Banner Preview</th>
-                  <th className="py-3.5 px-4">Title</th>
                   <th className="py-3.5 px-4">Position</th>
-                  <th className="py-3.5 px-4">Tag / Badge</th>
-                  <th className="py-3.5 px-4">CTA Link</th>
+                  <th className="py-3.5 px-4">Display Order</th>
                   <th className="py-3.5 px-4">Status</th>
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
@@ -482,24 +471,14 @@ export default function BannersView() {
                   <tr key={banner.id} className="hover:bg-[#2c3754] transition-colors">
                     <td className="py-3 px-4">
                       <img
-                        src={banner.imageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop'}
-                        alt={banner.title}
-                        className="w-20 h-12 rounded-lg object-cover border border-[#2c3754] shrink-0"
+                        src={banner.imageUrl}
+                        alt={`Banner Order ${banner.order}`}
+                        className="w-28 h-16 rounded-xl object-cover border border-[#2c3754] shrink-0"
                       />
                     </td>
-                    <td className="py-4 px-4 font-bold text-white">{banner.title}</td>
                     <td className="py-4 px-4">{renderPositionBadge(banner.position)}</td>
-                    <td className="py-4 px-4">
-                      {banner.tag ? (
-                        <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
-                          {banner.tag}
-                        </span>
-                      ) : (
-                        <span className="text-[#A0AEC0]">-</span>
-                      )}
-                    </td>
-                    <td className="py-4 px-4 font-mono text-[#00BCE1] max-w-xs truncate">
-                      {banner.ctaLink || banner.linkUrl || '-'}
+                    <td className="py-4 px-4 font-mono font-bold text-[#00BCE1]">
+                      Order #{banner.order || 1}
                     </td>
                     <td className="py-4 px-4">
                       <button
@@ -565,55 +544,6 @@ export default function BannersView() {
                 </div>
               )}
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Banner Title *</label>
-                <input
-                  type="text"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Livotec & RO Water Purifiers Showcase"
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Banner Position *</label>
-                  <select
-                    value={position}
-                    onChange={(e) => setPosition(e.target.value as any)}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer"
-                  >
-                    <option value="main">Main Carousel Slider</option>
-                    <option value="side_top">Side Banner (Top)</option>
-                    <option value="side_bottom">Side Banner (Bottom)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Tag / Badge</label>
-                  <input
-                    type="text"
-                    value={tag}
-                    onChange={(e) => setTag(e.target.value)}
-                    placeholder="e.g. Featured, Offer, New"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">CTA Link (URL / Route)</label>
-                <input
-                  type="text"
-                  value={ctaLink}
-                  onChange={(e) => setCtaLink(e.target.value)}
-                  placeholder="e.g. /products or https://..."
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono focus:outline-none focus:border-[#00BCE1]"
-                />
-              </div>
-
               {/* Cloudinary Image Upload */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
@@ -621,20 +551,20 @@ export default function BannersView() {
                 </label>
                 <div className="border-2 border-dashed border-[#2c3754] rounded-2xl p-4 text-center hover:border-[#00BCE1] transition-colors bg-[#141b2d]">
                   {previewUrl || existingImageUrl ? (
-                    <div className="relative w-full h-36 mx-auto rounded-xl overflow-hidden border border-[#2c3754]">
-                      <img src={previewUrl || existingImageUrl} alt="Preview" className="w-full h-full object-cover" />
+                    <div className="relative w-full h-40 mx-auto rounded-xl overflow-hidden border border-[#2c3754]">
+                      <img src={previewUrl || existingImageUrl} alt="Banner Preview" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => { setSelectedFile(null); setPreviewUrl(''); setExistingImageUrl(''); }}
-                        className="absolute top-2 right-2 p-1.5 bg-[#141b2d] rounded-full text-white cursor-pointer hover:bg-rose-600"
+                        className="absolute top-2 right-2 p-1.5 bg-[#141b2d]/80 hover:bg-rose-600 rounded-full text-white cursor-pointer transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                   ) : (
-                    <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-4">
+                    <label className="cursor-pointer flex flex-col items-center justify-center space-y-2 py-6">
                       <Upload className="w-8 h-8 text-[#00BCE1] animate-bounce" />
-                      <span className="text-xs text-slate-300">Click to upload banner image file</span>
+                      <span className="text-xs text-slate-300 font-medium">Click to upload banner image file</span>
                       <span className="text-[10px] text-[#A0AEC0] font-mono">Preset: aqua_point | Folder: banners</span>
                       <input
                         type="file"
@@ -645,6 +575,39 @@ export default function BannersView() {
                     </label>
                   )}
                 </div>
+              </div>
+
+              {/* Position Selection */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Banner Position *</label>
+                <select
+                  value={position}
+                  onChange={(e) => setPosition(e.target.value as any)}
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer"
+                >
+                  <option value="main">Main Carousel Slider</option>
+                  <option value="side_top">Side Banner Top</option>
+                  <option value="side_bottom">Side Banner Bottom</option>
+                </select>
+              </div>
+
+              {/* Display Order / Sequence Input */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Display Order / Sequence (Main Slider) *
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  required
+                  value={order}
+                  onChange={(e) => setOrder(Math.max(1, parseInt(e.target.value) || 1))}
+                  placeholder="e.g. 1, 2, 3..."
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white font-mono focus:outline-none focus:border-[#00BCE1]"
+                />
+                <p className="text-[10px] text-[#A0AEC0] mt-1">
+                  Numeric sequence order for banner display on the homepage carousel.
+                </p>
               </div>
 
               {/* Active Status Toggle */}
@@ -710,7 +673,7 @@ export default function BannersView() {
             </div>
 
             <p className="text-xs text-slate-300">
-              Are you sure you want to delete banner <strong className="text-white">"{deletingBanner.title}"</strong>? It will immediately be removed from the user website.
+              Are you sure you want to delete this banner (Order #{deletingBanner.order || 1})? It will immediately be removed from the user website.
             </p>
 
             <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2c3754]">
