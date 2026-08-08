@@ -131,7 +131,7 @@ export default function Header() {
   }, []);
 
   // Route-awareness configuration
-  const isSearchDisabled = pathname === '/settings' || pathname === '/login';
+  const isSearchDisabled = pathname === '/settings';
 
   const getSearchPlaceholder = (path: string) => {
     if (path.startsWith('/products')) return 'Search products & global...';
@@ -516,14 +516,12 @@ export default function Header() {
   const handleLogout = async () => {
     setIsProfileOpen(false);
     try {
-      await logoutAdmin();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
       if (typeof window !== 'undefined') {
         localStorage.clear();
       }
-      router.push('/login');
+      await logoutAdmin();
+    } catch (error) {
+      console.error('Logout error:', error);
     }
   };
 

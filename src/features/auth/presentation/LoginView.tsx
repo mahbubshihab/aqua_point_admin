@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 import { auth } from '@/core/services/firebase';
 
@@ -10,8 +9,11 @@ const ALLOWED_ADMIN_EMAILS = [
   'aquapointapp@gmail.com',
 ];
 
-export default function LoginPage() {
-  const router = useRouter();
+interface LoginViewProps {
+  onLoginSuccess?: () => void;
+}
+
+export default function LoginView({ onLoginSuccess }: LoginViewProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -120,8 +122,9 @@ export default function LoginPage() {
       if (ALLOWED_ADMIN_EMAILS.includes(userEmail)) {
         localStorage.setItem('admin_auth', 'true');
         localStorage.setItem('admin_email', userEmail);
-        // Use window.location for static export compatibility
-        window.location.href = '/';
+        if (onLoginSuccess) {
+          onLoginSuccess();
+        }
       } else {
         await signOut(auth);
         localStorage.removeItem('admin_auth');
@@ -140,7 +143,6 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-
   };
 
   return (
@@ -195,7 +197,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Sign In Button - Dark themed, no white */}
+        {/* Sign In Button */}
         <button
           type="button"
           onClick={handleGoogleSignIn}
@@ -479,7 +481,7 @@ export default function LoginPage() {
           75% { transform: translateX(4px); }
         }
 
-        /* Sign In Button - Dark, no white */
+        /* Sign In Button */
         .signin-btn {
           width: 100%;
           padding: 16px 24px;

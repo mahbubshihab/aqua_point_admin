@@ -104,14 +104,12 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      await logoutAdmin();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
       if (typeof window !== 'undefined') {
         localStorage.clear();
       }
-      router.push('/login');
+      await logoutAdmin();
+    } catch (error) {
+      console.error('Logout error:', error);
     }
   };
 
