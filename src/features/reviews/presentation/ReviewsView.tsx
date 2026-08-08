@@ -13,11 +13,14 @@ import {
   LayoutGrid,
   List,
   Check,
-  Ban
+  Ban,
+  Plus,
+  X
 } from 'lucide-react';
 import {
   db,
   REVIEWS_COLLECTION,
+  addReviewToFirestore,
   updateReviewInFirestore,
   deleteReviewFromFirestore,
   ReviewDoc
@@ -33,6 +36,15 @@ export default function ReviewsView() {
   const [filterApproved, setFilterApproved] = useState<'all' | 'approved' | 'pending'>('all');
   const [ratingFilter, setRatingFilter] = useState<'All' | number>('All');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+
+  // Add Review Modal State
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newCustomerName, setNewCustomerName] = useState('');
+  const [newRating, setNewRating] = useState(5);
+  const [newComment, setNewComment] = useState('');
+  const [newLocation, setNewLocation] = useState('');
+  const [formError, setFormError] = useState('');
 
   // Delete Modal State
   const [deletingReview, setDeletingReview] = useState<ReviewDoc | null>(null);
@@ -87,6 +99,49 @@ export default function ReviewsView() {
 
     return () => unsubscribe();
   }, []);
+
+  const resetForm = () => {
+    setNewCustomerName('');
+    setNewRating(5);
+    setNewComment('');
+    setNewLocation('');
+    setFormError('');
+  };
+
+  const handleCreateReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCustomerName.trim()) {
+      setFormError('Customer name is required.');
+      return;
+    }
+    if (!newComment.trim()) {
+      setFormError('Comment is required.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setFormError('');
+
+    try {
+      await addReviewToFirestore({
+        customerName: newCustomerName.trim(),
+        rating: Number(newRating),
+        comment: newComment.trim(),
+        location: newLocation.trim() || 'Dhaka',
+        isApproved: true,
+      });
+
+      setSuccessMessage('Review created successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+      setIsAddModalOpen(false);
+      resetForm();
+    } catch (err: any) {
+      console.error('Error creating review:', err);
+      setFormError(err.message || 'Failed to create review.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Summary Metrics calculated live
   const totalReviews = reviews.length;
@@ -173,6 +228,12 @@ export default function ReviewsView() {
             {filteredReviews.length} reviews
           </span>
         </div>
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-5 py-2.5 transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer shrink-0 self-start sm:self-auto"
+        >
+          <Plus className="w-4 h-4 stroke-[3]" /> Add Review
+        </button>
       </div>
 
       {/* Dynamic Summary Stats */}
@@ -333,6 +394,14 @@ export default function ReviewsView() {
               ? 'No reviews match your current filter query.'
               : 'No customer reviews submitted yet.'}
           </p>
+          {!searchTerm && filterApproved === 'all' && (
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold shadow-lg shadow-[#00BCE1]/25 rounded-full px-5 py-2.5 transition-all duration-300 transform active:scale-95 inline-flex items-center gap-2 cursor-pointer"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" /> Add First Review
+            </button>
+          )}
         </div>
       ) : viewMode === 'grid' ? (
         /* Grid Layout */
@@ -524,6 +593,149 @@ export default function ReviewsView() {
             </table>
           </div>
           <TableFooter totalItems={filteredReviews.length} />
+        </div>
+      )}
+
+      {/* Add Review Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#141b2d]/80 backdrop-blur-md">
+          <div className="bg-[#1f2940] border border-[#2c3754] w-full max-w-lg rounded-3xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-150 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#2c3754] pb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-[#00BCE1]/15 border border-[#00BCE1]/30 text-[#00BCE1]">
+                  <MessageSquareQuote className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white">Add New Review</h3>
+                  <p className="text-xs text-[#A0AEC0]">Create a review to publish on the website.</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setIsAddModalOpen(false);
+                  resetForm();
+                }}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-[#141b2d] border border-transparent hover:border-[#2c3754] transition-all cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {formError && (
+              <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                <span>{formError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleCreateReview} className="space-y-4">
+              {/* Customer Name */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-200">
+                  Customer Name <span className="text-rose-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newCustomerName}
+                  onChange={(e) => setNewCustomerName(e.target.value)}
+                  placeholder="e.g. Tanvir Ahmed"
+                  required
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-500 focus:outline-none focus:border-[#00BCE1] transition-all"
+                />
+              </div>
+
+              {/* Rating Star Selector */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-200">
+                  Rating <span className="text-rose-400">*</span>
+                </label>
+                <div className="flex items-center gap-2 p-2 rounded-xl bg-[#141b2d] border border-[#2c3754]">
+                  <div className="flex items-center gap-1 text-amber-400">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setNewRating(star)}
+                        className="p-1 hover:scale-110 transition-transform cursor-pointer"
+                      >
+                        <Star
+                          className={`w-6 h-6 ${
+                            star <= newRating
+                              ? 'fill-amber-400 text-amber-400'
+                              : 'text-slate-600 fill-slate-800'
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  <span className="text-xs font-bold text-amber-400 ml-2">
+                    {newRating} / 5 Stars
+                  </span>
+                </div>
+              </div>
+
+              {/* Location (Optional) */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-200">
+                  Location <span className="text-slate-400 font-normal">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={newLocation}
+                  onChange={(e) => setNewLocation(e.target.value)}
+                  placeholder="e.g. Dhanmondi, Dhaka"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-500 focus:outline-none focus:border-[#00BCE1] transition-all"
+                />
+              </div>
+
+              {/* Comment */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-200">
+                  Review Comment <span className="text-rose-400">*</span>
+                </label>
+                <textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Enter customer feedback or review details..."
+                  rows={4}
+                  required
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white placeholder-slate-500 focus:outline-none focus:border-[#00BCE1] transition-all resize-none"
+                />
+              </div>
+
+              {/* Form Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#2c3754]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAddModalOpen(false);
+                    resetForm();
+                  }}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#141b2d] hover:bg-[#2c3754] text-slate-300 border border-[#2c3754] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-[#00BCE1] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-[#00BCE1]/25 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 stroke-[3]" />
+                      <span>Save Review</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
