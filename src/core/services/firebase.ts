@@ -766,6 +766,7 @@ export interface CompanySettingsDoc {
   youtubeUrl: string;
   instagramUrl: string;
   linkedinUrl: string;
+  twitterUrl?: string;
   updatedAt?: any;
 }
 
@@ -781,6 +782,7 @@ export const DEFAULT_COMPANY_SETTINGS: CompanySettingsDoc = {
   youtubeUrl: 'https://youtube.com/@aquapointbd',
   instagramUrl: 'https://instagram.com/aquapointbd',
   linkedinUrl: 'https://linkedin.com/company/aquapointbd',
+  twitterUrl: 'https://x.com/aquapointbd',
 };
 
 export function subscribeToCompanyInfo(callback: (info: CompanySettingsDoc) => void) {
@@ -800,6 +802,7 @@ export function subscribeToCompanyInfo(callback: (info: CompanySettingsDoc) => v
         youtubeUrl: data.youtubeUrl ?? DEFAULT_COMPANY_SETTINGS.youtubeUrl,
         instagramUrl: data.instagramUrl ?? DEFAULT_COMPANY_SETTINGS.instagramUrl,
         linkedinUrl: data.linkedinUrl ?? DEFAULT_COMPANY_SETTINGS.linkedinUrl,
+        twitterUrl: data.twitterUrl ?? DEFAULT_COMPANY_SETTINGS.twitterUrl,
       });
     } else {
       callback(DEFAULT_COMPANY_SETTINGS);
