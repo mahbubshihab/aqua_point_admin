@@ -49,6 +49,7 @@ export default function BannersView() {
   const [title, setTitle] = useState('');
   const [tag, setTag] = useState('');
   const [ctaLink, setCtaLink] = useState('');
+  const [position, setPosition] = useState<'main' | 'side_top' | 'side_bottom'>('main');
   const [isActive, setIsActive] = useState(true);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -58,6 +59,10 @@ export default function BannersView() {
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
+
+  // Filter states
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Inactive'>('All');
+  const [positionFilter, setPositionFilter] = useState<'All' | 'main' | 'side_top' | 'side_bottom'>('All');
 
   // Real-time Firestore Sync with limit(15)
   useEffect(() => {
@@ -84,6 +89,7 @@ export default function BannersView() {
     setTitle('');
     setTag('');
     setCtaLink('');
+    setPosition('main');
     setIsActive(true);
     setSelectedFile(null);
     setPreviewUrl('');
@@ -96,7 +102,8 @@ export default function BannersView() {
     setEditingBannerId(banner.id);
     setTitle(banner.title);
     setTag(banner.tag || '');
-    setCtaLink(banner.ctaLink || '');
+    setCtaLink(banner.ctaLink || banner.linkUrl || '');
+    setPosition((banner.position as any) || 'main');
     setIsActive(banner.isActive);
     setSelectedFile(null);
     setPreviewUrl('');
@@ -128,6 +135,8 @@ export default function BannersView() {
         tag: tag.trim(),
         imageUrl: finalImageUrl,
         ctaLink: ctaLink.trim(),
+        linkUrl: ctaLink.trim(),
+        position: position,
         isActive: isActive,
       };
 
@@ -177,9 +186,37 @@ export default function BannersView() {
     }
   };
 
-  const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Inactive'>('All');
+  const renderPositionBadge = (pos?: string) => {
+    switch (pos) {
+      case 'side_top':
+        return (
+          <span className="px-2.5 py-1 text-[10px] font-extrabold rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-lg">
+            Side Top
+          </span>
+        );
+      case 'side_bottom':
+        return (
+          <span className="px-2.5 py-1 text-[10px] font-extrabold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-lg">
+            Side Bottom
+          </span>
+        );
+      case 'main':
+      default:
+        return (
+          <span className="px-2.5 py-1 text-[10px] font-extrabold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40 shadow-lg">
+            Main
+          </span>
+        );
+    }
+  };
 
-  const filteredBanners = banners;
+  const filteredBanners = banners.filter((banner) => {
+    if (statusFilter === 'Active' && !banner.isActive) return false;
+    if (statusFilter === 'Inactive' && banner.isActive) return false;
+    if (positionFilter !== 'All' && (banner.position || 'main') !== positionFilter) return false;
+    if (searchTerm && !banner.title.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    return true;
+  });
 
   return (
     <div className="space-y-8 pb-12">
@@ -209,11 +246,11 @@ export default function BannersView() {
         </button>
       </div>
 
-      {/* Unified Filter Bar (Single Consolidated Bar) */}
+      {/* Filter Bar */}
       <div className="p-4 bg-[#1f2940] border border-[#2c3754] rounded-2xl shadow-xl space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-1">
-            {/* Filter Dropdown */}
+            {/* Status Filter Dropdown */}
             <div className="relative w-full sm:w-48">
               <select
                 value={statusFilter}
@@ -223,6 +260,20 @@ export default function BannersView() {
                 <option value="All">All Banner Status</option>
                 <option value="Active">Active Only</option>
                 <option value="Inactive">Disabled Only</option>
+              </select>
+            </div>
+
+            {/* Position Filter Dropdown */}
+            <div className="relative w-full sm:w-48">
+              <select
+                value={positionFilter}
+                onChange={(e) => setPositionFilter(e.target.value as any)}
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-all"
+              >
+                <option value="All">All Positions</option>
+                <option value="main">Main Slider</option>
+                <option value="side_top">Side Banner (Top)</option>
+                <option value="side_bottom">Side Banner (Bottom)</option>
               </select>
             </div>
           </div>
@@ -258,22 +309,22 @@ export default function BannersView() {
         {/* Banner Status Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pt-2 border-t border-[#2c3754] scrollbar-none">
           {(['All', 'Active', 'Inactive'] as const).map((st) => {
-            const label = st === 'All' ? 'All Banners' : st === 'Active' ? 'Active Hero Slides' : 'Disabled Slides';
+            const label = st === 'All' ? 'All Banners' : st === 'Active' ? 'Active Slides' : 'Disabled Slides';
             const count = st === 'All' ? banners.length : banners.filter(b => st === 'Active' ? b.isActive : !b.isActive).length;
-            const isActive = statusFilter === st;
+            const isActiveTab = statusFilter === st;
             return (
               <button
                 key={st}
                 onClick={() => setStatusFilter(st)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
-                  isActive
+                  isActiveTab
                     ? 'bg-[#00BCE1] text-[#141b2d] font-bold shadow-[0_0_15px_rgba(0,188,225,0.4)]'
                     : 'bg-[#141b2d] text-slate-400 hover:text-white border border-[#2c3754]'
                 }`}
               >
                 <span>{label}</span>
                 <span className={`px-2 py-0.5 text-[10px] rounded-full font-bold ${
-                  isActive ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
+                  isActiveTab ? 'bg-[#141b2d]/25 text-[#141b2d]' : 'bg-white/10 text-[#00BCE1]'
                 }`}>
                   {count}
                 </span>
@@ -296,7 +347,7 @@ export default function BannersView() {
           <p className="text-xs text-[#A0AEC0] max-w-sm mx-auto">
             {searchTerm
               ? 'No banners match your search query.'
-              : 'Add your first promotional hero slider banner for the website.'}
+              : 'Add your first promotional hero or promo side banner.'}
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             <button
@@ -333,23 +384,24 @@ export default function BannersView() {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#1f2940] via-transparent to-transparent" />
 
-                  {/* Status Badge */}
-                  <div className="absolute top-3 left-3 flex items-center gap-2">
+                  {/* Status & Position Badges */}
+                  <div className="absolute top-3 left-3 flex items-center gap-2 flex-wrap z-10">
                     <span
                       className={`px-3 py-1 text-[11px] font-extrabold rounded-full border flex items-center gap-1.5 shadow-lg ${
                         banner.isActive
-                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
+                          ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40 backdrop-blur-md'
                           : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754]'
                       }`}
                     >
                       {banner.isActive ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                       {banner.isActive ? 'Active' : 'Inactive'}
                     </span>
+                    {renderPositionBadge(banner.position)}
                   </div>
 
                   {/* Tag / Badge */}
                   {banner.tag && (
-                    <div className="absolute top-3 right-3 px-3 py-1 text-[11px] font-extrabold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754] flex items-center gap-1">
+                    <div className="absolute top-3 right-3 px-3 py-1 text-[11px] font-extrabold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754] flex items-center gap-1 z-10">
                       <Tag className="w-3 h-3 text-[#00BCE1]" /> {banner.tag}
                     </div>
                   )}
@@ -361,10 +413,10 @@ export default function BannersView() {
                     {banner.title}
                   </h3>
 
-                  {banner.ctaLink && (
+                  {(banner.ctaLink || banner.linkUrl) && (
                     <div className="flex items-center gap-1.5 text-xs text-[#00BCE1]/90 font-mono truncate pt-1">
                       <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate">{banner.ctaLink}</span>
+                      <span className="truncate">{banner.ctaLink || banner.linkUrl}</span>
                     </div>
                   )}
                 </div>
@@ -379,7 +431,7 @@ export default function BannersView() {
                       ? 'bg-[#00BCE1]/20 text-[#00BCE1] border-[#00BCE1]/40'
                       : 'bg-[#141b2d] text-[#A0AEC0] border-[#2c3754] hover:text-white'
                   }`}
-                  title="Toggle active visibility on website hero slider"
+                  title="Toggle active visibility"
                 >
                   {banner.isActive ? (
                     <ToggleRight className="w-4 h-4 text-[#00BCE1]" />
@@ -418,6 +470,7 @@ export default function BannersView() {
                 <tr>
                   <th className="py-3.5 px-4">Banner Preview</th>
                   <th className="py-3.5 px-4">Title</th>
+                  <th className="py-3.5 px-4">Position</th>
                   <th className="py-3.5 px-4">Tag / Badge</th>
                   <th className="py-3.5 px-4">CTA Link</th>
                   <th className="py-3.5 px-4">Status</th>
@@ -435,6 +488,7 @@ export default function BannersView() {
                       />
                     </td>
                     <td className="py-4 px-4 font-bold text-white">{banner.title}</td>
+                    <td className="py-4 px-4">{renderPositionBadge(banner.position)}</td>
                     <td className="py-4 px-4">
                       {banner.tag ? (
                         <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-[#00BCE1]/20 text-[#00BCE1] border border-[#00BCE1]/40">
@@ -445,7 +499,7 @@ export default function BannersView() {
                       )}
                     </td>
                     <td className="py-4 px-4 font-mono text-[#00BCE1] max-w-xs truncate">
-                      {banner.ctaLink || '-'}
+                      {banner.ctaLink || banner.linkUrl || '-'}
                     </td>
                     <td className="py-4 px-4">
                       <button
@@ -525,6 +579,19 @@ export default function BannersView() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Banner Position *</label>
+                  <select
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value as any)}
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer"
+                  >
+                    <option value="main">Main Carousel Slider</option>
+                    <option value="side_top">Side Banner (Top)</option>
+                    <option value="side_bottom">Side Banner (Bottom)</option>
+                  </select>
+                </div>
+
+                <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Tag / Badge</label>
                   <input
                     type="text"
@@ -534,17 +601,17 @@ export default function BannersView() {
                     className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
                   />
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">CTA Link (URL / Route)</label>
-                  <input
-                    type="text"
-                    value={ctaLink}
-                    onChange={(e) => setCtaLink(e.target.value)}
-                    placeholder="e.g. /products or https://..."
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono focus:outline-none focus:border-[#00BCE1]"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">CTA Link (URL / Route)</label>
+                <input
+                  type="text"
+                  value={ctaLink}
+                  onChange={(e) => setCtaLink(e.target.value)}
+                  placeholder="e.g. /products or https://..."
+                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-[#00BCE1] font-mono focus:outline-none focus:border-[#00BCE1]"
+                />
               </div>
 
               {/* Cloudinary Image Upload */}
@@ -584,7 +651,7 @@ export default function BannersView() {
               <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#141b2d] border border-[#2c3754]">
                 <div>
                   <p className="text-xs font-semibold text-white">Active Visibility</p>
-                  <p className="text-[11px] text-[#A0AEC0]">Show this banner in the user website hero slider</p>
+                  <p className="text-[11px] text-[#A0AEC0]">Show this banner on the user website</p>
                 </div>
                 <button
                   type="button"
@@ -643,7 +710,7 @@ export default function BannersView() {
             </div>
 
             <p className="text-xs text-slate-300">
-              Are you sure you want to delete banner <strong className="text-white">"{deletingBanner.title}"</strong>? It will immediately be removed from the user website hero slider.
+              Are you sure you want to delete banner <strong className="text-white">"{deletingBanner.title}"</strong>? It will immediately be removed from the user website.
             </p>
 
             <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2c3754]">

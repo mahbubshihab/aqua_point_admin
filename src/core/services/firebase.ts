@@ -97,6 +97,8 @@ export interface BannerDoc {
   tag?: string;
   imageUrl: string;
   ctaLink?: string;
+  linkUrl?: string;
+  position?: 'main' | 'side_top' | 'side_bottom' | string;
   isActive: boolean;
   createdAt?: any;
 }
@@ -887,7 +889,9 @@ export function subscribeToBanners(
         title: data.title || 'Untitled Banner',
         tag: data.tag || data.badge || '',
         imageUrl: data.imageUrl || data.image || '',
-        ctaLink: data.ctaLink || data.link || '',
+        ctaLink: data.ctaLink || data.link || data.linkUrl || '',
+        linkUrl: data.linkUrl || data.ctaLink || data.link || '',
+        position: data.position || 'main',
         isActive: data.isActive !== undefined ? Boolean(data.isActive) : true,
         createdAt: data.createdAt,
       };
@@ -904,7 +908,9 @@ export function subscribeToBanners(
           title: data.title || 'Untitled Banner',
           tag: data.tag || data.badge || '',
           imageUrl: data.imageUrl || data.image || '',
-          ctaLink: data.ctaLink || data.link || '',
+          ctaLink: data.ctaLink || data.link || data.linkUrl || '',
+          linkUrl: data.linkUrl || data.ctaLink || data.link || '',
+          position: data.position || 'main',
           isActive: data.isActive !== undefined ? Boolean(data.isActive) : true,
           createdAt: data.createdAt,
         };
