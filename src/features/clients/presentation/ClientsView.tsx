@@ -40,7 +40,6 @@ export default function ClientsView() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Form State
-  const [name, setName] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -72,7 +71,6 @@ export default function ClientsView() {
 
   const openAddModal = () => {
     setEditingClientId(null);
-    setName('');
     setLogoUrl('');
     setSelectedFile(null);
     setPreviewUrl('');
@@ -82,7 +80,6 @@ export default function ClientsView() {
 
   const openEditModal = (client: ClientDoc) => {
     setEditingClientId(client.id);
-    setName(client.name);
     setLogoUrl(client.imageUrl || client.logoUrl || '');
     setSelectedFile(null);
     setPreviewUrl('');
@@ -92,10 +89,6 @@ export default function ClientsView() {
 
   const handleSaveClient = async (e: FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      setFormError('Name is required.');
-      return;
-    }
 
     setIsSaving(true);
     setFormError('');
@@ -115,17 +108,17 @@ export default function ClientsView() {
       }
 
       const payload = {
-        name: name.trim(),
+        name: 'Client',
         imageUrl: finalLogoUrl || logoUrl || '',
         logoUrl: finalLogoUrl || logoUrl || '',
       };
 
       if (editingClientId) {
         await updateClientInFirestore(editingClientId, payload);
-        setSuccessMessage(`Client "${name}" updated!`);
+        setSuccessMessage('Client updated!');
       } else {
         await addClientToFirestore(payload);
-        setSuccessMessage(`Client "${name}" added!`);
+        setSuccessMessage('Client added!');
       }
 
       setTimeout(() => setSuccessMessage(''), 3500);
@@ -144,7 +137,7 @@ export default function ClientsView() {
     setIsDeleting(true);
     try {
       await deleteClientFromFirestore(deletingClient.id);
-      setSuccessMessage(`Client "${deletingClient.name}" deleted.`);
+      setSuccessMessage('Client deleted.');
       setTimeout(() => setSuccessMessage(''), 3500);
       setDeletingClient(null);
     } catch (err: any) {
@@ -156,7 +149,7 @@ export default function ClientsView() {
   };
 
   const filteredClients = clients.filter(c => 
-    c.name.toLowerCase().includes(searchTerm.toLowerCase())
+    (c.name || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -256,13 +249,10 @@ export default function ClientsView() {
                   <div className="relative w-full h-32 rounded-xl bg-white/95 border border-[#2c3754] flex items-center justify-center p-4 overflow-hidden shadow-inner group-hover:scale-[1.02] transition-transform duration-300">
                     <img
                       src={logo || 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?q=80&w=400&auto=format&fit=crop'}
-                      alt={client.name}
+                      alt="Client logo"
                       className="max-h-24 max-w-full object-contain filter drop-shadow-sm"
                     />
                   </div>
-                  <h3 className="text-base font-bold text-white group-hover:text-[#00BCE1] transition-colors truncate">
-                    {client.name}
-                  </h3>
                 </div>
 
                 <div className="pt-3 border-t border-[#2c3754] flex items-center justify-end gap-2">
@@ -293,7 +283,6 @@ export default function ClientsView() {
               <thead className="bg-[#3e4396] text-white font-bold uppercase tracking-wider text-xs border-b border-[#2c3754]">
                 <tr>
                   <th className="py-3.5 px-4">Logo</th>
-                  <th className="py-3.5 px-4">Client Name</th>
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -306,12 +295,11 @@ export default function ClientsView() {
                         <div className="w-12 h-12 rounded-xl bg-white p-1.5 border border-[#2c3754] flex items-center justify-center overflow-hidden">
                           <img
                             src={logo}
-                            alt={client.name}
+                            alt="Client logo"
                             className="max-h-full max-w-full object-contain"
                           />
                         </div>
                       </td>
-                      <td className="py-3 px-4 font-bold text-white text-sm">{client.name}</td>
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button
@@ -364,18 +352,6 @@ export default function ClientsView() {
                   <span>{formError}</span>
                 </div>
               )}
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Client Name"
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1]"
-                />
-              </div>
 
               {/* Cloudinary Image Upload */}
               <div>
@@ -453,7 +429,7 @@ export default function ClientsView() {
             </div>
 
             <p className="text-xs text-slate-300">
-              Are you sure you want to remove <strong className="text-white">"{deletingClient.name}"</strong>?
+              Are you sure you want to remove this client?
             </p>
 
             <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2c3754]">
@@ -485,3 +461,4 @@ export default function ClientsView() {
     </div>
   );
 }
+
