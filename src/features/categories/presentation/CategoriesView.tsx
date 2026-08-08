@@ -126,28 +126,32 @@ export default function CategoriesView() {
     setFormError('');
 
     try {
-      let finalImageUrl = existingImageUrl || 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop';
+      let finalImageUrl = existingImageUrl;
 
       if (selectedFile) {
         finalImageUrl = await uploadToCloudinary(selectedFile, 'categories');
       }
 
-      const generatedSlug = slug.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      if (!finalImageUrl) {
+        finalImageUrl = 'https://images.unsplash.com/photo-1548839140-29a749e1cf4e?q=80&w=800&auto=format&fit=crop';
+      }
+
+      const generatedSlug = slug.trim() || name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
       const payload: Omit<CategoryDoc, 'id'> = {
         name: name.trim(),
         slug: generatedSlug,
         description: description.trim(),
         imageUrl: finalImageUrl,
-        productCount: products.filter(p => p.category === name.trim()).length,
+        productCount: products.filter(p => p.category.toLowerCase() === name.trim().toLowerCase()).length,
       };
 
       if (editingCategoryId) {
         await updateCategoryInFirestore(editingCategoryId, payload);
-        setSuccessMessage(`Category "${name}" updated successfully!`);
+        setSuccessMessage(`Category "${name.trim()}" updated successfully!`);
       } else {
         await addCategoryToFirestore(payload);
-        setSuccessMessage(`Category "${name}" created in Cloud Firestore!`);
+        setSuccessMessage(`Category "${name.trim()}" saved to Cloud Firestore categories collection!`);
       }
 
       setTimeout(() => setSuccessMessage(''), 3500);
