@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAnalytics, isSupported } from 'firebase/analytics';
-import { getAuth, signOut } from 'firebase/auth';
+import { getAuth, signOut, browserLocalPersistence, setPersistence } from 'firebase/auth';
 import {
   getFirestore,
   collection,
@@ -32,6 +32,12 @@ const firebaseConfig = {
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+
+// Fix: Use localStorage persistence instead of IndexedDB to prevent
+// "Database is closing/hidden" error during Google Sign-In popup flow
+if (typeof window !== 'undefined') {
+  setPersistence(auth, browserLocalPersistence).catch(console.error);
+}
 
 export const logoutAdmin = async () => {
   if (typeof window !== 'undefined') {
