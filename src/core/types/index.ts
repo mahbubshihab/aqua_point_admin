@@ -1,6 +1,7 @@
 export type {
   ClientDoc,
   ProductDoc,
+  ProductType,
   CategoryDoc,
   ServiceRequestDoc,
   OrderItemDoc,

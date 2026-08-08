@@ -108,12 +108,15 @@ export interface ClientDoc {
   createdAt?: any;
 }
 
+export type ProductType = 'open_type' | 'box_type' | 'hot_cold_normal' | 'cabinet_type';
+
 export interface ProductDoc {
   id: string;
   name: string;
   model?: string;
   category: string;
   categoryId?: string;
+  type?: ProductType;
   price: number;
   originalPrice?: number;
   description?: string;
@@ -261,6 +264,7 @@ export function subscribeToProducts(
           model: data.model || '',
           category: data.category || 'RO Purifiers',
           categoryId: data.categoryId || data.category || '',
+          type: data.type || 'open_type',
           price: Number(data.price) || 0,
           originalPrice: data.originalPrice !== undefined && data.originalPrice !== null ? Number(data.originalPrice) : undefined,
           description: data.description || '',
@@ -289,6 +293,7 @@ export function subscribeToProducts(
             model: data.model || '',
             category: data.category || 'RO Purifiers',
             categoryId: data.categoryId || data.category || '',
+            type: data.type || 'open_type',
             price: Number(data.price) || 0,
             originalPrice: data.originalPrice !== undefined && data.originalPrice !== null ? Number(data.originalPrice) : undefined,
             description: data.description || '',

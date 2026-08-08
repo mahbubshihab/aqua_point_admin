@@ -25,8 +25,33 @@ import {
   updateProductInFirestore, 
   deleteProductFromFirestore,
   ProductDoc,
+  ProductType,
   CategoryDoc 
 } from '@/core/services/firebase';
+
+const PRODUCT_TYPE_LABELS: Record<ProductType, string> = {
+  open_type: 'Open Type',
+  box_type: 'Box Type',
+  hot_cold_normal: 'Hot Cold Normal',
+  cabinet_type: 'Cabinet Type',
+};
+
+const PRODUCT_TYPE_BADGE_STYLES: Record<ProductType, string> = {
+  open_type: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40',
+  box_type: 'bg-purple-500/20 text-purple-300 border-purple-400/40',
+  hot_cold_normal: 'bg-amber-500/20 text-amber-300 border-amber-400/40',
+  cabinet_type: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40',
+};
+
+const getProductTypeLabel = (type?: string) => {
+  if (!type) return 'Open Type';
+  return PRODUCT_TYPE_LABELS[type as ProductType] || type;
+};
+
+const getProductTypeBadgeStyle = (type?: string) => {
+  if (!type) return 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40';
+  return PRODUCT_TYPE_BADGE_STYLES[type as ProductType] || 'bg-slate-500/20 text-slate-300 border-slate-400/40';
+};
 import TableFooter from '@/core/components/TableFooter';
 import { useSearch } from '@/core/context/SearchContext';
 
@@ -40,6 +65,7 @@ export default function ProductsView() {
   const { searchTerm } = useSearch();
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('All');
   const [selectedStockFilter, setSelectedStockFilter] = useState('All');
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState('All');
 
   // Add / Edit Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,6 +85,7 @@ export default function ProductsView() {
   const [application, setApplication] = useState('Household');
   const [description, setDescription] = useState('');
   const [stockStatus, setStockStatus] = useState<'In Stock' | 'Low Stock' | 'Out of Stock' | 'Pre-Order'>('In Stock');
+  const [type, setType] = useState<ProductType>('open_type');
   const [featured, setFeatured] = useState(false);
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -106,6 +133,7 @@ export default function ProductsView() {
     setApplication('Household');
     setDescription('');
     setStockStatus('In Stock');
+    setType('open_type');
     setFeatured(false);
     setSelectedFile(null);
     setPreviewUrl('');
@@ -125,6 +153,7 @@ export default function ProductsView() {
     setApplication(product.application || 'Household');
     setDescription(product.description || '');
     setStockStatus(product.stockStatus || 'In Stock');
+    setType((product.type as ProductType) || 'open_type');
     setFeatured(Boolean(product.featured));
     setSelectedFile(null);
     setPreviewUrl('');
@@ -159,6 +188,7 @@ export default function ProductsView() {
         model: model.trim() || 'AP-' + Math.floor(100 + Math.random() * 900),
         category,
         categoryId: category,
+        type,
         price: parseFloat(price),
         originalPrice: originalPrice ? parseFloat(originalPrice) : undefined,
         warranty: warranty.trim() || '1 Year Standard Warranty',
@@ -205,7 +235,17 @@ export default function ProductsView() {
     }
   };
 
-  const filteredProducts = products;
+  const filteredProducts = products.filter((p) => {
+    const matchesSearch = !searchTerm || 
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (p.model && p.model.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (p.category && p.category.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const matchesStock = selectedStockFilter === 'All' || p.stockStatus === selectedStockFilter;
+    const matchesType = selectedTypeFilter === 'All' || p.type === selectedTypeFilter;
+
+    return matchesSearch && matchesStock && matchesType;
+  });
 
   return (
     <div className="space-y-8 pb-12">
@@ -251,6 +291,21 @@ export default function ProductsView() {
                 <option value="Low Stock">Low Stock</option>
                 <option value="Out of Stock">Out of Stock</option>
                 <option value="Pre-Order">Pre-Order</option>
+              </select>
+            </div>
+
+            {/* Type Filter Dropdown */}
+            <div className="relative w-full sm:w-44">
+              <select
+                value={selectedTypeFilter}
+                onChange={(e) => setSelectedTypeFilter(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-slate-200 focus:outline-none focus:border-[#00BCE1] focus:ring-1 focus:ring-[#00BCE1]/50 cursor-pointer transition-all"
+              >
+                <option value="All">All Types</option>
+                <option value="open_type">Open Type</option>
+                <option value="box_type">Box Type</option>
+                <option value="hot_cold_normal">Hot Cold Normal</option>
+                <option value="cabinet_type">Cabinet Type</option>
               </select>
             </div>
           </div>
@@ -389,6 +444,9 @@ export default function ProductsView() {
                     <span className="px-2.5 py-1 text-[10px] font-mono font-bold rounded-full bg-[#141b2d] text-[#00BCE1] border border-[#2c3754] truncate max-w-[130px]">
                       {p.model || 'AP-MODEL'}
                     </span>
+                    <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${getProductTypeBadgeStyle(p.type)}`}>
+                      {getProductTypeLabel(p.type)}
+                    </span>
                   </div>
 
                   <div className="absolute top-3 right-3 z-10">
@@ -478,6 +536,7 @@ export default function ProductsView() {
                 <tr>
                   <th className="py-3.5 px-4">Product</th>
                   <th className="py-3.5 px-4">Category</th>
+                  <th className="py-3.5 px-4">Type</th>
                   <th className="py-3.5 px-4">Price</th>
                   <th className="py-3.5 px-4">Application</th>
                   <th className="py-3.5 px-4">Warranty</th>
@@ -509,6 +568,11 @@ export default function ProductsView() {
                     <td className="py-4 px-4 font-medium text-slate-200">
                       <span className="px-2.5 py-1 rounded-lg bg-[#141b2d] border border-[#2c3754]">
                         {p.category}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 font-medium text-slate-200">
+                      <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${getProductTypeBadgeStyle(p.type)}`}>
+                        {getProductTypeLabel(p.type)}
                       </span>
                     </td>
                     <td className="py-4 px-4">
@@ -609,7 +673,7 @@ export default function ProductsView() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">Category *</label>
                   <select
@@ -634,6 +698,22 @@ export default function ProductsView() {
                   </select>
                 </div>
 
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Product Type *</label>
+                  <select
+                    value={type}
+                    onChange={(e) => setType(e.target.value as ProductType)}
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#141b2d] border border-[#2c3754] text-white focus:outline-none focus:border-[#00BCE1] cursor-pointer transition-colors"
+                  >
+                    <option value="open_type">Open Type</option>
+                    <option value="box_type">Box Type</option>
+                    <option value="hot_cold_normal">Hot Cold Normal</option>
+                    <option value="cabinet_type">Cabinet Type</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">Selling Price (৳) *</label>
                   <input
