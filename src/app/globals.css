@@ -81,4 +81,23 @@ html, body {
   background: #3e4396;
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #141b2d;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(62, 67, 150, 0.6);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #3e4396;
+}
+
+
 
