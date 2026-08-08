@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAnalytics, isSupported } from 'firebase/analytics';
+import { getAuth, signOut } from 'firebase/auth';
 import {
   getFirestore,
   collection,
@@ -30,6 +31,15 @@ const firebaseConfig = {
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
+
+export const logoutAdmin = async () => {
+  if (typeof window !== 'undefined') {
+    localStorage.clear();
+    sessionStorage.clear();
+  }
+  return signOut(auth);
+};
 
 if (typeof window !== 'undefined') {
   isSupported().then(yes => yes && getAnalytics(app));

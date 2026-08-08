@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Droplets, 
@@ -17,13 +17,15 @@ import {
   Users, 
   Settings, 
   Menu,
-  ChevronRight
+  ChevronRight,
+  LogOut
 } from 'lucide-react';
 import { 
   subscribeToServiceRequests, 
   subscribeToOrders, 
   subscribeToInquiries,
-  subscribeToCustomerThreads
+  subscribeToCustomerThreads,
+  logoutAdmin
 } from '@/core/services/firebase';
 
 interface NavItem {
@@ -69,6 +71,7 @@ const navGroups: NavGroup[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [servicesCount, setServicesCount] = useState<number>(0);
   const [ordersCount, setOrdersCount] = useState<number>(0);
   const [inquiriesCount, setInquiriesCount] = useState<number>(0);
@@ -106,10 +109,19 @@ export default function Sidebar() {
     return 0;
   };
 
+  const handleLogout = async () => {
+    try {
+      await logoutAdmin();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      router.push('/login');
+    }
+  };
 
   return (
     <aside className={`fixed left-0 top-0 bottom-0 z-40 bg-[#1f2940] border-r border-[#2c3754] flex flex-col justify-between p-4 shadow-2xl transition-all duration-300 ${collapsed ? 'w-20' : 'w-64'}`}>
-      <div className="overflow-y-auto scrollbar-none pr-1">
+      <div className="overflow-y-auto scrollbar-none pr-1 flex-1">
         {/* Top Bar: Brand AQUA POINT with official logo and collapse menu icon */}
         <div className="flex items-center justify-between px-2 py-3 mb-4 border-b border-[#2c3754]">
           <div className="flex items-center gap-2.5 overflow-hidden">
@@ -181,6 +193,20 @@ export default function Sidebar() {
             </div>
           ))}
         </nav>
+      </div>
+
+      {/* Bottom Action: Prominent Logout Button */}
+      <div className="pt-4 mt-auto border-t border-[#2c3754]">
+        <button
+          onClick={handleLogout}
+          className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-bold text-red-400 bg-red-500/10 hover:bg-red-500/20 hover:text-red-300 border border-red-500/20 transition-all duration-200 cursor-pointer shadow-lg group ${
+            collapsed ? 'justify-center px-0' : 'justify-start'
+          }`}
+          title={collapsed ? 'Logout' : undefined}
+        >
+          <LogOut className="w-5 h-5 shrink-0 text-red-400 group-hover:scale-110 transition-transform" />
+          {!collapsed && <span>Logout</span>}
+        </button>
       </div>
     </aside>
   );

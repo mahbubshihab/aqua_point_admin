@@ -1,31 +1,92 @@
 'use client';
 
-import { Search, Bell, Settings, X } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Search, Bell, Settings, X, LogOut, ChevronDown, User, Shield } from 'lucide-react';
 import { useSearch } from '@/core/context/SearchContext';
+import { logoutAdmin } from '@/core/services/firebase';
 
 export default function Header() {
   const { searchTerm, setSearchTerm } = useSearch();
+  const router = useRouter();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    setIsProfileOpen(false);
+    try {
+      await logoutAdmin();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      router.push('/login');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-[#1f2940] border-b border-[#2c3754] px-6 flex items-center justify-between shadow-lg">
-      {/* Left Corner: User Profile Badge & Compact Search Bar */}
+      {/* Left Corner: User Profile Badge Dropdown & Compact Search Bar */}
       <div className="flex items-center gap-6">
-        {/* User Profile Badge */}
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#3e4396] to-[#00BCE1] flex items-center justify-center text-white font-extrabold text-sm shadow-md border-2 border-[#00BCE1]">
-              MS
+        {/* User Profile Badge Dropdown */}
+        <div className="relative" ref={profileRef}>
+          <button
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-[#141b2d]/60 transition-colors cursor-pointer group focus:outline-none"
+            title="User Profile Menu"
+          >
+            <div className="relative">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#3e4396] to-[#00BCE1] flex items-center justify-center text-white font-extrabold text-sm shadow-md border-2 border-[#00BCE1]">
+                MS
+              </div>
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#00BCE1] rounded-full border-2 border-[#1f2940]" />
             </div>
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#00BCE1] rounded-full border-2 border-[#1f2940]" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-white leading-tight">
-              Mahbub Shihab
-            </span>
-            <span className="text-[10px] font-semibold bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/30 px-2 py-0.5 rounded-full leading-tight mt-0.5 w-fit">
-              Super Admin
-            </span>
-          </div>
+            <div className="flex flex-col text-left">
+              <span className="text-xs font-bold text-white leading-tight flex items-center gap-1">
+                Mahbub Shihab
+                <ChevronDown className={`w-3.5 h-3.5 text-[#A0AEC0] group-hover:text-white transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+              </span>
+              <span className="text-[10px] font-semibold bg-[#00BCE1]/15 text-[#00BCE1] border border-[#00BCE1]/30 px-2 py-0.5 rounded-full leading-tight mt-0.5 w-fit">
+                Super Admin
+              </span>
+            </div>
+          </button>
+
+          {/* Profile Dropdown Menu */}
+          {isProfileOpen && (
+            <div className="absolute top-full left-0 mt-2 w-60 rounded-2xl bg-[#1f2940] border border-[#2c3754] shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="px-3 py-2.5 border-b border-[#2c3754]">
+                <div className="flex items-center gap-2 mb-1">
+                  <User className="w-4 h-4 text-[#00BCE1]" />
+                  <p className="text-xs font-bold text-white leading-tight">Mahbub Shihab</p>
+                </div>
+                <p className="text-[11px] text-[#A0AEC0] truncate">admin@aquapoint.bd</p>
+                <div className="flex items-center gap-1.5 mt-2">
+                  <Shield className="w-3 h-3 text-[#00BCE1]" />
+                  <span className="text-[10px] font-bold text-[#00BCE1] uppercase tracking-wider">Super Administrator</span>
+                </div>
+              </div>
+
+              <div className="pt-1">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/15 hover:text-red-300 transition-all cursor-pointer group"
+                >
+                  <LogOut className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Compact Search Bar */}
